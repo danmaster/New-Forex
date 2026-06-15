@@ -41,3 +41,6 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 
 ## Automatización y Herramientas
 - **Python y Scripts:** Este entorno cuenta con herramientas y scripts en Python (como `yt-dlp` y los archivos en la carpeta `/scripts/`) diseñados para automatizar tareas. Esto nos permite extraer fácilmente las listas de videos de YouTube y descargar el material directamente a nuestra carpeta local (`/Estrategias`).
+
+## Próximos Pasos / Tareas Pendientes
+- **Diario de Trading Automático:** Crear un script en Python que permita registrar y analizar de manera automatizada las operaciones diarias (Trading Journal) para medir el rendimiento de las estrategias.
