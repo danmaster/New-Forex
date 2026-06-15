@@ -10,7 +10,7 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 - **Canales de YouTube:** 
   - Alex Ruiz: [https://www.youtube.com/@AlexRuiiz](https://www.youtube.com/@AlexRuiiz)
   - Yuri Rabassa: [https://www.youtube.com/@YuriRabassa](https://www.youtube.com/@YuriRabassa)
-- **Gestión de Recursos:** Los videos de las lecciones se irán descargando y guardando localmente en la carpeta `/entorno`.
+- **Gestión de Recursos:** Los videos de las lecciones se irán descargando y guardando localmente en la carpeta `/Estrategias`.
 
 ## Infraestructura Técnica
 - **Entorno de Ejecución:** Las aplicaciones utilizadas para operar se encuentran alojadas y se ejecutan de forma remota en servidores de **Contabo**.
@@ -40,4 +40,4 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 - **Contraseña:** *(Pendiente de confirmar)*
 
 ## Automatización y Herramientas
-- **Python y Scripts:** Este entorno cuenta con herramientas y scripts en Python (como `yt-dlp` y los archivos en la carpeta `/scripts/`) diseñados para automatizar tareas. Esto nos permite extraer fácilmente las listas de videos de YouTube y descargar el material directamente a nuestra carpeta local (`/entorno`).
+- **Python y Scripts:** Este entorno cuenta con herramientas y scripts en Python (como `yt-dlp` y los archivos en la carpeta `/scripts/`) diseñados para automatizar tareas. Esto nos permite extraer fácilmente las listas de videos de YouTube y descargar el material directamente a nuestra carpeta local (`/Estrategias`).
