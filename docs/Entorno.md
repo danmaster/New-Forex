@@ -38,3 +38,6 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 - **Email:** `rhood20@hotmail.com`
 - **Usuario:** `grandanmaster`
 - **Contraseña:** *(Pendiente de confirmar)*
+
+## Automatización y Herramientas
+- **Python y Scripts:** Este entorno cuenta con herramientas y scripts en Python (como `yt-dlp` y los archivos en la carpeta `/scripts/`) diseñados para automatizar tareas. Esto nos permite extraer fácilmente las listas de videos de YouTube y descargar el material directamente a nuestra carpeta local (`/entorno`).
