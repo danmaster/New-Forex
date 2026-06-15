@@ -24,3 +24,11 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
   - **Usuario RDP:** `Administrator`
   - **Contraseña:** `Viena62020%`
   - **VNC (Emergencias):** `161.97.97.234:63150`
+
+## Cuentas de Trading
+- **Plataforma:** MetaTrader 4 (MT4)
+- **Broker:** Skilling
+- **Tipo de Cuenta:** Demo
+- **Servidor:** `SkillingLimited-Demo`
+- **Número de Cuenta (Login):** `7016509`
+- **Identificador de Cliente:** `customer-499277`
