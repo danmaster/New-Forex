@@ -1,0 +1,10 @@
+# Archivos de video pesados en la carpeta entorno
+entorno/*.mp4
+entorno/*.mkv
+entorno/*.avi
+entorno/*.mov
+entorno/*.webm
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
