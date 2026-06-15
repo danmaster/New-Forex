@@ -14,3 +14,7 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 
 ## Infraestructura Técnica
 - **Entorno de Ejecución:** Las aplicaciones utilizadas para operar se encuentran alojadas y se ejecutan de forma remota en servidores de **Contabo**.
+- **Acceso a Contabo:**
+  - **URL:** [https://my.contabo.com/](https://my.contabo.com/)
+  - **Usuario/Login:** `dan@arteywebcreaciones.com`
+  - **Contraseña:** `NQ65m7o9TbRd`
