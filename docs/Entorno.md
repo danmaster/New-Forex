@@ -18,3 +18,7 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
   - **URL:** [https://my.contabo.com/](https://my.contabo.com/)
   - **Usuario/Login:** `dan@arteywebcreaciones.com`
   - **Contraseña:** `NQ65m7o9TbRd`
+- **Acceso al Servidor Windows (VPS):**
+  - **IP (Escritorio Remoto):** `62.169.20.253`
+  - **Sistema Operativo:** Windows Server 2022 Datacenter Edition
+  - **VNC (Emergencias):** `161.97.97.234:63150`
