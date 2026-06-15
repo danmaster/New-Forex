@@ -39,6 +39,21 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 - **Usuario:** `grandanmaster`
 - **Contraseña:** *(Pendiente de confirmar)*
 
+### Indicadores Clave (TradingView)
+- **FXN - Asian Session Range** (creado por RobMinty): Utilizado en la *Estrategia de los 100 Dólares* para identificar el rango de consolidación asiático (gráficos de 5m). *Configuración recomendada: Desactivar las sesiones de Londres y Nueva York para dejar únicamente visible la caja asiática.*
+
+## Billeteras y Gestión de Capital
+
+### Skrill
+- **Email:** `dan@arteywebcreaciones.com`
+- **Contraseña:** `@2026%Robinh00d`
+- **Saldo Actual:** 5.00 EUR
+- **Estado de Cuenta:** No verificado (Límite de cuenta: 250 EUR). *Nota: Skrill indica que no hay necesidad de verificar la cuenta en este momento. Probablemente se pedirá la verificación al superar ciertos límites de depósito.*
+
+### PayPal
+- **Email:** *(Privado / Pendiente)*
+- **Contraseña:** *(Oculta por privacidad)*
+
 ## Automatización y Herramientas
 - **Python y Scripts:** Este entorno cuenta con herramientas y scripts en Python (como `yt-dlp` y los archivos en la carpeta `/scripts/`) diseñados para automatizar tareas. Esto nos permite extraer fácilmente las listas de videos de YouTube y descargar el material directamente a nuestra carpeta local (`/Estrategias`).
 
