@@ -32,3 +32,8 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 - **Servidor:** `SkillingLimited-Demo`
 - **Número de Cuenta (Login):** `7016509`
 - **Identificador de Cliente:** `customer-499277`
+
+## Herramientas de Análisis
+- **Plataforma:** [TradingView](https://es.tradingview.com/)
+- **Usuario:** *(Pendiente de confirmar)*
+- **Contraseña:** *(Pendiente de confirmar)*
