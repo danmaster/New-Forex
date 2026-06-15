@@ -35,6 +35,6 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 
 ## Herramientas de Análisis
 - **Plataforma:** [TradingView](https://es.tradingview.com/)
-- **Email:** `info@tradingengrupo.com`
+- **Email:** `rhood20@hotmail.com`
 - **Usuario:** `grandanmaster`
 - **Contraseña:** *(Pendiente de confirmar)*
