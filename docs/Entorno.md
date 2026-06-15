@@ -21,6 +21,6 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 - **Acceso al Servidor Windows (VPS):**
   - **IP (Escritorio Remoto):** `62.169.20.253`
   - **Sistema Operativo:** Windows Server 2022 Datacenter Edition
-  - **Usuario RDP:** `Administrator` (Ojo: en Windows no se usa 'root')
-  - **Contraseña:** *La que creaste durante el proceso de compra de Contabo.*
+  - **Usuario RDP:** `Administrator`
+  - **Contraseña:** `Viena62020%`
   - **VNC (Emergencias):** `161.97.97.234:63150`
