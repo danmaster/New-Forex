@@ -5,7 +5,9 @@ URLS = ['https://www.youtube.com/@AlexRuiiz/videos']
 
 ydl_opts = {
     'extract_flat': True,
-    'quiet': True
+    'quiet': True,
+    'extractor_args': {'youtube': ['lang=es-ES,es']},
+    'http_headers': {'Accept-Language': 'es-ES,es;q=0.9'}
 }
 
 def main():

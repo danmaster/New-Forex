@@ -6,8 +6,10 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 - **Fecha de inicio:** 15 de Junio de 2026
 
 ## Metodología y Aprendizaje
-- **Guía Principal:** Lecciones en YouTube de Alex Ruiz.
-- **Enlace del Canal:** [https://www.youtube.com/@AlexRuiiz](https://www.youtube.com/@AlexRuiiz)
+- **Guías Principales:** Lecciones en YouTube de Alex Ruiz y Yuri Rabassa.
+- **Canales de YouTube:** 
+  - Alex Ruiz: [https://www.youtube.com/@AlexRuiiz](https://www.youtube.com/@AlexRuiiz)
+  - Yuri Rabassa: [https://www.youtube.com/@YuriRabassa](https://www.youtube.com/@YuriRabassa)
 - **Gestión de Recursos:** Los videos de las lecciones se irán descargando y guardando localmente en la carpeta `/entorno`.
 
 ## Infraestructura Técnica

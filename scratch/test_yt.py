@@ -4,7 +4,8 @@ URLS = ['https://www.youtube.com/@AlexRuiiz']
 
 ydl_opts = {
     'extract_flat': True,
-    'quiet': True
+    'quiet': True,
+    'http_headers': {'Accept-Language': 'es-ES,es;q=0.9'}
 }
 
 try:
