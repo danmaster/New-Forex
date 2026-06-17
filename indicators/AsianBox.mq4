@@ -9,8 +9,8 @@
 #property indicator_chart_window
 
 //--- Input parameters
-input int    StartHour   = 1;          // Start Hour (Hora Broker - Skilling)
-input int    EndHour     = 10;         // End Hour (Hora Broker - Skilling)
+input int    StartHour   = 2;          // Start Hour (Hora Broker Skilling - 20:00 EST)
+input int    EndHour     = 8;          // End Hour (Hora Broker Skilling - 02:00 EST)
 input color  BoxColor    = clrAliceBlue;// Color de la Caja Asiática
 input int    DaysToDraw  = 30;         // Días hacia atrás para dibujar
 

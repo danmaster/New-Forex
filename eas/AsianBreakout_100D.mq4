@@ -14,8 +14,8 @@ enum ENUM_SL_TYPE {
 };
 
 //--- Input parameters
-input int          StartHour         = 1;          // Hora inicio Asia (01:00 en Skilling)
-input int          EndHour           = 10;         // Hora fin Asia (10:00 en Skilling)
+input int          StartHour         = 2;          // Hora inicio Asia (02:00 en Skilling / 20:00 EST)
+input int          EndHour           = 8;          // Hora fin Asia (08:00 en Skilling / 02:00 EST)
 input ENUM_SL_TYPE StopLossPlacement = SL_MID_BOX; // Ubicacion del Stop Loss
 input double       RiskRewardRatio   = 2.0;        // Ratio Riesgo:Beneficio (ej. 2.0 para 1:2)
 input double       LotSize           = 0.1;        // Volumen (Lotes)
