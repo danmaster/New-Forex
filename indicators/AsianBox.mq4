@@ -11,8 +11,8 @@
 //--- Input parameters
 input string s1 = "--- Sesion Asiatica ---";
 input bool   ShowAsianBox    = true;           // Mostrar Sesion Asiatica
-input int    StartHour       = 1;              // Inicio Asia (Hora Broker)
-input int    EndHour         = 10;             // Fin Asia (Hora Broker)
+input int    StartHour       = 2;              // Inicio Asia/Tokio (Hora Broker)
+input int    EndHour         = 8;              // Fin Asia/Tokio (Hora Broker)
 input color  BoxColor        = clrAliceBlue;   // Color Asia
 
 input string s2 = "--- Sesion Europea ---";

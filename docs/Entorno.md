@@ -40,7 +40,7 @@ Para evitar confusiones con indicadores externos, la **Tabla de la Verdad** ofic
 
 | Sesión | Apertura (Broker) | Cierre (Broker) | Hora Madrid equivalente |
 | :--- | :--- | :--- | :--- |
-| **Asiática** | `01:00` | `10:00` | 00:00 a 09:00 |
+| **Tokio (Asiática)** | `02:00` | `08:00` | 01:00 a 07:00 |
 | **Europea** | `09:00` | `18:00` | 08:00 a 17:00 |
 | **Nueva York** | `14:00` | `23:00` | 13:00 a 22:00 |
 
