@@ -33,6 +33,19 @@ Este documento detalla la configuración y el entorno utilizado para esta nueva 
 - **Número de Cuenta (Login):** `7016509`
 - **Identificador de Cliente:** `customer-499277`
 
+### Sincronización Horaria (Broker vs Madrid)
+**La Regla de Oro:** Skilling utiliza la configuración estándar *New York Close* (GMT+3 en verano, GMT+2 en invierno). Dado que España continental (Madrid) cambia sus relojes a la par (GMT+2 en verano, GMT+1 en invierno), la diferencia horaria es matemáticamente constante todo el año: **Hora del Broker = Hora de Madrid + 1 hora**.
+
+Para evitar confusiones con indicadores externos, la **Tabla de la Verdad** oficial para la configuración de horarios en MetaTrader 4 es la siguiente:
+
+| Sesión | Apertura (Broker) | Cierre (Broker) | Hora Madrid equivalente |
+| :--- | :--- | :--- | :--- |
+| **Asiática** | `01:00` | `10:00` | 00:00 a 09:00 |
+| **Europea** | `09:00` | `18:00` | 08:00 a 17:00 |
+| **Nueva York** | `14:00` | `23:00` | 13:00 a 22:00 |
+
+*Nota técnica: Tanto el indicador `AsianBox.mq4` como el EA `AsianBreakout_100D.mq4` tienen estos horarios de Broker integrados por defecto como `StartHour` y `EndHour`.*
+
 ## Herramientas de Análisis
 - **Plataforma:** [TradingView](https://es.tradingview.com/)
 - **Email:** `rhood20@hotmail.com`

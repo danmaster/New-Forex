@@ -14,15 +14,61 @@ enum ENUM_SL_TYPE {
 };
 
 //--- Input parameters
-input int          StartHour         = 2;          // Hora inicio Asia (02:00 en Skilling / 20:00 EST)
-input int          EndHour           = 8;          // Hora fin Asia (08:00 en Skilling / 02:00 EST)
+input int          StartHour         = 1;          // Hora inicio Asia (01:00 Broker)
+input int          EndHour           = 10;         // Hora fin Asia (10:00 Broker)
 input ENUM_SL_TYPE StopLossPlacement = SL_MID_BOX; // Ubicacion del Stop Loss
 input double       RiskRewardRatio   = 2.0;        // Ratio Riesgo:Beneficio (ej. 2.0 para 1:2)
 input double       LotSize           = 0.1;        // Volumen (Lotes)
 input int          MagicNumber       = 100100;     // Magic Number
 
+input string       s_vis = "--- Opciones Visuales ---";
+input bool         ShowAsianBox      = true;           // Dibujar Caja Asiatica
+input color        BoxColor          = clrAliceBlue;   // Color Asia
+input bool         ShowEuroBox       = true;           // Dibujar Caja Europea
+input int          EuroStartHour     = 9;              // Inicio Europa (09:00 Broker)
+input int          EuroEndHour       = 18;             // Fin Europa (18:00 Broker)
+input color        EuroBoxColor      = clrHoneydew;    // Color Europa
+input bool         ShowNYBox         = true;           // Dibujar Caja NY
+input int          NYStartHour       = 14;             // Inicio NY (14:00 Broker)
+input int          NYEndHour         = 23;             // Fin NY (23:00 Broker)
+input color        NYBoxColor        = clrLavenderBlush;// Color NY
+
 //--- Global variables
-int lastTradeDay = -1;
+// Removemos lastTradeDay de la memoria temporal para leer el historial directamente
+
+//+------------------------------------------------------------------+
+//| Comprueba si el EA ya ha operado en el dia actual                |
+//+------------------------------------------------------------------+
+bool HasTradedToday()
+  {
+   // 1. Revisar ordenes abiertas
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+     {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+        {
+         if(OrderSymbol() == Symbol() && OrderMagicNumber() == MagicNumber)
+           {
+            if(TimeDay(OrderOpenTime()) == Day() && TimeMonth(OrderOpenTime()) == Month() && TimeYear(OrderOpenTime()) == Year())
+               return true;
+           }
+        }
+     }
+     
+   // 2. Revisar historial de ordenes cerradas
+   for(int i = OrdersHistoryTotal() - 1; i >= 0; i--)
+     {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+        {
+         if(OrderSymbol() == Symbol() && OrderMagicNumber() == MagicNumber)
+           {
+            if(TimeDay(OrderOpenTime()) == Day() && TimeMonth(OrderOpenTime()) == Month() && TimeYear(OrderOpenTime()) == Year())
+               return true;
+           }
+        }
+     }
+     
+   return false;
+  }
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -33,18 +79,72 @@ int OnInit()
   }
 
 //+------------------------------------------------------------------+
+//| Helper to draw a box                                             |
+//+------------------------------------------------------------------+
+void DrawSessionBox(string namePrefix, datetime dayStart, int startH, int endH, color col, datetime currentTime)
+  {
+   datetime t1 = dayStart + startH * 3600;
+   datetime t2 = dayStart + endH * 3600;
+   
+   if(t1 > currentTime) return;
+   
+   datetime boxEndTime = t2;
+   if(t2 > currentTime) boxEndTime = currentTime;
+   
+   int shift1 = iBarShift(Symbol(), Period(), t1);
+   int shift2 = iBarShift(Symbol(), Period(), boxEndTime);
+   
+   if(shift1 < 0 || shift2 < 0 || shift1 <= shift2) return;
+   
+   int barsCount = shift1 - shift2;
+   int highestIdx = iHighest(Symbol(), Period(), MODE_HIGH, barsCount, shift2);
+   int lowestIdx  = iLowest(Symbol(), Period(), MODE_LOW, barsCount, shift2);
+   
+   if(highestIdx >= 0 && lowestIdx >= 0)
+     {
+      double maxPrice = High[highestIdx];
+      double minPrice = Low[lowestIdx];
+      
+      string objName = "EA_SessionBox_" + namePrefix + "_" + TimeToString(dayStart, TIME_DATE);
+      
+      if(ObjectFind(0, objName) < 0)
+        {
+         ObjectCreate(0, objName, OBJ_RECTANGLE, 0, t1, maxPrice, t2, minPrice);
+         ObjectSetInteger(0, objName, OBJPROP_COLOR, col);
+         ObjectSetInteger(0, objName, OBJPROP_BACK, true); // Rellenar fondo
+         ObjectSetInteger(0, objName, OBJPROP_SELECTABLE, false);
+         ObjectSetInteger(0, objName, OBJPROP_HIDDEN, true);
+        }
+      else
+        {
+         ObjectSetDouble(0, objName, OBJPROP_PRICE1, maxPrice);
+         ObjectSetDouble(0, objName, OBJPROP_PRICE2, minPrice);
+         ObjectSetInteger(0, objName, OBJPROP_TIME1, t1);
+         ObjectSetInteger(0, objName, OBJPROP_TIME2, t2);
+        }
+     }
+  }
+
+//+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick()
   {
+   // 1. Opciones visuales (Dibujar cajas en backtest)
+   datetime currentTime = TimeCurrent();
+   datetime currentDayStart = iTime(Symbol(), PERIOD_D1, 0);
+   
+   if(ShowAsianBox) DrawSessionBox("Asia", currentDayStart, StartHour, EndHour, BoxColor, currentTime);
+   if(ShowEuroBox)  DrawSessionBox("Euro", currentDayStart, EuroStartHour, EuroEndHour, EuroBoxColor, currentTime);
+   if(ShowNYBox)    DrawSessionBox("NY", currentDayStart, NYStartHour, NYEndHour, NYBoxColor, currentTime);
+
    // Solo buscar operaciones si estamos despues del cierre asiatico
    if(Hour() >= EndHour)
      {
-      // Comprobar si ya operamos hoy
-      if(Day() == lastTradeDay) return;
+      // Comprobar si ya operamos hoy leyendo el historial
+      if(HasTradedToday()) return;
 
       // Calcular inicio y fin de la sesion asiatica para el dia de HOY
-      datetime currentDayStart = iTime(Symbol(), PERIOD_D1, 0);
       datetime timeStart = currentDayStart + StartHour * 3600;
       datetime timeEnd = currentDayStart + EndHour * 3600;
       
@@ -85,8 +185,7 @@ void OnTick()
          int ticket = OrderSend(Symbol(), OP_BUY, LotSize, Ask, 3, sl, tp, "Asian Breakout Buy", MagicNumber, 0, clrBlue);
          if(ticket > 0)
            {
-            lastTradeDay = Day();
-            Print("Orden de COMPRA ejecutada exitosamente.");
+             Print("Orden de COMPRA ejecutada exitosamente.");
            }
         }
         
@@ -108,8 +207,7 @@ void OnTick()
          int ticket = OrderSend(Symbol(), OP_SELL, LotSize, Bid, 3, sl, tp, "Asian Breakout Sell", MagicNumber, 0, clrRed);
          if(ticket > 0)
            {
-            lastTradeDay = Day();
-            Print("Orden de VENTA ejecutada exitosamente.");
+             Print("Orden de VENTA ejecutada exitosamente.");
            }
         }
      }

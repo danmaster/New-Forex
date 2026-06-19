@@ -4,23 +4,38 @@
 //+------------------------------------------------------------------+
 #property copyright "Antigravity AI"
 #property link      ""
-#property version   "1.00"
+#property version   "1.10"
 #property strict
 #property indicator_chart_window
 
 //--- Input parameters
-input int    StartHour   = 2;          // Start Hour (Hora Broker Skilling - 20:00 EST)
-input int    EndHour     = 8;          // End Hour (Hora Broker Skilling - 02:00 EST)
-input color  BoxColor    = clrAliceBlue;// Color de la Caja Asiática
-input int    DaysToDraw  = 30;         // Días hacia atrás para dibujar
+input string s1 = "--- Sesion Asiatica ---";
+input bool   ShowAsianBox    = true;           // Mostrar Sesion Asiatica
+input int    StartHour       = 1;              // Inicio Asia (Hora Broker)
+input int    EndHour         = 10;             // Fin Asia (Hora Broker)
+input color  BoxColor        = clrAliceBlue;   // Color Asia
+
+input string s2 = "--- Sesion Europea ---";
+input bool   ShowEuroBox     = true;           // Mostrar Sesion Europea
+input int    EuroStartHour   = 9;              // Inicio Europa (09:00 Broker)
+input int    EuroEndHour     = 18;             // Fin Europa (18:00 Broker)
+input color  EuroBoxColor    = clrHoneydew;    // Color Europa (Tenue)
+
+input string s3 = "--- Sesion Nueva York ---";
+input bool   ShowNYBox       = true;           // Mostrar Sesion NY
+input int    NYStartHour     = 14;             // Inicio NY (14:00 Broker)
+input int    NYEndHour       = 23;             // Fin NY (23:00 Broker)
+input color  NYBoxColor      = clrLavenderBlush;// Color NY (Tenue)
+
+input string s4 = "--- Configuracion General ---";
+input int    DaysToDraw      = 30;             // Dias hacia atras para dibujar
 
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
 int OnInit()
   {
-   // Nombre corto para el indicador
-   IndicatorShortName("Asian Box (" + IntegerToString(StartHour) + "-" + IntegerToString(EndHour) + ")");
+   IndicatorShortName("Market Sessions");
    return(INIT_SUCCEEDED);
   }
 
@@ -29,8 +44,54 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
   {
-   // Limpiar todos los rectángulos dibujados al quitar el indicador
-   ObjectsDeleteAll(0, "AsianBox_");
+   ObjectsDeleteAll(0, "SessionBox_");
+  }
+
+//+------------------------------------------------------------------+
+//| Helper to draw a box                                             |
+//+------------------------------------------------------------------+
+void DrawSessionBox(string namePrefix, datetime dayStart, int startH, int endH, color col, datetime currentTime)
+  {
+   datetime t1 = dayStart + startH * 3600;
+   datetime t2 = dayStart + endH * 3600;
+   
+   if(t1 > currentTime) return;
+   
+   datetime boxEndTime = t2;
+   if(t2 > currentTime) boxEndTime = currentTime;
+   
+   int shift1 = iBarShift(Symbol(), Period(), t1);
+   int shift2 = iBarShift(Symbol(), Period(), boxEndTime);
+   
+   if(shift1 < 0 || shift2 < 0 || shift1 <= shift2) return;
+   
+   int barsCount = shift1 - shift2;
+   int highestIdx = iHighest(Symbol(), Period(), MODE_HIGH, barsCount, shift2);
+   int lowestIdx  = iLowest(Symbol(), Period(), MODE_LOW, barsCount, shift2);
+   
+   if(highestIdx >= 0 && lowestIdx >= 0)
+     {
+      double maxPrice = High[highestIdx];
+      double minPrice = Low[lowestIdx];
+      
+      string objName = "SessionBox_" + namePrefix + "_" + TimeToString(dayStart, TIME_DATE);
+      
+      if(ObjectFind(0, objName) < 0)
+        {
+         ObjectCreate(0, objName, OBJ_RECTANGLE, 0, t1, maxPrice, t2, minPrice);
+         ObjectSetInteger(0, objName, OBJPROP_COLOR, col);
+         ObjectSetInteger(0, objName, OBJPROP_BACK, true); // Rellenar fondo
+         ObjectSetInteger(0, objName, OBJPROP_SELECTABLE, false);
+         ObjectSetInteger(0, objName, OBJPROP_HIDDEN, true);
+        }
+      else
+        {
+         ObjectSetDouble(0, objName, OBJPROP_PRICE1, maxPrice);
+         ObjectSetDouble(0, objName, OBJPROP_PRICE2, minPrice);
+         ObjectSetInteger(0, objName, OBJPROP_TIME1, t1);
+         ObjectSetInteger(0, objName, OBJPROP_TIME2, t2);
+        }
+     }
   }
 
 //+------------------------------------------------------------------+
@@ -47,64 +108,26 @@ int OnCalculate(const int rates_total,
                 const long &volume[],
                 const int &spread[])
   {
-   // Solo redibujar si hay nuevas barras o es la primera vez
    if(prev_calculated == 0)
      {
-      ObjectsDeleteAll(0, "AsianBox_");
-      
-      datetime currentTime = TimeCurrent();
-      
-      for(int i = 0; i < DaysToDraw; i++)
-        {
-         datetime dayStart = iTime(Symbol(), PERIOD_D1, i);
-         if(dayStart == 0) continue;
-         
-         // Definir tiempo de inicio y fin de la caja
-         datetime t1 = dayStart + StartHour * 3600;
-         datetime t2 = dayStart + EndHour * 3600;
-         
-         if(t1 > currentTime) continue;
-         
-         // Limitar el fin de la caja al tiempo actual si el dia esta en curso
-         datetime boxEndTime = t2;
-         if(t2 > currentTime) boxEndTime = currentTime;
-         
-         int shift1 = iBarShift(Symbol(), Period(), t1);
-         int shift2 = iBarShift(Symbol(), Period(), boxEndTime);
-         
-         // Asegurar que hay barras en ese rango
-         if(shift1 < 0 || shift2 < 0 || shift1 <= shift2) continue;
-         
-         int barsCount = shift1 - shift2;
-         int highestIdx = iHighest(Symbol(), Period(), MODE_HIGH, barsCount, shift2);
-         int lowestIdx  = iLowest(Symbol(), Period(), MODE_LOW, barsCount, shift2);
-         
-         if(highestIdx >= 0 && lowestIdx >= 0)
-           {
-            double maxPrice = High[highestIdx];
-            double minPrice = Low[lowestIdx];
-            
-            // Crear o actualizar el objeto rectangulo
-            string objName = "AsianBox_" + TimeToString(dayStart, TIME_DATE);
-            
-            if(ObjectFind(0, objName) < 0)
-              {
-               ObjectCreate(0, objName, OBJ_RECTANGLE, 0, t1, maxPrice, t2, minPrice);
-               ObjectSetInteger(0, objName, OBJPROP_COLOR, BoxColor);
-               ObjectSetInteger(0, objName, OBJPROP_BACK, true); // Rellenar fondo
-               ObjectSetInteger(0, objName, OBJPROP_SELECTABLE, false);
-               ObjectSetInteger(0, objName, OBJPROP_HIDDEN, true);
-              }
-            else
-              {
-               ObjectSetDouble(0, objName, OBJPROP_PRICE1, maxPrice);
-               ObjectSetDouble(0, objName, OBJPROP_PRICE2, minPrice);
-               ObjectSetInteger(0, objName, OBJPROP_TIME1, t1);
-               ObjectSetInteger(0, objName, OBJPROP_TIME2, t2);
-              }
-           }
-        }
+      ObjectsDeleteAll(0, "SessionBox_");
      }
+     
+   datetime currentTime = TimeCurrent();
+   
+   for(int i = 0; i < DaysToDraw; i++)
+     {
+      // Si ya calculamos antes, solo actualizamos el dia actual (i=0) para no ralentizar el terminal
+      if(prev_calculated > 0 && i > 0) break;
+      
+      datetime dayStart = iTime(Symbol(), PERIOD_D1, i);
+      if(dayStart == 0) continue;
+      
+      if(ShowAsianBox) DrawSessionBox("Asia", dayStart, StartHour, EndHour, BoxColor, currentTime);
+      if(ShowEuroBox)  DrawSessionBox("Euro", dayStart, EuroStartHour, EuroEndHour, EuroBoxColor, currentTime);
+      if(ShowNYBox)    DrawSessionBox("NY", dayStart, NYStartHour, NYEndHour, NYBoxColor, currentTime);
+     }
+   
    return(rates_total);
   }
 //+------------------------------------------------------------------+
