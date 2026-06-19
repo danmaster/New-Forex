@@ -22,7 +22,7 @@ input int      EndHour           = 8;          // Hora fin Asia (08:00 Skilling)
 
 input string   Trailing_Settings = "--- TRAILING STOP ---";
 input bool     UseTrailingStop   = true;       // Activar Trailing Stop (Sin TP Fijo)
-input int      TrailingPips      = 10;         // Distancia del Trailing (pips)
+input int      TrailingPips      = 15;         // Distancia del Trailing (pips)
 
 input string   Mode_Settings     = "--- MODO DE LIQUIDEZ ---";
 input bool     AutoFindLiquidity = true;       // Buscar Liquidez en AMBOS sentidos (Backtest)
