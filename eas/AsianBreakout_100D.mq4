@@ -4,71 +4,38 @@
 //+------------------------------------------------------------------+
 #property copyright "Antigravity AI"
 #property link      ""
-#property version   "1.01"
+#property version   "2.10"
 #property strict
 
-//--- Enums
-enum ENUM_SL_TYPE {
-   SL_MID_BOX=0,      // Mitad de la Caja Asiatica
-   SL_OPPOSITE_BOX=1  // Extremo Opuesto de la Caja
-};
-
 //--- Input parameters
-input int          StartHour         = 1;          // Hora inicio Asia (01:00 Broker)
-input int          EndHour           = 10;         // Hora fin Asia (10:00 Broker)
-input ENUM_SL_TYPE StopLossPlacement = SL_MID_BOX; // Ubicacion del Stop Loss
-input double       RiskRewardRatio   = 2.0;        // Ratio Riesgo:Beneficio (ej. 2.0 para 1:2)
-input double       LotSize           = 0.1;        // Volumen (Lotes)
-input int          MagicNumber       = 100100;     // Magic Number
+input string   General_Settings  = "--- AJUSTES GENERALES ---";
+input bool     UseDynamicLot     = true;       // Activar Lote Dinámico (1%)
+input double   RiskPercent       = 1.0;        // Riesgo por operación (%)
+input double   MinRewardRiskRatio= 2.0;        // Ratio R:R Mínimo Teórico
+input double   FixedLotSize      = 0.10;       // Lote Fijo (si Auto es false)
+input bool     WaitCandleClose   = true;       // Esperar Cierre de Vela M5
+input int      MinBoxPips        = 10;         // Tamaño Mínimo Caja (pips)
+input int      MaxBoxPips        = 50;         // Tamaño Máximo Caja (pips)
+input int      MagicNumber       = 100100;     // Magic Number
+input int      StartHour         = 2;          // Hora inicio Asia (02:00 Skilling)
+input int      EndHour           = 8;          // Hora fin Asia (08:00 Skilling)
 
-input string       s_vis = "--- Opciones Visuales ---";
-input bool         ShowAsianBox      = true;           // Dibujar Caja Asiatica
-input color        BoxColor          = clrAliceBlue;   // Color Asia
-input bool         ShowEuroBox       = true;           // Dibujar Caja Europea
-input int          EuroStartHour     = 9;              // Inicio Europa (09:00 Broker)
-input int          EuroEndHour       = 18;             // Fin Europa (18:00 Broker)
-input color        EuroBoxColor      = clrHoneydew;    // Color Europa
-input bool         ShowNYBox         = true;           // Dibujar Caja NY
-input int          NYStartHour       = 14;             // Inicio NY (14:00 Broker)
-input int          NYEndHour         = 23;             // Fin NY (23:00 Broker)
-input color        NYBoxColor        = clrLavenderBlush;// Color NY
+input string   Trailing_Settings = "--- TRAILING STOP ---";
+input bool     UseTrailingStop   = true;       // Activar Trailing Stop (Sin TP Fijo)
+input int      TrailingPips      = 10;         // Distancia del Trailing (pips)
+
+input string   Mode_Settings     = "--- MODO DE LIQUIDEZ ---";
+input bool     AutoFindLiquidity = true;       // Buscar Liquidez en AMBOS sentidos (Backtest)
+input int      HoursToLookBack   = 12;         // Horas previas a la caja (Modo Auto)
+input string   ManualBoxName     = "ZonaLiquidez"; // Nombre del Rectángulo Manual (Modo Manual)
 
 //--- Global variables
-// Removemos lastTradeDay de la memoria temporal para leer el historial directamente
-
-//+------------------------------------------------------------------+
-//| Comprueba si el EA ya ha operado en el dia actual                |
-//+------------------------------------------------------------------+
-bool HasTradedToday()
-  {
-   // 1. Revisar ordenes abiertas
-   for(int i = OrdersTotal() - 1; i >= 0; i--)
-     {
-      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
-        {
-         if(OrderSymbol() == Symbol() && OrderMagicNumber() == MagicNumber)
-           {
-            if(TimeDay(OrderOpenTime()) == Day() && TimeMonth(OrderOpenTime()) == Month() && TimeYear(OrderOpenTime()) == Year())
-               return true;
-           }
-        }
-     }
-     
-   // 2. Revisar historial de ordenes cerradas
-   for(int i = OrdersHistoryTotal() - 1; i >= 0; i--)
-     {
-      if(OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
-        {
-         if(OrderSymbol() == Symbol() && OrderMagicNumber() == MagicNumber)
-           {
-            if(TimeDay(OrderOpenTime()) == Day() && TimeMonth(OrderOpenTime()) == Month() && TimeYear(OrderOpenTime()) == Year())
-               return true;
-           }
-        }
-     }
-     
-   return false;
-  }
+int lastTradeDay = -1;
+int currentSessionDay = -1;
+bool sweptHigh = false;
+bool sweptLow = false;
+double peakHigh = 0;
+double troughLow = 0;
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -79,50 +46,132 @@ int OnInit()
   }
 
 //+------------------------------------------------------------------+
-//| Helper to draw a box                                             |
+//| Calcular Lotaje Dinamico basado en el Riesgo y Stop Loss         |
 //+------------------------------------------------------------------+
-void DrawSessionBox(string namePrefix, datetime dayStart, int startH, int endH, color col, datetime currentTime)
+double CalculateLotSize(double slDistancePips)
   {
-   datetime t1 = dayStart + startH * 3600;
-   datetime t2 = dayStart + endH * 3600;
+   if(!UseDynamicLot || slDistancePips <= 0) return FixedLotSize;
    
-   if(t1 > currentTime) return;
+   double riskAmount = AccountBalance() * (RiskPercent / 100.0);
+   double tickValue = MarketInfo(Symbol(), MODE_TICKVALUE);
    
-   datetime boxEndTime = t2;
-   if(t2 > currentTime) boxEndTime = currentTime;
+   if(tickValue == 0) return FixedLotSize; // Fallback de seguridad
    
-   int shift1 = iBarShift(Symbol(), Period(), t1);
-   int shift2 = iBarShift(Symbol(), Period(), boxEndTime);
+   // Formula: Lote = Riesgo / (SL_Points * TickValue)
+   double slPoints = slDistancePips * 10.0;
+   double lot = riskAmount / (slPoints * tickValue);
    
-   if(shift1 < 0 || shift2 < 0 || shift1 <= shift2) return;
+   double minLot = MarketInfo(Symbol(), MODE_MINLOT);
+   double maxLot = MarketInfo(Symbol(), MODE_MAXLOT);
+   double lotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
    
-   int barsCount = shift1 - shift2;
-   int highestIdx = iHighest(Symbol(), Period(), MODE_HIGH, barsCount, shift2);
-   int lowestIdx  = iLowest(Symbol(), Period(), MODE_LOW, barsCount, shift2);
+   if(lot < minLot) lot = minLot;
+   if(lot > maxLot) lot = maxLot;
    
-   if(highestIdx >= 0 && lowestIdx >= 0)
+   // Normalizar al LotStep (ej: 0.01)
+   lot = MathFloor(lot / lotStep) * lotStep;
+   return lot;
+  }
+
+//+------------------------------------------------------------------+
+//| Gestionar Trailing Stop para operaciones abiertas                |
+//+------------------------------------------------------------------+
+void ManageTrailingStop()
+  {
+   if(!UseTrailingStop || TrailingPips <= 0) return;
+   
+   double trailingPoints = TrailingPips * 10.0 * Point;
+   
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
      {
-      double maxPrice = High[highestIdx];
-      double minPrice = Low[lowestIdx];
-      
-      string objName = "EA_SessionBox_" + namePrefix + "_" + TimeToString(dayStart, TIME_DATE);
-      
-      if(ObjectFind(0, objName) < 0)
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
         {
-         ObjectCreate(0, objName, OBJ_RECTANGLE, 0, t1, maxPrice, t2, minPrice);
-         ObjectSetInteger(0, objName, OBJPROP_COLOR, col);
-         ObjectSetInteger(0, objName, OBJPROP_BACK, true); // Rellenar fondo
-         ObjectSetInteger(0, objName, OBJPROP_SELECTABLE, false);
-         ObjectSetInteger(0, objName, OBJPROP_HIDDEN, true);
-        }
-      else
-        {
-         ObjectSetDouble(0, objName, OBJPROP_PRICE1, maxPrice);
-         ObjectSetDouble(0, objName, OBJPROP_PRICE2, minPrice);
-         ObjectSetInteger(0, objName, OBJPROP_TIME1, t1);
-         ObjectSetInteger(0, objName, OBJPROP_TIME2, t2);
+         if(OrderMagicNumber() == MagicNumber && OrderSymbol() == Symbol())
+           {
+            if(OrderType() == OP_BUY)
+              {
+               if(Bid - OrderOpenPrice() > trailingPoints)
+                 {
+                  double newSL = NormalizeDouble(Bid - trailingPoints, Digits);
+                  if(newSL - OrderStopLoss() > Point * 2) // Solo si mejora el SL en más de 2 puntos
+                    {
+                     int mod = OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrGreen);
+                    }
+                 }
+              }
+            else if(OrderType() == OP_SELL)
+              {
+               if(OrderOpenPrice() - Ask > trailingPoints)
+                 {
+                  double newSL = NormalizeDouble(Ask + trailingPoints, Digits);
+                  if(OrderStopLoss() - newSL > Point * 2 || OrderStopLoss() == 0) // Solo si baja el SL
+                    {
+                     int mod = OrderModify(OrderTicket(), OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrGreen);
+                    }
+                 }
+              }
+           }
         }
      }
+  }
+
+//+------------------------------------------------------------------+
+//| Limpiar ordenes pendientes al final del día                      |
+//+------------------------------------------------------------------+
+void CleanPendingOrders()
+  {
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+     {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+        {
+         if(OrderMagicNumber() == MagicNumber && OrderSymbol() == Symbol())
+           {
+            if(OrderType() == OP_BUYLIMIT || OrderType() == OP_SELLLIMIT)
+              {
+               OrderDelete(OrderTicket());
+              }
+           }
+        }
+     }
+  }
+
+//+------------------------------------------------------------------+
+//| Verificar si ya se ha abierto una operacion hoy                  |
+//+------------------------------------------------------------------+
+bool HasTradedToday()
+  {
+   int currentDay = Day();
+   // Revisar operaciones activas
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+     {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+        {
+         if(OrderMagicNumber() == MagicNumber && OrderSymbol() == Symbol())
+           {
+            if((OrderType() == OP_BUY || OrderType() == OP_SELL) && TimeDay(OrderOpenTime()) == currentDay)
+              {
+               Print("DEBUG: Detectada operacion ACTIVA hoy. Ticket: ", OrderTicket(), " Tipo: ", OrderType());
+               return true;
+              }
+           }
+        }
+     }
+   // Revisar historial (operaciones ya cerradas hoy)
+   for(int i = OrdersHistoryTotal() - 1; i >= 0; i--)
+     {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+        {
+         if(OrderMagicNumber() == MagicNumber && OrderSymbol() == Symbol())
+           {
+            if((OrderType() == OP_BUY || OrderType() == OP_SELL) && TimeDay(OrderOpenTime()) == currentDay)
+              {
+               Print("DEBUG: Detectada operacion en HISTORIAL hoy. Ticket: ", OrderTicket(), " Tipo: ", OrderType());
+               return true;
+              }
+           }
+        }
+     }
+   return false;
   }
 
 //+------------------------------------------------------------------+
@@ -130,25 +179,45 @@ void DrawSessionBox(string namePrefix, datetime dayStart, int startH, int endH, 
 //+------------------------------------------------------------------+
 void OnTick()
   {
-   // 1. Opciones visuales (Dibujar cajas en backtest)
-   datetime currentTime = TimeCurrent();
-   datetime currentDayStart = iTime(Symbol(), PERIOD_D1, 0);
+   // Llamada al gestor de Trailing Stop continuo
+   ManageTrailingStop();
    
-   if(ShowAsianBox) DrawSessionBox("Asia", currentDayStart, StartHour, EndHour, BoxColor, currentTime);
-   if(ShowEuroBox)  DrawSessionBox("Euro", currentDayStart, EuroStartHour, EuroEndHour, EuroBoxColor, currentTime);
-   if(ShowNYBox)    DrawSessionBox("NY", currentDayStart, NYStartHour, NYEndHour, NYBoxColor, currentTime);
-
-   // Solo buscar operaciones si estamos despues del cierre asiatico
-   if(Hour() >= EndHour)
+   int currentHour = Hour();
+   int currentDay = Day();
+   
+   // Si es el final del día (ej. hora 23), limpiamos ordenes pendientes que no se activaron
+   if(currentHour >= 23)
      {
-      // Comprobar si ya operamos hoy leyendo el historial
-      if(HasTradedToday()) return;
+      CleanPendingOrders();
+     }
 
-      // Calcular inicio y fin de la sesion asiatica para el dia de HOY
+   // Si ya entramos al mercado hoy (operacion activa o cerrada), borramos la otra orden pendiente
+   if(HasTradedToday())
+     {
+      CleanPendingOrders();
+     }
+
+   // Solo buscar operaciones despues de cerrar la caja asiatica
+   if(currentHour >= EndHour && currentHour < 23)
+     {
+      // Resetear variables de barrido cada nuevo día
+      if(currentDay != currentSessionDay)
+        {
+         sweptHigh = false;
+         sweptLow = false;
+         peakHigh = 0;
+         troughLow = 0;
+         currentSessionDay = currentDay;
+        }
+
+      // Comprobar si ya operamos hoy
+      if(currentDay == lastTradeDay || HasTradedToday()) return;
+
+      // Calcular inicio y fin de la sesion asiatica para HOY
+      datetime currentDayStart = iTime(Symbol(), PERIOD_D1, 0);
       datetime timeStart = currentDayStart + StartHour * 3600;
       datetime timeEnd = currentDayStart + EndHour * 3600;
       
-      // Obtener indices de las velas
       int shiftStart = iBarShift(Symbol(), Period(), timeStart);
       int shiftEnd = iBarShift(Symbol(), Period(), timeEnd);
       
@@ -156,7 +225,6 @@ void OnTick()
       
       int barsCount = shiftStart - shiftEnd;
       
-      // Encontrar Maximo y Minimo
       int highestIdx = iHighest(Symbol(), Period(), MODE_HIGH, barsCount, shiftEnd);
       int lowestIdx  = iLowest(Symbol(), Period(), MODE_LOW, barsCount, shiftEnd);
       
@@ -165,49 +233,172 @@ void OnTick()
       double asianHigh = High[highestIdx];
       double asianLow  = Low[lowestIdx];
       
-      // Logica de COMPRA (Cruce real por arriba)
-      // Usamos Close[1] para asegurarnos de que el rompimiento esta ocurriendo AHORA, 
-      // y no hace 6 horas.
-      if(Ask > asianHigh && Close[1] <= asianHigh)
+      // Filtro de Tamano de Caja
+      double boxSizePips = (asianHigh - asianLow) / (10 * Point);
+      if(boxSizePips < MinBoxPips || boxSizePips > MaxBoxPips)
         {
-         double sl = 0;
-         if(StopLossPlacement == SL_MID_BOX)
-            sl = asianLow + (asianHigh - asianLow) / 2.0;
-         else
-            sl = asianLow;
-            
-         double tp = asianHigh + (asianHigh - sl) * RiskRewardRatio;
-         
-         // Normalizar precios para MT4
-         sl = NormalizeDouble(sl, Digits);
-         tp = NormalizeDouble(tp, Digits);
-         
-         int ticket = OrderSend(Symbol(), OP_BUY, LotSize, Ask, 3, sl, tp, "Asian Breakout Buy", MagicNumber, 0, clrBlue);
-         if(ticket > 0)
+         lastTradeDay = currentDay;
+         Print("Caja asiatica ignorada por tamano: ", DoubleToStr(boxSizePips, 1), " pips.");
+         return;
+        }
+      
+      if(AutoFindLiquidity)
+        {
+         // MODO AUTOMATICO: Vigilar Ruptura y Reversión (Asian Sweep)
+         // 1. Detectar si el precio rompe el techo o el suelo
+         if(Bid > asianHigh || High[0] > asianHigh)
            {
-             Print("Orden de COMPRA ejecutada exitosamente.");
+            sweptHigh = true;
+            peakHigh = MathMax(peakHigh, High[0]);
+           }
+         if(Ask < asianLow || Low[0] < asianLow)
+           {
+            sweptLow = true;
+            if(troughLow == 0) troughLow = Low[0];
+            else troughLow = MathMin(troughLow, Low[0]);
+           }
+         
+         // 2. Operar la reversión
+         bool triggerSell = false;
+         bool triggerBuy = false;
+         
+         static datetime lastBarTime = 0;
+         bool isNewBar = false;
+         if(Time[0] != lastBarTime)
+           {
+            isNewBar = true;
+            lastBarTime = Time[0];
+           }
+           
+         if(WaitCandleClose)
+           {
+            if(isNewBar)
+              {
+               if(sweptHigh && Close[1] < asianHigh) triggerSell = true;
+               if(sweptLow && Close[1] > asianLow) triggerBuy = true;
+              }
+           }
+         else
+           {
+            if(sweptHigh && Bid < asianHigh) triggerSell = true;
+            if(sweptLow && Ask > asianLow) triggerBuy = true;
+           }
+
+         if(triggerSell)
+           {
+            // Reversión bajista -> VENDER
+            double sl = NormalizeDouble(peakHigh + 10 * Point, Digits); // SL 1 pip por encima del pico
+            double tpLogical = NormalizeDouble((asianHigh + asianLow) / 2.0, Digits); // TP teorico
+            double slPips = (sl - Bid) / (10 * Point);
+            double tpPips = (Bid - tpLogical) / (10 * Point);
+            
+            if(slPips > 0 && (tpPips / slPips) < MinRewardRiskRatio)
+              {
+               Print("Venta SMC cancelada. Ratio R:R (", DoubleToStr(tpPips/slPips, 2), ") es menor al requerido: ", MinRewardRiskRatio);
+               lastTradeDay = currentDay; // Ignoramos el resto del dia
+              }
+            else
+              {
+               double calculatedLot = CalculateLotSize(slPips);
+               double actualTP = UseTrailingStop ? 0 : tpLogical;
+               
+               if(Bid < sl && Bid > tpLogical)
+                 {
+                  int t = OrderSend(Symbol(), OP_SELL, calculatedLot, Bid, 3, sl, actualTP, "SMC Reversion Sell", MagicNumber, 0, clrRed);
+                  if(t > 0)
+                    {
+                     Print("Venta SMC ejecutada. Lote: ", calculatedLot, " SL: ", slPips, " pips");
+                     lastTradeDay = currentDay;
+                    }
+                  else Print("Error abriendo Venta SMC: ", GetLastError());
+                 }
+              }
+           }
+           
+         if(triggerBuy)
+           {
+            // Reversión alcista -> COMPRAR
+            double sl = NormalizeDouble(troughLow - 10 * Point, Digits); // SL 1 pip por debajo del minimo
+            double tpLogical = NormalizeDouble((asianHigh + asianLow) / 2.0, Digits); // TP teorico
+            double slPips = (Ask - sl) / (10 * Point);
+            double tpPips = (tpLogical - Ask) / (10 * Point);
+            
+            if(slPips > 0 && (tpPips / slPips) < MinRewardRiskRatio)
+              {
+               Print("Compra SMC cancelada. Ratio R:R (", DoubleToStr(tpPips/slPips, 2), ") es menor al requerido: ", MinRewardRiskRatio);
+               lastTradeDay = currentDay; // Ignoramos el resto del dia
+              }
+            else
+              {
+               double calculatedLot = CalculateLotSize(slPips);
+               double actualTP = UseTrailingStop ? 0 : tpLogical;
+               
+               if(Ask > sl && Ask < tpLogical)
+                 {
+                  int t = OrderSend(Symbol(), OP_BUY, calculatedLot, Ask, 3, sl, actualTP, "SMC Reversion Buy", MagicNumber, 0, clrBlue);
+                  if(t > 0)
+                    {
+                     Print("Compra SMC ejecutada. Lote: ", calculatedLot, " SL: ", slPips, " pips");
+                     lastTradeDay = currentDay;
+                    }
+                  else Print("Error abriendo Compra SMC: ", GetLastError());
+                 }
+              }
            }
         }
-        
-      // Logica de VENTA (Cruce real por abajo)
-      else if(Bid < asianLow && Close[1] >= asianLow)
+      else
         {
-         double sl = 0;
-         if(StopLossPlacement == SL_MID_BOX)
-            sl = asianHigh - (asianHigh - asianLow) / 2.0;
-         else
-            sl = asianHigh;
-            
-         double tp = asianLow - (sl - asianLow) * RiskRewardRatio;
-         
-         // Normalizar precios para MT4
-         sl = NormalizeDouble(sl, Digits);
-         tp = NormalizeDouble(tp, Digits);
-         
-         int ticket = OrderSend(Symbol(), OP_SELL, LotSize, Bid, 3, sl, tp, "Asian Breakout Sell", MagicNumber, 0, clrRed);
-         if(ticket > 0)
+         // MODO MANUAL (Buscar el rectangulo del usuario)
+         if(ObjectFind(0, ManualBoxName) >= 0)
            {
-             Print("Orden de VENTA ejecutada exitosamente.");
+            double price1 = ObjectGetDouble(0, ManualBoxName, OBJPROP_PRICE1);
+            double price2 = ObjectGetDouble(0, ManualBoxName, OBJPROP_PRICE2);
+            
+            double boxTop = MathMax(price1, price2);
+            double boxBottom = MathMin(price1, price2);
+            
+            double limitPrice = 0, stopLoss = 0, takeProfit = 0;
+            int orderType = -1;
+            
+            // Si la caja manual esta por encima de la asiatica, queremos VENDER
+            if(boxBottom >= asianHigh)
+              {
+               limitPrice = boxBottom; 
+               stopLoss = boxTop + 20 * Point; 
+               takeProfit = asianLow;  
+               orderType = OP_SELLLIMIT;
+              }
+            // Si la caja manual esta por debajo de la asiatica, queremos COMPRAR
+            else if(boxTop <= asianLow)
+              {
+               limitPrice = boxTop; 
+               stopLoss = boxBottom - 20 * Point; 
+               takeProfit = asianHigh; 
+               orderType = OP_BUYLIMIT;
+              }
+              
+            if(orderType >= 0 && limitPrice > 0)
+              {
+               limitPrice = NormalizeDouble(limitPrice, Digits);
+               stopLoss = NormalizeDouble(stopLoss, Digits);
+               takeProfit = NormalizeDouble(takeProfit, Digits);
+               
+               bool validLimit = false;
+               if(orderType == OP_BUYLIMIT && Ask > limitPrice) validLimit = true;
+               if(orderType == OP_SELLLIMIT && Bid < limitPrice) validLimit = true;
+               
+               if(validLimit)
+                 {
+                  int ticket = OrderSend(Symbol(), orderType, FixedLotSize, limitPrice, 3, stopLoss, takeProfit, "SMC Limit Manual", MagicNumber, 0, (orderType == OP_BUYLIMIT) ? clrBlue : clrRed);
+                  if(ticket > 0)
+                    {
+                     lastTradeDay = currentDay;
+                     Print("Orden Limit SMC Manual colocada exitosamente.");
+                     // Ocultar el rectángulo para no duplicar mañana
+                     ObjectDelete(0, ManualBoxName);
+                    }
+                 }
+              }
            }
         }
      }
