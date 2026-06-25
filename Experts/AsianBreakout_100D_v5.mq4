@@ -351,6 +351,8 @@ void OnTick()
    // Solo buscar operaciones despues de cerrar la caja asiatica
    if(currentHour >= EndHour && currentHour < 23)
      {
+      // Print("DEBUG: Entrando al bloque de horario operativo. Hour: ", currentHour);
+      
       // Resetear variables de barrido cada nuevo día
       if(currentDay != currentSessionDay)
         {
@@ -362,7 +364,9 @@ void OnTick()
         }
 
       // Comprobar si el dia fue ignorado, o alcanzamos limite, o hay trades activos
-      if(currentDay == lastTradeDay || GetTradesTodayCount() >= MaxTradesPerDay || HasActiveTrades()) return;
+      if(currentDay == lastTradeDay) { Print("DEBUG: Saliendo porque currentDay == lastTradeDay (", lastTradeDay, ")"); return; }
+      if(GetTradesTodayCount() >= MaxTradesPerDay) { Print("DEBUG: Saliendo porque limite trades (", GetTradesTodayCount(), ")"); return; }
+      if(HasActiveTrades()) { Print("DEBUG: Saliendo porque HasActiveTrades es true."); return; }
 
       // Calcular inicio y fin de la sesion asiatica para HOY
       datetime currentDayStart = iTime(Symbol(), PERIOD_D1, 0);
@@ -372,14 +376,22 @@ void OnTick()
       int shiftStart = iBarShift(Symbol(), Period(), timeStart);
       int shiftEnd = iBarShift(Symbol(), Period(), timeEnd);
       
-      if(shiftStart < 0 || shiftEnd < 0 || shiftStart <= shiftEnd) return;
+      if(shiftStart < 0 || shiftEnd < 0 || shiftStart <= shiftEnd) 
+        {
+         Print("DEBUG: Saliendo por error en shift. shiftStart:", shiftStart, " shiftEnd:", shiftEnd);
+         return;
+        }
       
       int barsCount = shiftStart - shiftEnd;
       
       int highestIdx = iHighest(Symbol(), Period(), MODE_HIGH, barsCount, shiftEnd);
       int lowestIdx  = iLowest(Symbol(), Period(), MODE_LOW, barsCount, shiftEnd);
       
-      if(highestIdx < 0 || lowestIdx < 0) return;
+      if(highestIdx < 0 || lowestIdx < 0) 
+        {
+         Print("DEBUG: Saliendo por error iHighest/iLowest. barsCount:", barsCount);
+         return;
+        }
       
       double asianHigh = High[highestIdx];
       double asianLow  = Low[lowestIdx];
@@ -522,7 +534,8 @@ void OnTick()
       else
         {
          // MODO MANUAL (Buscar el rectangulo del usuario)
-         if(ObjectFind(0, ManualBoxName) >= 0)
+         int objIdx = ObjectFind(0, ManualBoxName);
+         if(objIdx >= 0)
            {
             double price1 = ObjectGetDouble(0, ManualBoxName, OBJPROP_PRICE1);
             double price2 = ObjectGetDouble(0, ManualBoxName, OBJPROP_PRICE2);
@@ -533,7 +546,7 @@ void OnTick()
             static bool boxDetected = false;
             if(!boxDetected)
               {
-               Print("SMC: Caja '", ManualBoxName, "' detectada visualmente. Base: ", boxBottom, " Techo: ", boxTop);
+               Print("SMC: Caja '", ManualBoxName, "' detectada visualmente. Base: ", boxBottom, " Techo: ", boxTop, " (AsianHigh:", asianHigh, " AsianLow:", asianLow, ")");
                boxDetected = true;
               }
             
@@ -543,6 +556,7 @@ void OnTick()
             // Si la caja manual esta por encima de la asiatica, queremos VENDER
             if(boxBottom >= asianHigh)
               {
+               // ... (resto intacto)
                limitPrice = boxBottom; 
                stopLoss = boxTop + SLBufferPips * 10 * Point; 
                if((stopLoss - limitPrice) / (10 * Point) < MinSLPips) stopLoss = limitPrice + MinSLPips * 10 * Point;

@@ -51,25 +51,31 @@ void DrawSessionBox(string prefix, datetime dayStart, int startH, int endH, colo
    datetime t1 = dayStart + startH * 3600;
    datetime t2 = dayStart + endH * 3600;
    
-   if(t1 > currentTime) return;
+   if(currentTime < t1) return; // Aún no empieza la sesión
    
-   datetime boxEndTime = t2;
-   if(t2 > currentTime) boxEndTime = currentTime;
-   
+   // En el Probador, pintamos siempre la caja completa de t1 a t2 para evitar que se achique
    int shift1 = iBarShift(Symbol(), Period(), t1);
-   int shift2 = iBarShift(Symbol(), Period(), boxEndTime);
    
-   if(shift1 < 0 || shift2 < 0 || shift1 <= shift2) return;
+   datetime evalEndTime = (currentTime < t2) ? currentTime : t2;
+   int shift2 = iBarShift(Symbol(), Period(), evalEndTime);
    
-   int barsCount = shift1 - shift2;
-   int highestIdx = iHighest(Symbol(), Period(), MODE_HIGH, barsCount, shift2);
-   int lowestIdx  = iLowest(Symbol(), Period(), MODE_LOW, barsCount, shift2);
+   if(shift1 < 0 || shift2 < 0 || shift1 < shift2) return;
    
-   if(highestIdx >= 0 && lowestIdx >= 0)
+   double maxPrice = -1.0;
+   double minPrice = 99999.0;
+   bool valid = false;
+   
+   // Bucle robusto para evitar fallos de iHighest en el simulador
+   for(int j = shift2; j <= shift1; j++)
      {
-      double maxPrice = High[highestIdx];
-      double minPrice = Low[lowestIdx];
-      
+      if(j < 0 || j >= Bars) continue;
+      if(High[j] > maxPrice) maxPrice = High[j];
+      if(Low[j] < minPrice) minPrice = Low[j];
+      valid = true;
+     }
+     
+   if(valid)
+     {
       string objName = "SessionBox_" + prefix + "_" + TimeToString(dayStart, TIME_DATE);
       
       if(ObjectFind(0, objName) < 0)
@@ -82,10 +88,14 @@ void DrawSessionBox(string prefix, datetime dayStart, int startH, int endH, colo
         }
       else
         {
-         ObjectSetDouble(0, objName, OBJPROP_PRICE1, maxPrice);
-         ObjectSetDouble(0, objName, OBJPROP_PRICE2, minPrice);
-         ObjectSetInteger(0, objName, OBJPROP_TIME1, t1);
-         ObjectSetInteger(0, objName, OBJPROP_TIME2, t2);
+         // Si la sesion no ha terminado, actualizamos su dimension vertical
+         if(currentTime <= t2)
+           {
+            ObjectSetDouble(0, objName, OBJPROP_PRICE1, maxPrice);
+            ObjectSetDouble(0, objName, OBJPROP_PRICE2, minPrice);
+            ObjectSetInteger(0, objName, OBJPROP_TIME1, t1);
+            ObjectSetInteger(0, objName, OBJPROP_TIME2, t2); // Siempre anclado a t2
+           }
         }
      }
   }
