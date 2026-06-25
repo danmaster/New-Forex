@@ -1,0 +1,238 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © Antigravity
+
+//@version=5
+strategy("Asian Breakout SMC - Auto", overlay=true, initial_capital=10000, default_qty_type=strategy.cash, slippage=5)
+
+// =========================================================================
+// INPUTS
+// =========================================================================
+grp_gen = "--- Ajustes de Sesión (Hora Madrid) ---"
+i_sessionAsia = input.session("0100-0700", "Tokio (Asia)", group=grp_gen)
+i_sessionLon  = input.session("0900-1700", "Europa (Londres)", group=grp_gen)
+i_sessionNY   = input.session("1400-2300", "Nueva York", group=grp_gen)
+
+grp_days = "--- Filtro de Días ---"
+i_tradeMonday    = input.bool(false, "Operar Lunes", group=grp_days, tooltip="Desactivado tras el análisis de pérdidas de los Lunes")
+i_tradeTuesday   = input.bool(true,  "Operar Martes", group=grp_days)
+i_tradeWednesday = input.bool(true,  "Operar Miércoles", group=grp_days)
+i_tradeThursday  = input.bool(true,  "Operar Jueves", group=grp_days)
+i_tradeFriday    = input.bool(false, "Operar Viernes", group=grp_days, tooltip="Desactivado tras el análisis de pérdidas de los Viernes")
+
+grp_risk = "--- Gestión de Riesgo ---"
+i_riskPct    = input.float(1.0, "Riesgo por operación (%)", group=grp_risk)
+i_maxTrades  = input.int(2, "Max Operaciones por Día", group=grp_risk)
+i_minBoxPips = input.int(10, "Tamaño Mínimo Caja Asia (pips)", group=grp_risk)
+i_maxBoxPips = input.int(50, "Tamaño Máximo Caja Asia (pips)", group=grp_risk)
+i_waitClose  = input.bool(true, "Esperar Cierre de Vela M5", group=grp_risk)
+
+grp_tp = "--- Objetivos ---"
+i_fixedRR    = input.float(3.0, "Ratio R:R Fijo", group=grp_tp)
+i_useFixedRR = input.bool(true, "Activar TP Fijo", group=grp_tp)
+
+grp_sl = "--- Stop Loss ---"
+i_slBuffer   = input.int(3, "Margen SL (pips)", group=grp_sl)
+i_minSl      = input.int(5, "SL Mínimo (pips)", group=grp_sl)
+
+grp_trend = "--- Filtro Tendencia ---"
+i_useTrend   = input.bool(true, "Activar Filtro EMA", group=grp_trend)
+i_fastEma    = input.int(50, "EMA Rápida", group=grp_trend)
+i_slowEma    = input.int(200, "EMA Lenta", group=grp_trend)
+
+// =========================================================================
+// FUNCIONES DE UTILIDAD
+// =========================================================================
+pipSize = syminfo.mintick * (syminfo.type == "forex" ? 10 : 1)
+to_pips(price) => price / pipSize
+to_price(pips) => pips * pipSize
+
+// =========================================================================
+// FILTRO DE TENDENCIA (H1)
+// =========================================================================
+fastEMA_calc = ta.ema(close, i_fastEma)
+slowEMA_calc = ta.ema(close, i_slowEma)
+
+[h1_close, h1_fast, h1_slow] = request.security(syminfo.tickerid, "60", [close, fastEMA_calc, slowEMA_calc], lookahead=barmerge.lookahead_on)
+
+uptrend = not i_useTrend or (h1_fast > h1_slow and h1_close > h1_slow)
+downtrend = not i_useTrend or (h1_fast < h1_slow and h1_close < h1_slow)
+
+// =========================================================================
+// DETECCIÓN DE SESIONES Y CAJAS (Con Zona Horaria de Madrid)
+// =========================================================================
+tz = "Europe/Madrid"
+
+// Al usar 'not na()', forzamos a que el resultado sea Booleano (true/false) para evitar los avisos amarillos.
+inSessionAsia = not na(time(timeframe.period, i_sessionAsia, tz))
+inSessionLon  = not na(time(timeframe.period, i_sessionLon, tz))
+inSessionNY   = not na(time(timeframe.period, i_sessionNY, tz))
+
+// Comprobar si hoy es día habilitado para operar
+int currentDay = dayofweek(time, tz)
+bool isTradingDay = false
+if currentDay == dayofweek.monday
+    isTradingDay := i_tradeMonday
+else if currentDay == dayofweek.tuesday
+    isTradingDay := i_tradeTuesday
+else if currentDay == dayofweek.wednesday
+    isTradingDay := i_tradeWednesday
+else if currentDay == dayofweek.thursday
+    isTradingDay := i_tradeThursday
+else if currentDay == dayofweek.friday
+    isTradingDay := i_tradeFriday
+
+// Contador de trades por día
+var int tradesToday = 0
+if time("D", tz) != time("D", tz)[1]
+    tradesToday := 0
+
+// --- CAJA ASIA ---
+isNewAsia = inSessionAsia and not inSessionAsia[1]
+isEndAsia = not inSessionAsia and inSessionAsia[1]
+
+var float asianHigh = na
+var float asianLow = na
+var float boxHigh = na
+var float boxLow = na
+var box boxAsia = na
+
+if isNewAsia
+    asianHigh := high
+    asianLow := low
+    boxAsia := box.new(bar_index, asianHigh, bar_index, asianLow, bgcolor=color.new(color.blue, 90), border_color=color.blue)
+else if inSessionAsia
+    asianHigh := math.max(asianHigh, high)
+    asianLow := math.min(asianLow, low)
+    box.set_top(boxAsia, asianHigh)
+    box.set_bottom(boxAsia, asianLow)
+    box.set_right(boxAsia, bar_index)
+
+if isEndAsia
+    boxHigh := asianHigh
+    boxLow := asianLow
+
+// --- CAJA LONDRES ---
+isNewLon = inSessionLon and not inSessionLon[1]
+var float lonHigh = na
+var float lonLow = na
+var box boxLon = na
+
+if isNewLon
+    lonHigh := high
+    lonLow := low
+    boxLon := box.new(bar_index, lonHigh, bar_index, lonLow, bgcolor=color.new(color.teal, 90), border_color=color.teal)
+else if inSessionLon
+    lonHigh := math.max(lonHigh, high)
+    lonLow := math.min(lonLow, low)
+    box.set_top(boxLon, lonHigh)
+    box.set_bottom(boxLon, lonLow)
+    box.set_right(boxLon, bar_index)
+
+// --- CAJA NY ---
+isNewNY = inSessionNY and not inSessionNY[1]
+var float nyHigh = na
+var float nyLow = na
+var box boxNY = na
+
+if isNewNY
+    nyHigh := high
+    nyLow := low
+    boxNY := box.new(bar_index, nyHigh, bar_index, nyLow, bgcolor=color.new(color.silver, 85), border_color=color.silver)
+else if inSessionNY
+    nyHigh := math.max(nyHigh, high)
+    nyLow := math.min(nyLow, low)
+    box.set_top(boxNY, nyHigh)
+    box.set_bottom(boxNY, nyLow)
+    box.set_right(boxNY, bar_index)
+
+// =========================================================================
+// LÓGICA DE SMC: BARRIDO DE LIQUIDEZ (SWEEP) SOBRE CAJA ASIATICA
+// =========================================================================
+var bool sweptHigh = false
+var bool sweptLow = false
+var float peakHigh = na
+var float troughLow = na
+
+// Resetear estados tras la caja asiática
+if isEndAsia
+    sweptHigh := false
+    sweptLow := false
+    peakHigh := na
+    troughLow := na
+
+// La ventana de operativa es después de Asia
+bool tradingWindow = not inSessionAsia and not na(boxHigh)
+float boxPips = to_pips(boxHigh - boxLow)
+bool validBox = boxPips >= i_minBoxPips and boxPips <= i_maxBoxPips
+
+// Detectar barridos (Sweeps) de la caja Asiática
+if tradingWindow and validBox
+    if high > boxHigh
+        sweptHigh := true
+        peakHigh := na(peakHigh) ? high : math.max(peakHigh, high)
+    if low < boxLow
+        sweptLow := true
+        troughLow := na(troughLow) ? low : math.min(troughLow, low)
+
+// =========================================================================
+// GATILLOS Y ENTRADAS
+// =========================================================================
+bool triggerSell = false
+bool triggerBuy = false
+
+// Condiciones de entrada si estamos en ventana, es un día habilitado, caja válida y no superamos trades diarios
+if tradingWindow and isTradingDay and validBox and strategy.opentrades == 0 and tradesToday < i_maxTrades
+    if i_waitClose
+        if sweptHigh and close < boxHigh 
+            triggerSell := downtrend
+        if sweptLow and close > boxLow 
+            triggerBuy := uptrend
+    else
+        // Entrar en cuanto cruza (representado aquí al cierre de la vela que cruza)
+        if sweptHigh and close < boxHigh
+            triggerSell := downtrend
+        if sweptLow and close > boxLow
+            triggerBuy := uptrend
+
+// Cálculo de Lote (Riesgo Dinámico)
+calcQty(slDistPrice) =>
+    riskAmount = strategy.equity * (i_riskPct / 100)
+    qty = slDistPrice > 0 ? (riskAmount / slDistPrice) : 0
+    qty
+
+// Ejecución
+if triggerBuy
+    float slPriceBase = troughLow - to_price(i_slBuffer)
+    float minSlPrice = close - to_price(i_minSl)
+    float slPrice = math.min(slPriceBase, minSlPrice)
+    float slDistPrice = close - slPrice
+    
+    float tpPrice = na
+    if i_useFixedRR
+        tpPrice := close + (slDistPrice * i_fixedRR)
+        
+    float qty = calcQty(slDistPrice)
+    
+    strategy.entry("SMC_Buy", strategy.long, qty=qty)
+    strategy.exit("Exit_Buy", "SMC_Buy", stop=slPrice, limit=tpPrice)
+    tradesToday += 1
+
+if triggerSell
+    float slPriceBase = peakHigh + to_price(i_slBuffer)
+    float minSlPrice = close + to_price(i_minSl)
+    float slPrice = math.max(slPriceBase, minSlPrice)
+    float slDistPrice = slPrice - close
+    
+    float tpPrice = na
+    if i_useFixedRR
+        tpPrice := close - (slDistPrice * i_fixedRR)
+        
+    float qty = calcQty(slDistPrice)
+    
+    strategy.entry("SMC_Sell", strategy.short, qty=qty)
+    strategy.exit("Exit_Sell", "SMC_Sell", stop=slPrice, limit=tpPrice)
+    tradesToday += 1
+
+// Dibujar niveles de sweep
+plot(sweptHigh ? peakHigh : na, color=color.red, style=plot.style_circles, linewidth=2, title="Peak High")
+plot(sweptLow ? troughLow : na, color=color.green, style=plot.style_circles, linewidth=2, title="Trough Low")
