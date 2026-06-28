@@ -43,6 +43,7 @@ Para evitar confusiones con indicadores externos, la **Tabla de la Verdad** ofic
 | **Tokio (Asiática)** | `02:00` | `08:00` | 01:00 a 07:00 |
 | **Europea** | `09:00` | `18:00` | 08:00 a 17:00 |
 | **Nueva York** | `14:00` | `23:00` | 13:00 a 22:00 |
+| **Apertura US (Nasdaq/Wall St)** | `16:30` | `-` | 15:30 |
 
 *Nota técnica: Tanto el indicador `AsianBox.mq4` como el EA `AsianBreakout_100D.mq4` tienen estos horarios de Broker integrados por defecto como `StartHour` y `EndHour`.*
 

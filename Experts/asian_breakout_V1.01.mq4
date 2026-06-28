@@ -11,6 +11,7 @@
 input string   General_Settings  = "--- AJUSTES GENERALES ---";
 input bool     UseDynamicLot     = true;       // Activar Lote Dinámico (1%)
 input double   RiskPercent       = 1.0;        // Riesgo por operación (%)
+input bool     InpSendPush       = true;       // Enviar Notificación al Móvil
 
 input double   FixedLotSize      = 0.10;       // Lote Fijo (si Auto es false)
 input bool     WaitCandleClose   = true;       // Esperar Cierre de Vela M5
@@ -223,7 +224,11 @@ void ManagePartialClose()
                if(lotToClose >= minLot && (OrderLots() - lotToClose) >= minLot)
                  {
                   bool res = OrderClose(OrderTicket(), lotToClose, (OrderType() == OP_BUY) ? Bid : Ask, 3, clrOrange);
-                  if(res) Print("SMC Cierre Parcial Automático ejecutado: ", lotToClose, " lotes.");
+                  if(res)
+                    {
+                     Print("SMC Cierre Parcial Automático ejecutado: ", lotToClose, " lotes.");
+                     if(InpSendPush) SendNotification("Asian Breakout [" + Symbol() + "]: Cierre Parcial alcanzado ✅");
+                    }
                  }
               }
            }
@@ -503,6 +508,7 @@ void OnTick()
                      if(t > 0)
                        {
                         Print("Venta SMC ejecutada. Lote: ", calculatedLot, " SL: ", slPips, " pips. (Sin TP fijo)");
+                        if(InpSendPush) SendNotification("Asian Breakout [" + Symbol() + "]: VENTA Auto abierta a " + DoubleToStr(Bid, Digits));
                         // lastTradeDay = currentDay; removido para permitir reentradas
                        }
                      else Print("Error abriendo Venta SMC: ", GetLastError());
@@ -545,6 +551,7 @@ void OnTick()
                      if(t > 0)
                        {
                         Print("Compra SMC ejecutada. Lote: ", calculatedLot, " SL: ", slPips, " pips. (Sin TP fijo)");
+                        if(InpSendPush) SendNotification("Asian Breakout [" + Symbol() + "]: COMPRA Auto abierta a " + DoubleToStr(Ask, Digits));
                         // lastTradeDay = currentDay; removido para permitir reentradas
                        }
                      else Print("Error abriendo Compra SMC: ", GetLastError());
@@ -618,6 +625,7 @@ void OnTick()
                      lastTradeDay = currentDay;
                      boxDetected = false; // Reset state
                      Print("Orden Limit SMC Manual colocada exitosamente. Lote: ", lot, " TP: ", takeProfit);
+                     if(InpSendPush) SendNotification("Asian Breakout [" + Symbol() + "]: Orden Limit colocada a " + DoubleToStr(limitPrice, Digits));
                      // Ocultar el rectángulo para no duplicar mañana
                      ObjectDelete(0, ManualBoxName);
                     }

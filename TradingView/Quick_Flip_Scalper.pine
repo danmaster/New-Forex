@@ -1,0 +1,117 @@
+//@version=5
+strategy("Quick Flip Scalper", overlay=true, margin_long=5, margin_short=5, default_qty_type=strategy.percent_of_equity, default_qty_value=1)
+
+// --- Inputs ---
+var string GRP_TIME = "Configuración de Horario"
+// Apertura de Wall Street. Usamos 0930-1100 y forzaremos "America/New_York" internamente.
+openTime = input.session("0930-1100", title="Horario de Sesión NY (90 min)", group=GRP_TIME)
+
+var string GRP_ATR = "Configuración Filtro y Riesgo"
+atrPeriod = input.int(14, title="Periodo ATR Diario", group=GRP_ATR)
+atrMult = input.float(0.25, title="Multiplicador ATR (25% por defecto)", step=0.05, group=GRP_ATR)
+slPadding = input.int(0, title="Holgura Stop Loss (Ticks)", group=GRP_ATR)
+riskPercentInput = input.float(1.0, title="Riesgo % por Operación", step=0.5, group=GRP_ATR) / 100.0
+strictPatterns = input.bool(true, title="Exigir patrones de velas estrictos", group=GRP_ATR)
+
+var string GRP_MGMT = "Gestión de Operación"
+partialRatio = input.float(1.0, title="Ratio R:R Cierre Parcial (0 = Desactivado)", step=0.5, group=GRP_MGMT)
+partialPct = input.float(50.0, title="% a cerrar", step=10, group=GRP_MGMT)
+
+// --- Variables para la Caja de 15m ---
+var float boxHigh = na
+var float boxLow = na
+var bool isActiveToday = false
+var float dailyAtrYest = na
+var bool is15mBullish = false
+
+// Detectar si estamos en la sesión configurada (forzando horario de Wall Street)
+inSession = not na(time(timeframe.period, openTime, "America/New_York"))
+isNewSession = inSession and not inSession[1]
+
+// Obtener ATR del día anterior
+dailyAtr = request.security(syminfo.tickerid, "D", ta.atr(atrPeriod)[1], lookahead=barmerge.lookahead_on)
+
+// Reiniciar variables al inicio de la sesión
+if isNewSession
+    boxHigh := high
+    boxLow := low
+    isActiveToday := false
+    dailyAtrYest := dailyAtr
+
+// Durante los primeros 15 minutos, actualizar máximos y mínimos de la caja
+// 15 minutos = 3 velas de 5m
+barsSinceStart = ta.barssince(isNewSession)
+inFirst15m = inSession and barsSinceStart < 3
+
+if inFirst15m
+    boxHigh := math.max(boxHigh, high)
+    boxLow := math.min(boxLow, low)
+
+// Al finalizar la tercera vela (cierre del minuto 15), verificamos la volatilidad
+if barsSinceStart == 2
+    boxSize = boxHigh - boxLow
+    if atrMult == 0.0 or boxSize >= (nz(dailyAtrYest) * atrMult)
+        isActiveToday := true
+        is15mBullish := close > open[2]
+
+// Dibujar la caja de los primeros 15 min
+var box qfBox = na
+if isNewSession
+    qfBox := box.new(left=bar_index, top=boxHigh, right=bar_index+3, bottom=boxLow, border_color=color.blue, bgcolor=color.new(color.blue, 80))
+if inFirst15m
+    box.set_top(qfBox, boxHigh)
+    box.set_bottom(qfBox, boxLow)
+    box.set_right(qfBox, bar_index + 1)
+
+// Colorear fondo si el día ES válido para operar
+bgcolor(isActiveToday and inSession ? color.new(color.green, 95) : na, title="Día Activo (Filtro ATR Superado)")
+
+// --- Detección de Patrones y Entradas (Minuto 15 al 90) ---
+canTrade = inSession and isActiveToday and barsSinceStart >= 3 and strategy.opentrades == 0
+
+// Lógica de Velas
+bodySize = math.abs(open - close)
+upperWick = high - math.max(open, close)
+lowerWick = math.min(open, close) - low
+
+// Patrones Bajistas (Buscamos que el precio haya roto por encima de la caja)
+isBearishEngulfing = close < open and open[1] < close[1] and close < open[1] and open >= close[1]
+isShootingStar = (upperWick > bodySize * 2) and (lowerWick <= bodySize)
+bearishPattern = strictPatterns ? (isBearishEngulfing or isShootingStar) : (close < open and (isShootingStar or close < low[1]))
+sellCondition = canTrade and is15mBullish and (high > boxHigh) and bearishPattern
+
+// Patrones Alcistas (Buscamos que el precio haya roto por debajo de la caja)
+isBullishEngulfing = close > open and open[1] > close[1] and close > open[1] and open <= close[1]
+isHammer = (lowerWick > bodySize * 2) and (upperWick <= bodySize)
+bullishPattern = strictPatterns ? (isBullishEngulfing or isHammer) : (close > open and (isHammer or close > high[1]))
+buyCondition = canTrade and not is15mBullish and (low < boxLow) and bullishPattern
+
+// Ejecución de Órdenes con holgura en el Stop Loss y Riesgo Exacto (1%)
+if buyCondition
+    sl = low - (syminfo.mintick * slPadding)
+    tp = boxHigh
+    stopDistance = math.max(math.abs(close - sl), syminfo.mintick)
+    riskMoney = strategy.equity * riskPercentInput
+    // Cálculo realista de lotaje (permite decimales como en MT4)
+    posQty = riskMoney / (stopDistance * syminfo.pointvalue)
+    strategy.entry("Buy", strategy.long, qty=posQty)
+    if partialRatio > 0
+        partialLimit = close + (stopDistance * partialRatio)
+        strategy.exit("Exit Parcial", "Buy", qty_percent=partialPct, limit=partialLimit)
+    strategy.exit("Exit Full", "Buy", stop=sl, limit=tp)
+
+if sellCondition
+    sl = high + (syminfo.mintick * slPadding)
+    tp = boxLow
+    stopDistance = math.max(math.abs(sl - close), syminfo.mintick)
+    riskMoney = strategy.equity * riskPercentInput
+    // Cálculo realista de lotaje (permite decimales como en MT4)
+    posQty = riskMoney / (stopDistance * syminfo.pointvalue)
+    strategy.entry("Sell", strategy.short, qty=posQty)
+    if partialRatio > 0
+        partialLimit = close - (stopDistance * partialRatio)
+        strategy.exit("Exit Parcial", "Sell", qty_percent=partialPct, limit=partialLimit)
+    strategy.exit("Exit Full", "Sell", stop=sl, limit=tp)
+
+// Debug visual de señales
+bgcolor(buyCondition ? color.new(color.lime, 40) : sellCondition ? color.new(color.fuchsia, 40) : na, title="Señal de Entrada Disparada")
