@@ -146,6 +146,41 @@ else if inSessionNY
     box.set_right(boxNY, bar_index)
 
 // =========================================================================
+// PATRONES DE REVERSIÓN SMC (ALEX RUIZ)
+// =========================================================================
+f_isBearishReversal() =>
+    body = math.abs(open - close)
+    upperWick = high - math.max(open, close)
+    lowerWick = math.min(open, close) - low
+    
+    // Pinbar bajista
+    isPinbar = body > 0 ? (upperWick >= 2.0 * body and lowerWick <= body * 1.5) : (upperWick > 3.0 * syminfo.mintick * 10 and lowerWick < upperWick * 0.3)
+    
+    // Envolvente bajista
+    prevOpen = open[1]
+    prevClose = close[1]
+    isBullishPrev = prevClose > prevOpen
+    isEngulfing = isBullishPrev and (open >= prevClose) and (close <= prevOpen) and (body > (prevClose - prevOpen))
+    
+    (close <= open) and (isPinbar or isEngulfing)
+
+f_isBullishReversal() =>
+    body = math.abs(close - open)
+    upperWick = high - math.max(open, close)
+    lowerWick = math.min(open, close) - low
+    
+    // Pinbar alcista
+    isPinbar = body > 0 ? (lowerWick >= 2.0 * body and upperWick <= body * 1.5) : (lowerWick > 3.0 * syminfo.mintick * 10 and upperWick < lowerWick * 0.3)
+    
+    // Envolvente alcista
+    prevOpen = open[1]
+    prevClose = close[1]
+    isBearishPrev = prevOpen > prevClose
+    isEngulfing = isBearishPrev and (open <= prevClose) and (close >= prevOpen) and (body > (prevOpen - prevClose))
+    
+    (close >= open) and (isPinbar or isEngulfing)
+
+// =========================================================================
 // LÓGICA DE SMC: BARRIDO DE LIQUIDEZ (SWEEP) SOBRE CAJA ASIATICA
 // =========================================================================
 var bool sweptHigh = false
@@ -165,14 +200,19 @@ bool tradingWindow = not inSessionAsia and not na(boxHigh)
 float boxPips = to_pips(boxHigh - boxLow)
 bool validBox = boxPips >= i_minBoxPips and boxPips <= i_maxBoxPips
 
-// Detectar barridos (Sweeps) de la caja Asiática
+// Detectar barridos (Sweeps) con ENERGIA (Cerrando fuera)
 if tradingWindow and validBox
-    if high > boxHigh
+    if close > boxHigh
         sweptHigh := true
-        peakHigh := na(peakHigh) ? high : math.max(peakHigh, high)
-    if low < boxLow
+        peakHigh := high
+    else if sweptHigh and high > peakHigh
+        peakHigh := high
+        
+    if close < boxLow
         sweptLow := true
-        troughLow := na(troughLow) ? low : math.min(troughLow, low)
+        troughLow := low
+    else if sweptLow and low < troughLow
+        troughLow := low
 
 // =========================================================================
 // GATILLOS Y ENTRADAS
@@ -180,19 +220,22 @@ if tradingWindow and validBox
 bool triggerSell = false
 bool triggerBuy = false
 
+bool isBearishPat = f_isBearishReversal()
+bool isBullishPat = f_isBullishReversal()
+
 // Condiciones de entrada si estamos en ventana, es un día habilitado, caja válida y no superamos trades diarios
 if tradingWindow and isTradingDay and validBox and strategy.opentrades == 0 and tradesToday < i_maxTrades
-    if i_waitClose
-        if sweptHigh and close < boxHigh 
+    if sweptHigh and close < boxHigh 
+        if isBearishPat
             triggerSell := downtrend
-        if sweptLow and close > boxLow 
+        else
+            sweptHigh := false // Invalidar si no hay patrón claro
+            
+    if sweptLow and close > boxLow 
+        if isBullishPat
             triggerBuy := uptrend
-    else
-        // Entrar en cuanto cruza (representado aquí al cierre de la vela que cruza)
-        if sweptHigh and close < boxHigh
-            triggerSell := downtrend
-        if sweptLow and close > boxLow
-            triggerBuy := uptrend
+        else
+            sweptLow := false // Invalidar si no hay patrón claro
 
 // Cálculo de Lote (Riesgo Dinámico)
 calcQty(slDistPrice) =>
@@ -216,6 +259,7 @@ if triggerBuy
     strategy.entry("SMC_Buy", strategy.long, qty=qty)
     strategy.exit("Exit_Buy", "SMC_Buy", stop=slPrice, limit=tpPrice)
     tradesToday += 1
+    sweptLow := false
 
 if triggerSell
     float slPriceBase = peakHigh + to_price(i_slBuffer)
@@ -232,6 +276,7 @@ if triggerSell
     strategy.entry("SMC_Sell", strategy.short, qty=qty)
     strategy.exit("Exit_Sell", "SMC_Sell", stop=slPrice, limit=tpPrice)
     tradesToday += 1
+    sweptHigh := false
 
 // Dibujar niveles de sweep
 plot(sweptHigh ? peakHigh : na, color=color.red, style=plot.style_circles, linewidth=2, title="Peak High")

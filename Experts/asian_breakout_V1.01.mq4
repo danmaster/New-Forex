@@ -336,6 +336,81 @@ bool HasActiveTrades()
   }
 
 //+------------------------------------------------------------------+
+//| Patrones de Reversion SMC (Alex Ruiz)                            |
+//+------------------------------------------------------------------+
+bool isBearishReversal(int shift)
+  {
+   double open = Open[shift];
+   double close = Close[shift];
+   double high = High[shift];
+   double low = Low[shift];
+   
+   // La vela de gatillo idealmente debe cerrar bajista o plana
+   if(close > open) return false;
+   
+   double body = MathAbs(open - close);
+   double upperWick = high - MathMax(open, close);
+   double lowerWick = MathMin(open, close) - low;
+   
+   // 1. Pinbar Bajista (Martillo invertido / Shooting star)
+   // Mecha superior >= 2x cuerpo, mecha inferior pequeña
+   bool isPinbar = false;
+   if(body > 0)
+     {
+      if(upperWick >= 2.0 * body && lowerWick <= body * 1.5) isPinbar = true;
+     }
+   else
+     {
+      // Si es un Doji
+      if(upperWick > 3.0 * Point * 10 && lowerWick < upperWick * 0.3) isPinbar = true;
+     }
+     
+   // 2. Envolvente Bajista (Bearish Engulfing)
+   double prevOpen = Open[shift+1];
+   double prevClose = Close[shift+1];
+   bool isBullishPrev = prevClose > prevOpen;
+   bool isEngulfing = isBullishPrev && (open >= prevClose) && (close <= prevOpen) && (body > (prevClose - prevOpen));
+   
+   return isPinbar || isEngulfing;
+  }
+
+bool isBullishReversal(int shift)
+  {
+   double open = Open[shift];
+   double close = Close[shift];
+   double high = High[shift];
+   double low = Low[shift];
+   
+   // La vela de gatillo idealmente debe cerrar alcista o plana
+   if(close < open) return false;
+   
+   double body = MathAbs(close - open);
+   double upperWick = high - MathMax(open, close);
+   double lowerWick = MathMin(open, close) - low;
+   
+   // 1. Pinbar Alcista (Martillo)
+   // Mecha inferior >= 2x cuerpo, mecha superior pequeña
+   bool isPinbar = false;
+   if(body > 0)
+     {
+      if(lowerWick >= 2.0 * body && upperWick <= body * 1.5) isPinbar = true;
+     }
+   else
+     {
+      // Si es un Doji
+      if(lowerWick > 3.0 * Point * 10 && upperWick < lowerWick * 0.3) isPinbar = true;
+     }
+     
+   // 2. Envolvente Alcista (Bullish Engulfing)
+   double prevOpen = Open[shift+1];
+   double prevClose = Close[shift+1];
+   bool isBearishPrev = prevOpen > prevClose;
+   bool isEngulfing = isBearishPrev && (open <= prevClose) && (close >= prevOpen) && (body > (prevOpen - prevClose));
+   
+   return isPinbar || isEngulfing;
+  }
+
+//+------------------------------------------------------------------+
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick()
@@ -434,21 +509,7 @@ void OnTick()
       
       if(AutoFindLiquidity)
         {
-         // MODO AUTOMATICO: Vigilar Ruptura y Reversión (Asian Sweep)
-         // 1. Detectar si el precio rompe el techo o el suelo
-         if(Bid > asianHigh || High[0] > asianHigh)
-           {
-            sweptHigh = true;
-            peakHigh = MathMax(peakHigh, High[0]);
-           }
-         if(Ask < asianLow || Low[0] < asianLow)
-           {
-            sweptLow = true;
-            if(troughLow == 0) troughLow = Low[0];
-            else troughLow = MathMin(troughLow, Low[0]);
-           }
-         
-         // 2. Operar la reversión
+         // MODO AUTOMATICO: Vigilar Ruptura y Reversión (Asian Sweep - Alex Ruiz SMC)
          bool triggerSell = false;
          bool triggerBuy = false;
          
@@ -460,18 +521,48 @@ void OnTick()
             lastBarTime = Time[0];
            }
            
-         if(WaitCandleClose)
+         if(isNewBar)
            {
-            if(isNewBar)
+            // 1. Detectar si la vela anterior rompió CON ENERGIA (Cerrando fuera)
+            if(Close[1] > asianHigh)
               {
-               if(sweptHigh && Close[1] < asianHigh) triggerSell = true;
-               if(sweptLow && Close[1] > asianLow) triggerBuy = true;
+               sweptHigh = true;
+               peakHigh = High[1];
+              }
+            else if(sweptHigh && High[1] > peakHigh)
+              {
+               peakHigh = High[1]; // Mantener el pico más alto mientras estemos fuera
+              }
+              
+            if(Close[1] < asianLow)
+              {
+               sweptLow = true;
+               if(troughLow == 0 || Low[1] < troughLow) troughLow = Low[1];
+              }
+            else if(sweptLow && Low[1] < troughLow)
+              {
+               troughLow = Low[1]; // Mantener el valle más bajo mientras estemos fuera
+              }
+              
+            // 2. Esperar Gatillo: Patrón de Reversión + Cierre dentro de la caja
+            if(sweptHigh && Close[1] < asianHigh)
+              {
+               if(isBearishReversal(1)) triggerSell = true;
+               else sweptHigh = false; // Si volvió a entrar sin patrón claro, invalidar la trampa
+              }
+              
+            if(sweptLow && Close[1] > asianLow)
+              {
+               if(isBullishReversal(1)) triggerBuy = true;
+               else sweptLow = false; // Si volvió a entrar sin patrón claro, invalidar la trampa
               }
            }
-         else
+
+         // Soporte legacy para WaitCandleClose false (forzando validación estricta de todas formas por SMC)
+         if(!WaitCandleClose)
            {
-            if(sweptHigh && Bid < asianHigh) triggerSell = true;
-            if(sweptLow && Ask > asianLow) triggerBuy = true;
+            // En la estrategia de Alex Ruiz es OBLIGATORIO que la vela cierre dentro con patrón.
+            // Por lo tanto, si WaitCandleClose es false, la ignoramos para esta lógica específica.
            }
 
          if(triggerSell)
@@ -509,7 +600,8 @@ void OnTick()
                        {
                         Print("Venta SMC ejecutada. Lote: ", calculatedLot, " SL: ", slPips, " pips. (Sin TP fijo)");
                         if(InpSendPush) SendNotification("Asian Breakout [" + Symbol() + "]: VENTA Auto abierta a " + DoubleToStr(Bid, Digits));
-                        // lastTradeDay = currentDay; removido para permitir reentradas
+                        // Resetear el barrido tras entrar para obligar a buscar uno nuevo si hay reentradas
+                        sweptHigh = false;
                        }
                      else Print("Error abriendo Venta SMC: ", GetLastError());
                     }
@@ -552,7 +644,8 @@ void OnTick()
                        {
                         Print("Compra SMC ejecutada. Lote: ", calculatedLot, " SL: ", slPips, " pips. (Sin TP fijo)");
                         if(InpSendPush) SendNotification("Asian Breakout [" + Symbol() + "]: COMPRA Auto abierta a " + DoubleToStr(Ask, Digits));
-                        // lastTradeDay = currentDay; removido para permitir reentradas
+                        // Resetear el barrido tras entrar para obligar a buscar uno nuevo si hay reentradas
+                        sweptLow = false;
                        }
                      else Print("Error abriendo Compra SMC: ", GetLastError());
                     }
