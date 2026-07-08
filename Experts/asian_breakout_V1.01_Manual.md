@@ -35,6 +35,9 @@ A continuación, se explican todos los parámetros disponibles en las propiedade
 ### Modo de Liquidez
 *   **`AutoFindLiquidity` (true/false):** Si es `true`, el EA ejecuta todo el paso a paso descrito arriba de forma totalmente autónoma (Modo Auto-Sweep).
 *   **`ManualBoxName` ("ZonaLiquidez"):** Si apagas el modo automático (`AutoFindLiquidity = false`), el EA pasará a Modo Semiautomático. En este modo, el robot no buscará la reversión; en su lugar, esperará a que tú dibujes un rectángulo en el gráfico de MetaTrader y lo nombres "ZonaLiquidez". El EA calculará y colocará una orden pendiente límite (Buy Limit o Sell Limit) apoyándose en la caja de Asia y en tu rectángulo manual. *¿Por qué?* Para los días en los que quieras operar un "Bloque de Órdenes" (Order Block) lejano específico que tú mismo has visto, permitiendo al EA ser un simple ejecutor de tu análisis.
+*   **`MinBreakoutBodyPips` (2):** Tamaño mínimo (en pips) del cuerpo de la vela que sale de la caja para considerarse un barrido válido ("Vela decidida").
+*   **`MaxCandlesOutside` (3):** Límite máximo de velas que el precio puede permanecer por fuera de la caja asiática. Si pasa este límite sin que ocurra el patrón de reversión, la trampa de liquidez caduca automáticamente.
+*   **`MaxMinutesForReversal` (120):** Respaldo de seguridad absoluto en minutos para anular la trampa.
 
 ---
 

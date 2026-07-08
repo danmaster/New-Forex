@@ -67,3 +67,12 @@ Se observó que los barridos de liquidez (sweeps) durante los lunes (cuando el m
 
 **Conclusión Operativa:**
 Filtrar los días lunes y viernes demostró ser el "Santo Grial" para esta estrategia. Al limpiar el ruido de mercado de esos días, la tasa de acierto saltó al 50%. Teniendo en cuenta que el sistema busca ganancias de 1:3, ganar el 50% de las veces genera una curva de capital extremadamente eficiente (Profit Factor casi 3). El Drawdown se redujo dramáticamente de un peligroso 11.4% a un inofensivo 2.6%, **haciendo que el EA sea perfecto y altamente recomendable para superar y gestionar cuentas financiadas (Prop Firms)**.
+
+---
+
+## 5. Novedades en la Versión 1.01 (Reglas Estrictas SMC)
+
+Para evitar entradas erróneas o desfasadas horas después de la sesión asiática (operaciones "fantasma"), la Versión 1.01 incorporó filtros de tiempo y fuerza que garantizan un comportamiento purista del concepto de *Fakeout* (manipulación rápida):
+
+*   **Vela de Ruptura Decidida (`MinBreakoutBodyPips`):** El EA ya no valida cualquier ruptura. Exige que la vela que sale de la caja asiática tenga un cuerpo sólido mínimo (por defecto 2 pips) demostrando volumen institucional.
+*   **Caducidad Rápida de Trampa (`MaxCandlesOutside`):** Si el precio rompe la caja, debe regresar rápidamente. El EA cuenta cuántas velas permanece el precio fuera. Si supera el límite configurado (por defecto 3 velas) sin reingresar con un patrón de reversión válido, el EA anula la trampa automáticamente. Esto previene completamente que el EA tome operaciones por la tarde basadas en una ruptura matutina.
