@@ -53,8 +53,8 @@ input double   PartialClosePercent = 50.0;       // % del lote original a cerrar
 input string   Mode_Settings     = "--- MODO DE LIQUIDEZ (SMC MTF) ---";
 input bool     AutoFindLiquidity = true;       // Buscar Liquidez en AMBOS sentidos (Modo Auto)
 input int      HoursToLookBack   = 12;         // Horas previas a la caja (Modo Auto)
-input int      MinBreakoutBodyPips = 2;        // Min pips cuerpo vela ruptura M15 (Vela Decidida)
-input int      MaxCandlesOutside = 3;          // Max velas M5 fuera de caja antes de reversión
+input int      MinBreakoutBodyPips = 2;        // Min pips cuerpo vela ruptura M5 (Vela Decidida)
+input int      MaxCandlesOutside = 6;          // Max velas M5 fuera de caja antes de reversión
 input int      MaxMinutesForReversal = 120;    // Máx. minutos absolutos para caducar
 input string   ManualBoxName     = "ZonaLiquidez"; // Nombre del Rectángulo Manual (Modo Manual)
 
@@ -349,70 +349,26 @@ bool isBearishReversalMTF(ENUM_TIMEFRAMES tf, int shift)
   {
    double open = iOpen(Symbol(), tf, shift);
    double close = iClose(Symbol(), tf, shift);
-   double high = iHigh(Symbol(), tf, shift);
-   double low = iLow(Symbol(), tf, shift);
    
-   // La vela de gatillo idealmente debe cerrar bajista o plana
-   if(close > open) return false;
+   // --- VERSIÓN RELAJADA ---
+   // Simplemente requerimos que la vela que entra de nuevo a la caja sea bajista.
+   // Eliminamos la restricción estricta de Pinbar o Envolvente perfecta para atrapar más reversiones.
+   if(close < open) return true;
    
-   double body = MathAbs(open - close);
-   double upperWick = high - MathMax(open, close);
-   double lowerWick = MathMin(open, close) - low;
-   
-   // 1. Pinbar Bajista (Martillo invertido / Shooting star)
-   bool isPinbar = false;
-   if(body > 0)
-     {
-      if(upperWick >= 2.0 * body && lowerWick <= body * 1.5) isPinbar = true;
-     }
-   else
-     {
-      // Si es un Doji
-      if(upperWick > 3.0 * Point * 10 && lowerWick < upperWick * 0.3) isPinbar = true;
-     }
-     
-   // 2. Envolvente Bajista (Bearish Engulfing)
-   double prevOpen = iOpen(Symbol(), tf, shift+1);
-   double prevClose = iClose(Symbol(), tf, shift+1);
-   bool isBullishPrev = prevClose > prevOpen;
-   bool isEngulfing = isBullishPrev && (open >= prevClose) && (close <= prevOpen) && (body > (prevClose - prevOpen));
-   
-   return isPinbar || isEngulfing;
+   return false;
   }
 
 bool isBullishReversalMTF(ENUM_TIMEFRAMES tf, int shift)
   {
    double open = iOpen(Symbol(), tf, shift);
    double close = iClose(Symbol(), tf, shift);
-   double high = iHigh(Symbol(), tf, shift);
-   double low = iLow(Symbol(), tf, shift);
    
-   // La vela de gatillo idealmente debe cerrar alcista o plana
-   if(close < open) return false;
+   // --- VERSIÓN RELAJADA ---
+   // Simplemente requerimos que la vela que entra de nuevo a la caja sea alcista.
+   // Eliminamos la restricción estricta de Pinbar o Envolvente perfecta.
+   if(close > open) return true;
    
-   double body = MathAbs(close - open);
-   double upperWick = high - MathMax(open, close);
-   double lowerWick = MathMin(open, close) - low;
-   
-   // 1. Pinbar Alcista (Martillo)
-   bool isPinbar = false;
-   if(body > 0)
-     {
-      if(lowerWick >= 2.0 * body && upperWick <= body * 1.5) isPinbar = true;
-     }
-   else
-     {
-      // Si es un Doji
-      if(lowerWick > 3.0 * Point * 10 && upperWick < lowerWick * 0.3) isPinbar = true;
-     }
-     
-   // 2. Envolvente Alcista (Bullish Engulfing)
-   double prevOpen = iOpen(Symbol(), tf, shift+1);
-   double prevClose = iClose(Symbol(), tf, shift+1);
-   bool isBearishPrev = prevOpen > prevClose;
-   bool isEngulfing = isBearishPrev && (open <= prevClose) && (close >= prevOpen) && (body > (prevOpen - prevClose));
-   
-   return isPinbar || isEngulfing;
+   return false;
   }
 
 //+------------------------------------------------------------------+
@@ -481,13 +437,13 @@ void OnTick()
       if(GetTradesTodayCount() >= MaxTradesPerDay) { return; }
       if(HasActiveTrades()) { return; }
 
-      // Calcular inicio y fin de la sesion asiatica para HOY explícitamente en M15
+      // Calcular inicio y fin de la sesion asiatica para HOY explícitamente en M5
       datetime currentDayStart = iTime(Symbol(), PERIOD_D1, 0);
       datetime timeStart = currentDayStart + StartHour * 3600;
       datetime timeEnd = currentDayStart + EndHour * 3600;
       
-      int shiftStart = iBarShift(Symbol(), PERIOD_M15, timeStart);
-      int shiftEnd = iBarShift(Symbol(), PERIOD_M15, timeEnd);
+      int shiftStart = iBarShift(Symbol(), PERIOD_M5, timeStart);
+      int shiftEnd = iBarShift(Symbol(), PERIOD_M5, timeEnd);
       
       if(shiftStart < 0 || shiftEnd < 0 || shiftStart <= shiftEnd) 
         {
@@ -496,16 +452,16 @@ void OnTick()
       
       int barsCount = shiftStart - shiftEnd;
       
-      int highestIdx = iHighest(Symbol(), PERIOD_M15, MODE_HIGH, barsCount, shiftEnd);
-      int lowestIdx  = iLowest(Symbol(), PERIOD_M15, MODE_LOW, barsCount, shiftEnd);
+      int highestIdx = iHighest(Symbol(), PERIOD_M5, MODE_HIGH, barsCount, shiftEnd);
+      int lowestIdx  = iLowest(Symbol(), PERIOD_M5, MODE_LOW, barsCount, shiftEnd);
       
       if(highestIdx < 0 || lowestIdx < 0) 
         {
          return;
         }
       
-      double asianHigh = iHigh(Symbol(), PERIOD_M15, highestIdx);
-      double asianLow  = iLow(Symbol(), PERIOD_M15, lowestIdx);
+      double asianHigh = iHigh(Symbol(), PERIOD_M5, highestIdx);
+      double asianLow  = iLow(Symbol(), PERIOD_M5, lowestIdx);
       
       // Filtro de Tamano de Caja
       double boxSizePips = (asianHigh - asianLow) / (10 * Point);
@@ -518,19 +474,10 @@ void OnTick()
       
       if(AutoFindLiquidity)
         {
-         // MODO AUTOMATICO: Multi-Timeframe (M15 / M5)
+         // MODO AUTOMATICO: Single-Timeframe (M5) como V1.01
          bool triggerSell = false;
          bool triggerBuy = false;
          
-         static datetime lastBarTimeM15 = 0;
-         bool isNewBarM15 = false;
-         datetime currentM15Time = iTime(Symbol(), PERIOD_M15, 0);
-         if(currentM15Time != lastBarTimeM15)
-           {
-            isNewBarM15 = true;
-            lastBarTimeM15 = currentM15Time;
-           }
-           
          static datetime lastBarTimeM5 = 0;
          bool isNewBarM5 = false;
          datetime currentM5Time = iTime(Symbol(), PERIOD_M5, 0);
@@ -540,57 +487,54 @@ void OnTick()
             lastBarTimeM5 = currentM5Time;
            }
            
-         if(isNewBarM15)
+         if(isNewBarM5)
            {
-            // 1. Detectar si la vela M15 anterior rompió CON ENERGIA (Cerrando fuera)
-            double closeM15 = iClose(Symbol(), PERIOD_M15, 1);
-            double openM15 = iOpen(Symbol(), PERIOD_M15, 1);
-            double highM15 = iHigh(Symbol(), PERIOD_M15, 1);
-            double lowM15 = iLow(Symbol(), PERIOD_M15, 1);
+            // 1. Detectar si la vela M5 anterior rompió CON ENERGIA (Cerrando fuera)
+            double closeM5_1 = iClose(Symbol(), PERIOD_M5, 1);
+            double openM5_1 = iOpen(Symbol(), PERIOD_M5, 1);
+            double highM5_1 = iHigh(Symbol(), PERIOD_M5, 1);
+            double lowM5_1 = iLow(Symbol(), PERIOD_M5, 1);
             
-            if(closeM15 > asianHigh)
+            if(closeM5_1 > asianHigh)
               {
                if(!sweptHigh)
                  {
-                  double bodyPips = MathAbs(closeM15 - openM15) / (10 * Point);
+                  double bodyPips = MathAbs(closeM5_1 - openM5_1) / (10 * Point);
                   if(bodyPips >= MinBreakoutBodyPips)
                     {
-                     timeSweptHigh = iTime(Symbol(), PERIOD_M5, 0); // Guardamos la hora actual de M5 para conteo
-                     timeAbsoluteSweepHigh = TimeCurrent(); // Para el MaxMinutes absoluto
+                     timeSweptHigh = iTime(Symbol(), PERIOD_M5, 1); 
+                     timeAbsoluteSweepHigh = TimeCurrent(); 
                      sweptHigh = true;
-                     peakHigh = highM15;
-                     Print("SMC MTF: Ruptura Alcista M15 detectada. Cuerpo: ", DoubleToStr(bodyPips, 1), " pips.");
+                     peakHigh = highM5_1;
+                     Print("SMC: Ruptura Alcista M5 detectada. Cuerpo: ", DoubleToStr(bodyPips, 1), " pips.");
                     }
                  }
                else
                  {
-                  if(highM15 > peakHigh) peakHigh = highM15; // Mantener el pico más alto
+                  if(highM5_1 > peakHigh) peakHigh = highM5_1; // Mantener el pico más alto
                  }
               }
               
-            if(closeM15 < asianLow)
+            if(closeM5_1 < asianLow)
               {
                if(!sweptLow)
                  {
-                  double bodyPips = MathAbs(closeM15 - openM15) / (10 * Point);
+                  double bodyPips = MathAbs(closeM5_1 - openM5_1) / (10 * Point);
                   if(bodyPips >= MinBreakoutBodyPips)
                     {
-                     timeSweptLow = iTime(Symbol(), PERIOD_M5, 0);
+                     timeSweptLow = iTime(Symbol(), PERIOD_M5, 1);
                      timeAbsoluteSweepLow = TimeCurrent();
                      sweptLow = true;
-                     if(troughLow == 0 || lowM15 < troughLow) troughLow = lowM15;
-                     Print("SMC MTF: Ruptura Bajista M15 detectada. Cuerpo: ", DoubleToStr(bodyPips, 1), " pips.");
+                     if(troughLow == 0 || lowM5_1 < troughLow) troughLow = lowM5_1;
+                     Print("SMC: Ruptura Bajista M5 detectada. Cuerpo: ", DoubleToStr(bodyPips, 1), " pips.");
                     }
                  }
                else
                  {
-                  if(troughLow == 0 || lowM15 < troughLow) troughLow = lowM15;
+                  if(troughLow == 0 || lowM5_1 < troughLow) troughLow = lowM5_1;
                  }
               }
-           }
-           
-         if(isNewBarM5)
-           {
+              
             // 1.5 Validar caducidad en velas M5
             if(sweptHigh)
               {
@@ -598,7 +542,7 @@ void OnTick()
                if(barsPassedM5 > MaxCandlesOutside || (TimeCurrent() - timeAbsoluteSweepHigh > MaxMinutesForReversal * 60))
                  {
                   sweptHigh = false;
-                  Print("SMC MTF: Trampa Alcista CADUCADA. Velas M5 fuera: ", barsPassedM5);
+                  Print("SMC: Trampa Alcista CADUCADA. Velas M5 fuera: ", barsPassedM5);
                  }
               }
             if(sweptLow)
@@ -607,19 +551,18 @@ void OnTick()
                if(barsPassedM5 > MaxCandlesOutside || (TimeCurrent() - timeAbsoluteSweepLow > MaxMinutesForReversal * 60))
                  {
                   sweptLow = false;
-                  Print("SMC MTF: Trampa Bajista CADUCADA. Velas M5 fuera: ", barsPassedM5);
+                  Print("SMC: Trampa Bajista CADUCADA. Velas M5 fuera: ", barsPassedM5);
                  }
               }
 
             // 2. Esperar Gatillo: Patrón de Reversión M5 + Cierre dentro de la caja
-            double closeM5 = iClose(Symbol(), PERIOD_M5, 1);
-            if(sweptHigh && closeM5 < asianHigh)
+            if(sweptHigh && closeM5_1 < asianHigh)
               {
                if(isBearishReversalMTF(PERIOD_M5, 1)) triggerSell = true;
                else sweptHigh = false; // Si volvió a entrar sin patrón claro, invalidar la trampa
               }
               
-            if(sweptLow && closeM5 > asianLow)
+            if(sweptLow && closeM5_1 > asianLow)
               {
                if(isBullishReversalMTF(PERIOD_M5, 1)) triggerBuy = true;
                else sweptLow = false; // Si volvió a entrar sin patrón claro, invalidar la trampa
@@ -629,7 +572,7 @@ void OnTick()
          // Soporte legacy para WaitCandleClose false (forzando validación estricta de todas formas por SMC)
          if(!WaitCandleClose)
            {
-            // En la estrategia MTF es OBLIGATORIO que la vela M5 cierre dentro con patrón.
+            // OBLIGATORIO que la vela M5 cierre dentro con patrón.
            }
 
          if(triggerSell)

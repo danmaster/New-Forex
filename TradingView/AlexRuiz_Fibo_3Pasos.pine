@@ -1,0 +1,192 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © Antigravity AI
+//@version=5
+strategy("AlexRuiz Fibo 3Pasos - Integrado", overlay=true, margin_long=3.33, margin_short=3.33, calc_on_every_tick=true)
+
+// --- Inputs Generales
+inpRiskPercent = input.float(1.0, title="Riesgo Total de la Cuenta (%)")
+inpEmaPeriod = input.int(200, title="Periodo de EMA (Tendencia)")
+inpZigZagDepth = input.int(12, title="Pivot Depth (Barras mínimas de MT4)")
+inpZigZagDev = input.float(5.0, title="ZigZag Deviation (Pips para confirmar giro)")
+
+// --- Inputs de Fibonacci
+inpFibo1 = input.float(0.382, title="Fibo Entrada 1")
+inpRiskSplit1 = input.float(25.0, title="Riesgo Entrada 1 (%)")
+inpFibo2 = input.float(0.500, title="Fibo Entrada 2")
+inpRiskSplit2 = input.float(40.0, title="Riesgo Entrada 2 (%)")
+inpFibo3 = input.float(0.618, title="Fibo Entrada 3")
+inpRiskSplit3 = input.float(35.0, title="Riesgo Entrada 3 (%)")
+inpFiboSL = input.float(0.786, title="Fibo Stop Loss (Global)")
+inpFiboTP = input.float(-0.272, title="Fibo Take Profit (Extensión)")
+inpMinImpulsePips = input.float(15.0, title="Impulso mínimo en Pips")
+
+// --- Filtros de Tiempo
+inpUseTimeFilter = input.bool(false, title="Activar Filtro de Horario")
+inpStartHour = input.int(2, title="Hora de inicio")
+inpEndHour = input.int(21, title="Hora de fin")
+inpUseFridayFilter = input.bool(true, title="Activar Filtro de Viernes")
+inpFridayStopHour = input.int(14, title="Hora límite los Viernes")
+
+// --- Lógica EMA
+ema = ta.ema(close, inpEmaPeriod)
+isUptrend = close > ema
+isDowntrend = close < ema
+
+// --- Lógica ZigZag Blindada (Solo procesa velas CERRADAS para evitar repinte histórico)
+devSize = inpZigZagDev * syminfo.mintick * (syminfo.type == "forex" ? 10 : 1)
+
+var int trendZZ = 1
+var float lastHighZZ = na
+var float lastLowZZ = na
+
+var int eventCounter = 0
+var int lastHighEventZZ = 0
+var int lastLowEventZZ = 0
+
+var float swingHigh = na
+var float swingLow = na
+var int eventHigh = 0
+var int eventLow = 0
+
+if na(lastHighZZ)
+    lastHighZZ := high
+    lastLowZZ := low
+    lastHighEventZZ := eventCounter
+    lastLowEventZZ := eventCounter
+
+// BLINDAJE: El motor de impulsos solo consolida estructuras en barras cerradas reales
+if barstate.isconfirmed
+    if trendZZ >= 0
+        if high > lastHighZZ
+            lastHighZZ := high
+            eventCounter += 1
+            lastHighEventZZ := eventCounter
+        else if lastHighZZ - low >= devSize 
+            trendZZ := -1
+            swingHigh := lastHighZZ
+            eventHigh := lastHighEventZZ
+            lastLowZZ := low
+            eventCounter += 1
+            lastLowEventZZ := eventCounter
+    else if trendZZ < 0
+        if low < lastLowZZ
+            lastLowZZ := low
+            eventCounter += 1
+            lastLowEventZZ := eventCounter
+        else if high - lastLowZZ >= devSize
+            trendZZ := 1
+            swingLow := lastLowZZ
+            eventLow := lastLowEventZZ
+            lastHighZZ := high
+            eventCounter += 1
+            lastHighEventZZ := eventCounter
+
+// Dirección del impulso estable
+impulseIsUp = eventHigh > eventLow
+impulseIsDown = eventLow > eventHigh
+impulseRange = math.abs(nz(swingHigh) - nz(swingLow))
+
+minImpulsePrice = inpMinImpulsePips * syminfo.mintick * (syminfo.type == "forex" ? 10 : 1)
+
+// --- Filtros Operativos
+hourBroker = hour
+dayOfWeek = dayofweek
+canTrade = true
+
+if inpUseTimeFilter and (hourBroker < inpStartHour or hourBroker >= inpEndHour)
+    canTrade := false
+if inpUseFridayFilter and dayOfWeek == dayofweek.friday and hourBroker >= inpFridayStopHour
+    canTrade := false
+
+// Cancelación por horario
+if not canTrade and strategy.position_size == 0
+    strategy.cancel("Buy L1"), strategy.cancel("Buy L2"), strategy.cancel("Buy L3")
+    strategy.cancel("Sell L1"), strategy.cancel("Sell L2"), strategy.cancel("Sell L3")
+
+var float lastSwingHigh = na
+var float lastSwingLow = na
+var float globalSL = na
+var float globalTP = na
+
+// Limpieza previa de huérfanas
+var bool checkReset = false
+if strategy.position_size != 0
+    checkReset := true
+
+if checkReset and strategy.position_size == 0
+    strategy.cancel("Buy L1"), strategy.cancel("Buy L2"), strategy.cancel("Buy L3")
+    strategy.cancel("Sell L1"), strategy.cancel("Sell L2"), strategy.cancel("Sell L3")
+    checkReset := false
+
+// Lógica de Entrada e Inyección de Salidas Óptimas (Una sola ejecución por trade)
+if strategy.position_size == 0 and canTrade and impulseRange >= minImpulsePrice
+    
+    // COMPRAS
+    if isUptrend and impulseIsUp and (na(lastSwingHigh) or lastSwingHigh != swingHigh)
+        entry1 = swingHigh - (impulseRange * inpFibo1)
+        entry2 = swingHigh - (impulseRange * inpFibo2)
+        entry3 = swingHigh - (impulseRange * inpFibo3)
+        
+        lastSwingHigh := swingHigh
+        lastSwingLow := swingLow
+        
+        if close > entry1
+            strategy.cancel("Buy L1"), strategy.cancel("Buy L2"), strategy.cancel("Buy L3")
+            
+            globalSL := swingHigh - (impulseRange * inpFiboSL)
+            globalTP := swingHigh - (impulseRange * inpFiboTP)
+            
+            riskAmount = strategy.equity * (inpRiskPercent / 100)
+            qty1 = (riskAmount * (inpRiskSplit1 / 100)) / math.abs(entry1 - globalSL)
+            qty2 = (riskAmount * (inpRiskSplit2 / 100)) / math.abs(entry2 - globalSL)
+            qty3 = (riskAmount * (inpRiskSplit3 / 100)) / math.abs(entry3 - globalSL)
+            
+            strategy.entry("Buy L1", strategy.long, qty=qty1, limit=entry1)
+            strategy.entry("Buy L2", strategy.long, qty=qty2, limit=entry2)
+            strategy.entry("Buy L3", strategy.long, qty=qty3, limit=entry3)
+
+
+    // VENTAS
+    else if isDowntrend and impulseIsDown and (na(lastSwingLow) or lastSwingLow != swingLow)
+        entry1 = swingLow + (impulseRange * inpFibo1)
+        entry2 = swingLow + (impulseRange * inpFibo2)
+        entry3 = swingLow + (impulseRange * inpFibo3)
+        
+        lastSwingHigh := swingHigh
+        lastSwingLow := swingLow
+        
+        if close < entry1
+            strategy.cancel("Sell L1"), strategy.cancel("Sell L2"), strategy.cancel("Sell L3")
+            
+            globalSL := swingLow + (impulseRange * inpFiboSL)
+            globalTP := swingLow + (impulseRange * inpFiboTP)
+            
+            riskAmount = strategy.equity * (inpRiskPercent / 100)
+            qty1 = (riskAmount * (inpRiskSplit1 / 100)) / math.abs(entry1 - globalSL)
+            qty2 = (riskAmount * (inpRiskSplit2 / 100)) / math.abs(entry2 - globalSL)
+            qty3 = (riskAmount * (inpRiskSplit3 / 100)) / math.abs(entry3 - globalSL)
+            
+            strategy.entry("Sell L1", strategy.short, qty=qty1, limit=entry1)
+            strategy.entry("Sell L2", strategy.short, qty=qty2, limit=entry2)
+            strategy.entry("Sell L3", strategy.short, qty=qty3, limit=entry3)
+
+// ==============================================================================
+// GESTION DE SALIDAS GLOBAL PARA LA CESTA (Evita operaciones huerfanas)
+// Al mantener esto fuera de los condicionales, garantizamos que Pine Script 
+// mantenga los limites vivos todo el tiempo que dure la operacion abierta.
+// ==============================================================================
+if strategy.position_size > 0
+    strategy.exit("Exit L1", "Buy L1", stop=globalSL, limit=globalTP)
+    strategy.exit("Exit L2", "Buy L2", stop=globalSL, limit=globalTP)
+    strategy.exit("Exit L3", "Buy L3", stop=globalSL, limit=globalTP)
+
+if strategy.position_size < 0
+    strategy.exit("Exit S1", "Sell L1", stop=globalSL, limit=globalTP)
+    strategy.exit("Exit S2", "Sell L2", stop=globalSL, limit=globalTP)
+    strategy.exit("Exit S3", "Sell L3", stop=globalSL, limit=globalTP)
+
+
+// Plots visuales
+plot(ema, color=color.blue, title="EMA 200")
+plot(swingHigh, color=color.new(color.green, 50), style=plot.style_circles, title="Swing High")
+plot(swingLow, color=color.new(color.red, 50), style=plot.style_circles, title="Swing Low")

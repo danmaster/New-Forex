@@ -20,7 +20,7 @@ input int      InpMagicNumber = 888123;  // Magic Number
 
 input string   IndiSettings = "--- Indicadores ---";
 input int      InpATRPeriod = 14;        // Período ATR Diario
-input double   InpATRMultiplier = 0.25;  // Multiplicador ATR (25%)
+input double   InpATRMultiplier = 0.10;  // Multiplicador ATR (10%)
 input int      InpSLPadding = 0;         // Holgura Stop Loss (Puntos)
 input bool     InpStrictPatterns = true; // Exigir patrones estrictos
 
