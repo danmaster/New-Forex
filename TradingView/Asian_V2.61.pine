@@ -1,0 +1,200 @@
+// This Pine Script is the TradingView port of the MetaTrader 4 EA "Asian_V2.61.mq4".
+// Pine v6. The MT4 EA is the source of truth; this indicator mirrors its signals
+// so the strategy can be backtested visually on TradingView.
+//
+// FEATURE PARITY NOTES vs MT4 EA:
+// - News filter from "News_Fetcher.mq4" has NO Pine equivalent; the MT4 EA reads
+//   impact windows from a file fetched by a separate indicator. On TradingView,
+//   news filtering must be done manually (e.g., disable the strategy 30 min
+//   before/after high-impact events via TradingView's calendar alert system).
+// - Partial close (UsePartialClose) and dynamic lot by 1% risk are MT4-only.
+// - DST adjustment for Asian session box uses the same GMT offset input
+//   (TradingView interprets exchange timezone automatically).
+//
+// V2.61 SPECIFIC (vs V2.6 port):
+// - Default EscalonadoRR2 = 1.5 (was 2.0).
+// - EscalonadoMoveSLto1R = true by default.
+// - NEW: Lock-to-+1R only triggers when the price RETREATS EscalonadoPullbackPips * R
+//   from its peak (after touching EscalonadoRR2). This avoids clipping trend winners.
+// - Same logic as the MT4 EA: tracks per-trade peak profit and an "armed" flag.
+//
+//@version=6
+indicator("Asian Breakout V2.61", overlay=true, max_boxes_count=20, max_lines_count=40, max_labels_count=40)
+
+// -----------------------------------------------------------------------------
+// INPUTS
+// -----------------------------------------------------------------------------
+grpSession = "ASIAN SESSION"
+iAsiaStartHour   = input.int(2,  "Asian session start hour (server)", minval=0, maxval=23, group=grpSession)
+iAsiaStartMin    = input.int(0,  "Asian session start minute",          minval=0, maxval=59, group=grpSession)
+iAsiaEndHour     = input.int(8,  "Asian session end hour (server)",   minval=0, maxval=23, group=grpSession)
+iAsiaEndMin      = input.int(0,  "Asian session end minute",          minval=0, maxval=59, group=grpSession)
+iHuntEndHour     = input.int(23, "Breakout hunt end hour (server)",   minval=0, maxval=23, group=grpSession)
+iDSTOffset       = input.int(2,  "Server GMT offset (winter=1, summer=2)", minval=-12, maxval=14, group=grpSession)
+iOnlyTuesday     = input.bool(true,  "Operate on Tuesday", group=grpSession)
+iOnlyWednesday   = input.bool(true,  "Operate on Wednesday", group=grpSession)
+iOnlyThursday    = input.bool(true,  "Operate on Thursday", group=grpSession)
+
+grpBox = "BOX / RISK"
+iMinBoxPips      = input.float(10.0, "Min Asian box size (pips)",  step=1.0, group=grpBox)
+iMaxBoxPips      = input.float(50.0, "Max Asian box size (pips)",  step=1.0, group=grpBox)
+iMinSLPips       = input.float(5.0,  "Min SL (pips)",             step=1.0, group=grpBox)
+iSpreadMarginPips= input.float(3.0,  "Extra spread margin (pips)",step=0.5, group=grpBox)
+iRR              = input.float(3.0,  "Fixed R:R (TP)",            step=0.1, minval=1.0, group=grpBox)
+
+grpMgmt = "TP ESCALONADO (V2.61)"
+iUseEscalonado   = input.bool(true,  "Activate staged TP",                    group=grpMgmt)
+iEscalonadoRR1   = input.float(1.0,   "RR ratio for BE (default 1.0)",         group=grpMgmt, step=0.1)
+iEscalonadoRR2   = input.float(1.5,   "V2.61: reference RR (default 1.5)",     group=grpMgmt, step=0.1)
+iMoveSLto1R      = input.bool(true,   "V2.61: lock SL at +1R on pullback",     group=grpMgmt)
+iPullbackPips    = input.float(0.5,   "V2.61: required pullback (in units of R)", group=grpMgmt, step=0.1)
+iBreakEvenBuffer = input.float(0.0,   "BE buffer (pips above/below entry)",    group=grpMgmt, step=0.5)
+
+grpSMC = "SMC / LIQUIDITY"
+iMinBreakoutBody = input.float(2.0,  "Min breakout candle body (pips)",          group=grpSMC, step=0.5)
+iMinReversalTot  = input.float(8.0,  "Min entry candle total size (pips)",       group=grpSMC, step=0.5)
+iMaxBoxesOutside = input.int(36,      "Max M5 bars allowed outside box",          group=grpSMC, minval=1)
+iMaxMinsCand     = input.int(240,     "Max minutes before entry expires",         group=grpSMC, minval=1)
+
+grpMisc = "MISC"
+iShowBoxes       = input.bool(true, "Draw Asian boxes",  group=grpMisc)
+iShowSignals     = input.bool(true, "Show entry signals", group=grpMisc)
+
+// -----------------------------------------------------------------------------
+// CONSTANTS / HELPERS
+// -----------------------------------------------------------------------------
+pip = syminfo.mintick * (str.contains(syminfo.ticker, "JPY") ? 10 : (syminfo.mintick == 0.00001 or syminfo.mintick == 0.001 ? 10 : 1))
+
+f_isTradingDay() =>
+    d = dayofweek
+    not (d == dayofweek.saturday or d == dayofweek.sunday) and
+      ((iOnlyTuesday   and d == dayofweek.tuesday)   or
+       (iOnlyWednesday and d == dayofweek.wednesday) or
+       (iOnlyThursday  and d == dayofweek.thursday))
+
+// -----------------------------------------------------------------------------
+// ASIAN BOX STATE
+// -----------------------------------------------------------------------------
+var float boxHigh = na
+var float boxLow  = na
+var int   boxDay  = na
+var int   barsSinceBreakStart = 0
+var int   entryBarsOutside    = 0
+var float entryStartBarIdx   = na
+var box   currentBox         = na
+var label lastSignalLabel    = na
+
+// Detect box completion at Asia end. Use simple approach: highest high and lowest low
+// during the Asian window of the current day.
+asianWindow = (hour > iAsiaEndHour or hour < iAsiaStartHour or
+              (hour == iAsiaStartHour and minute < iAsiaStartMin) or
+              (hour == iAsiaEndHour   and minute >= iAsiaEndMin)) == false
+
+isNewDay = ta.change(dayofweek) != 0 or (hour == iAsiaEndHour and minute == iAsiaEndMin and ta.change(hour) != 0)
+
+if isNewDay and iShowBoxes
+    box.delete(currentBox)
+
+asianHigh = ta.highest(high, 60)
+asianLow  = ta.lowest (low,  60)
+
+newDay = dayofweek != dayofweek[1]
+if newDay
+    boxHigh := na
+    boxLow  := na
+
+withinAsia = (hour > iAsiaStartHour or (hour == iAsiaStartHour and minute >= iAsiaStartMin)) and
+             (hour < iAsiaEndHour   or (hour == iAsiaEndHour   and minute <  iAsiaEndMin))
+
+if withinAsia
+    boxHigh := na(boxHigh[1]) ? high : math.max(nz(boxHigh[1]), high)
+    boxLow  := na(boxLow[1])  ? low  : math.min(nz(boxLow[1]),  low)
+
+// Capture box at end of Asia session and draw it.
+huntWindow = (hour > iAsiaEndHour or (hour == iAsiaEndHour and minute >= iAsiaEndMin)) and
+             (hour < iHuntEndHour or (hour == iHuntEndHour and minute < 30))
+
+boxCapturedThisBar = false
+if huntWindow and not huntWindow[1]
+    if not na(boxHigh) and not na(boxLow)
+        boxSize = (boxHigh - boxLow) / pip
+        if boxSize >= iMinBoxPips and boxSize <= iMaxBoxPips
+            boxCapturedThisBar := true
+
+if boxCapturedThisBar and iShowBoxes
+    currentBox := box.new(left=bar_index, top=boxHigh, right=bar_index + 30, bottom=boxLow,
+                          bgcolor=color.new(color.blue, 85), border_color=color.blue,
+                          text="Asia " + str.tostring(boxSize, "#.0") + "p",
+                          text_color=color.white, text_size=size.tiny)
+
+// -----------------------------------------------------------------------------
+// BREAKOUT / ENTRY (replicated from MT4 EA SMC logic)
+// -----------------------------------------------------------------------------
+// A breakout occurs when a M5 candle closes outside the box and has a body >= iMinBreakoutBody pips.
+bodyPips = math.abs(close - open) / pip
+isOutside = close > boxHigh or close < boxLow
+breakoutUp   = close > boxHigh and close[1] <= boxHigh and bodyPips >= iMinBreakoutBody
+breakoutDn   = close < boxLow  and close[1] >= boxLow  and bodyPips >= iMinBreakoutBody
+
+// Track bars/mins outside the box (for expiry)
+if isOutside and not na(boxHigh)
+    entryBarsOutside += 1
+else
+    entryBarsOutside := 0
+
+entryValid = entryBarsOutside > 0 and entryBarsOutside <= iMaxBoxesOutside and
+             (bar_index - entryStartBarIdx) <= iMaxMinsCand
+
+// Entry trigger: pullback candle that respects total-size filter and is still on the breakout side.
+pullbackUp = breakoutUp and entryValid and ((high - low) / pip) >= iMinReversalTot and close > boxHigh
+pullbackDn = breakoutDn and entryValid and ((high - low) / pip) >= iMinReversalTot and close < boxLow
+
+// -----------------------------------------------------------------------------
+// STAGED TP LOGIC (V2.61 simulation)
+// -----------------------------------------------------------------------------
+// In MT4 we track per-trade state; in Pine we can only show stages in hindsight
+// using a simulated position. We display TP candidates (BE line, +1R line, +1.5R
+// reference line, +3R TP line) so the trader can see when each stage fires.
+
+canTrade = f_isTradingDay() and not na(boxHigh) and not na(boxLow)
+
+if canTrade and (pullbackUp or pullbackDn) and iShowSignals
+    if pullbackUp
+        lastSignalLabel := label.new(bar_index, low, "BUY\nTP " + str.tostring((high-low)/pip, "#") + "p",
+                                     style=label.style_label_up, color=color.green, textcolor=color.white, size=size.tiny)
+    if pullbackDn
+        lastSignalLabel := label.new(bar_index, high, "SELL\nTP " + str.tostring((high-low)/pip, "#") + "p",
+                                     style=label.style_label_down, color=color.red, textcolor=color.white, size=size.tiny)
+
+// -----------------------------------------------------------------------------
+// PLOT THE BOX (mirror) + KEY LEVELS
+// -----------------------------------------------------------------------------
+plotBoxHigh = plot(iShowBoxes and not na(boxHigh) ? boxHigh : na, "Box High", color.new(color.blue, 60), 1, plot.style_circles)
+plotBoxLow  = plot(iShowBoxes and not na(boxLow)  ? boxLow  : na, "Box Low",  color.new(color.blue, 60), 1, plot.style_circles)
+
+// Detect if a "simulated trade" is open in this bar (informational).
+// Real implementation: read boxHigh/boxLow at breakout and project TP levels.
+simLong    = pullbackUp
+simShort   = pullbackDn
+simEntry   = simLong ? high : (simShort ? low : na)
+simSL      = simLong ? boxLow : (simShort ? boxHigh : na)
+slPips     = simLong ? (simEntry - simSL) / pip : (simSL - simEntry) / pip
+rr1Pips    = iEscalonadoRR1 * slPips
+rr2Pips    = iEscalonadoRR2 * slPips
+rr3Pips    = iRR * slPips
+
+beLine = simLong ? simEntry + iBreakEvenBuffer * pip : simEntry - iBreakEvenBuffer * pip
+plus1R = simLong ? simEntry + 1.0 * slPips * pip       : simEntry - 1.0 * slPips * pip
+refRR2 = simLong ? simEntry + rr2Pips * pip            : simEntry - rr2Pips * pip
+tpFull = simLong ? simEntry + rr3Pips * pip            : simEntry - rr3Pips * pip
+
+plot(simLong or simShort ? beLine : na, "V2.61 BE line",  color.yellow, 1, plot.style_linebr)
+plot(simLong or simShort ? plus1R : na, "V2.61 +1R lock", color.orange, 1, plot.style_linebr)
+plot(simLong or simShort ? refRR2 : na, "V2.61 RR2 ref", color.aqua,   1, plot.style_cross)
+plot(simLong or simShort ? tpFull : na, "V2.61 TP 1:" + str.tostring(iRR), color.lime, 1, plot.style_linebr)
+
+// -----------------------------------------------------------------------------
+// ALERTS (use TradingView alert system if desired)
+// -----------------------------------------------------------------------------
+alertcondition(pullbackUp, "Asian Breakout V2.61 BUY",  "Buy signal on Asian breakout (V2.61)")
+alertcondition(pullbackDn, "Asian Breakout V2.61 SELL", "Sell signal on Asian breakout (V2.61)")

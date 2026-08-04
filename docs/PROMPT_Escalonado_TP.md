@@ -1,5 +1,3 @@
-Ahora te pasaré un promp para que mejores las relaciones de 1:1 y 1:2 y está en el documento PROMPT_Escalonado_TP.md IMPORTANTE: RECUERDA QUE DEBES HACER ESTOS CAMBIOS SOLO EN LA NUEVA VERSION 2.6, no debes tocar la version 2.51
-
 ## PROMPT
 
 Estoy manteniendo un EA de ruptura asiática escrito en MQL4: `Experts/Asian_V2.51.mq4`. Funciona en M5, abre una sola operación al día tras un barrido de la caja asiática (Judas Swing / SMC), y actualmente usa **TP fijo 1:3** (input `UseFixedRR = true`, `FixedRiskReward = 3.0`) o, en su defecto, trailing stop por pips fijos.
