@@ -20,13 +20,13 @@ input double   FixedLotSize      = 0.10;       // Lote Fijo (si Auto es false)
 input int      MinBoxPips        = 10;         // Tamano Minimo Caja (pips)
 input int      MaxBoxPips        = 50;         // Tamano Maximo Caja (pips)
 input int      MagicNumber       = 100100;     // Magic Number
-input int      StartHour         = 2;          // Hora inicio Asia (02:00 Skilling)
-input int      EndHour           = 8;          // Hora fin Asia (08:00 Skilling)
-input int      MaxEntryHour      = 23;         // Hora maxima para cazar ruptura (Fin Londres)
-input int      EndOfDayHour      = 23;         // Hora de corte diario (limpieza de pendientes / Time Stop)
+input int      StartHour         = 2;          // Hora inicio Asia (02:00 Skilling - Se ajustara auto por DST)
+input int      EndHour           = 8;          // Hora fin Asia (08:00 Skilling - Se ajustara auto por DST)
+input int      MaxEntryHour      = 23;         // Hora maxima para cazar ruptura (Fin Londres - Se ajustara auto por DST)
+input int      EndOfDayHour      = 23;         // Hora de corte diario (Time Stop - Se ajustara auto por DST)
 
 input string   Days_Settings     = "--- FILTRO DE DIAS ---";
-input bool     TradeMonday       = false;      // Operar Lunes
+input bool     TradeMonday       = true;       // Operar Lunes
 input bool     TradeTuesday      = true;       // Operar Martes
 input bool     TradeWednesday    = true;       // Operar Miercoles
 input bool     TradeThursday     = true;       // Operar Jueves
@@ -56,7 +56,7 @@ input int      MinsBeforeNews    = 30;         // Minutos antes de la noticia pa
 input int      MinsAfterNews     = 30;         // Minutos despues de la noticia para pausar
 input bool     FilterHighImpact  = true;       // Filtrar Carpetas Rojas (Alta)
 input bool     FilterMedImpact   = false;      // Filtrar Carpetas Naranjas (Media)
-input int      MaxTradesPerDay     = 2;          // Maximo de operaciones por dia (Reentradas)
+input int      MaxTradesPerDay     = 1;          // Maximo de operaciones por dia (Reentradas)
 input bool     CloseAtEndOfDay     = false;      // Cerrar todas las operaciones a EndOfDayHour (Time Stop)
 input bool     UsePartialClose     = false;      // Activar Cierre Parcial Automatico (False = Purista)
 input int      PartialClosePips    = 15;         // Pips ganancia para cerrar parcial
@@ -67,8 +67,8 @@ input bool     AutoFindLiquidity = true;       // Buscar Liquidez en AMBOS senti
 input int      MinBreakoutBodyPips = 2;        // Min pips cuerpo vela de ruptura (Vela Decidida)
 input double   MinReversalCandlePips = 8.0;    // Min pips TOTALES de la vela de entrada (Filtro Ruido NY)
 input double   MinDojiSizePips   = 2.0;        // Min pips TOTALES para considerar un Doji plano
-input int      MaxCandlesOutside = 36;         // Max velas fuera de caja antes de reversion (3h)
-input int      MaxMinutesForReversal = 240;    // Max. minutos absolutos para caducar (4h)
+input int      MaxCandlesOutside = 6;          // Max velas fuera de caja antes de reversion (30m)
+input int      MaxMinutesForReversal = 60;     // Max. minutos absolutos para caducar (1h)
 input string   ManualBoxName     = "ZonaLiquidez"; // Nombre del Rectangulo Manual (Modo Manual)
 
 
@@ -80,6 +80,8 @@ double Pip;                   // Multiplicador dinamico para brokers de 4 o 5 di
 
 bool sweptHigh = false;
 bool sweptLow = false;
+bool burnedHigh = false;
+bool burnedLow = false;
 bool patternFoundHigh = false;
 bool patternFoundLow = false;
 double peakHigh = 0;
@@ -224,6 +226,8 @@ int OnInit()
    // Solucionar el problema de "Fractional Pips" (Brokers de 3 o 5 digitos vs Clasicos)
    // NOTA: debe calcularse ANTES de rehidratar g_mgmt* porque esa rehidratacion usa Pip.
    Pip = (Digits == 3 || Digits == 5) ? 10.0 * Point : 1.0 * Point;
+
+   RefreshRates(); // FIX HIGH-1: Evitar race condition entre bucles durante rehidratacion
 
    // Rehidratar seguimiento de gestion BE a 1:1 (g_mgmtTickets) para operaciones vivas
    // que sobreviven a un reinicio del EA (crash, redeploy, reinicio de VPS).
@@ -411,8 +415,12 @@ void ManageBreakEvenAt1R()
                      double newSL = NormalizeDouble(Bid - trailingPoints, Digits);
                      if(newSL - OrderStopLoss() > Point * 2)
                        {
-                        bool res = OrderModify(ticket, OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrGreen);
-                        if(!res) Print("Error modificando SL (Trailing Buy): ", GetLastError());
+                        double stopLevel = MarketInfo(Symbol(), MODE_STOPLEVEL) * Point;
+                        if(Bid - newSL >= stopLevel)
+                          {
+                           bool res = OrderModify(ticket, OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrGreen);
+                           if(!res) Print("Error modificando SL (Trailing Buy): ", GetLastError());
+                          }
                        }
                     }
                  }
@@ -423,8 +431,12 @@ void ManageBreakEvenAt1R()
                      double newSL = NormalizeDouble(Ask + trailingPoints, Digits);
                      if(OrderStopLoss() - newSL > Point * 2 || OrderStopLoss() == 0)
                        {
-                        bool res = OrderModify(ticket, OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrGreen);
-                        if(!res) Print("Error modificando SL (Trailing Sell): ", GetLastError());
+                        double stopLevel = MarketInfo(Symbol(), MODE_STOPLEVEL) * Point;
+                        if(newSL - Ask >= stopLevel)
+                          {
+                           bool res = OrderModify(ticket, OrderOpenPrice(), newSL, OrderTakeProfit(), 0, clrGreen);
+                           if(!res) Print("Error modificando SL (Trailing Sell): ", GetLastError());
+                          }
                        }
                     }
                  }
@@ -823,15 +835,16 @@ void OnTick()
    int currentHour = Hour();
    int currentDay = GetDateKey(TimeCurrent()); // FIX bug3: clave de fecha completa, no solo Day()
 
-   // Ajuste automatico de DST: SOLO para la sesion asiatica (Tokio no tiene DST,
-   // pero el broker si cambia de GMT+2 a GMT+3). MaxEntryHour y EndOfDayHour son
-   // limites del dia del servidor y NO se ajustan (el dia siempre va de 00:00 a 23:59).
+   // Ajuste automatico de DST: Aplica a la caja asiatica y a los limites horarios
+   // para mantener la misma franja horaria real a lo largo del ano.
    int adjStartHour = GetDSTAdjustedHour(StartHour);
    int adjEndHour   = GetDSTAdjustedHour(EndHour);
+   int adjMaxEntryHour = GetDSTAdjustedHour(MaxEntryHour);
+   int adjEndOfDayHour = GetDSTAdjustedHour(EndOfDayHour);
 
    // Si es el final del dia (input EndOfDayHour), limpiamos ordenes
    // pendientes que no se activaron y, opcionalmente, cerramos activas con reintentos.
-   if(currentHour >= EndOfDayHour)
+   if(currentHour >= adjEndOfDayHour)
      {
       CleanPendingOrders();
       if(CloseAtEndOfDay)
@@ -888,13 +901,15 @@ void OnTick()
      }
 
    // Solo buscar operaciones despues de cerrar la caja asiatica y antes del limite (Killzone Londres)
-   if(currentHour >= adjEndHour && currentHour < MaxEntryHour)
+   if(currentHour >= adjEndHour && currentHour < adjMaxEntryHour)
      {
       // Resetear variables de barrido cada nuevo dia
       if(currentDay != currentSessionDay)
         {
          sweptHigh = false;
          sweptLow = false;
+         burnedHigh = false;
+         burnedLow = false;
          patternFoundHigh = false;
          patternFoundLow = false;
          peakHigh = 0;
@@ -992,7 +1007,7 @@ void OnTick()
             // 1. Detectar si la vela anterior rompio CON ENERGIA (Cerrando fuera)
             // Se requiere Close[2] dentro de la caja para garantizar que es el momento EXACTO de la ruptura,
             // evitando que se reinicien trampas caducadas si el precio sigue flotando fuera.
-            if(Close[1] > asianHigh && Close[2] <= asianHigh)
+            if(Close[1] > asianHigh && Close[2] <= asianHigh && !burnedHigh)
               {
                if(!sweptHigh)
                  {
@@ -1011,7 +1026,7 @@ void OnTick()
                if(High[1] > peakHigh) peakHigh = High[1]; // Mantener el pico mas alto mientras estemos fuera
               }
 
-            if(Close[1] < asianLow && Close[2] >= asianLow)
+            if(Close[1] < asianLow && Close[2] >= asianLow && !burnedLow)
               {
                if(!sweptLow)
                  {
@@ -1047,6 +1062,7 @@ void OnTick()
                   if(barsPassed < 0)
                      Print("SMC: sweptHigh invalidado por iBarShift(-1) (timeSweptHigh fuera de historial cargado).");
                   sweptHigh = false;
+                  burnedHigh = true; // FIX: Quemar el techo para el resto del dia
                   patternFoundHigh = false; // Reset
                   peakHigh = 0;
                  }
@@ -1066,6 +1082,7 @@ void OnTick()
                   if(barsPassed < 0)
                      Print("SMC: sweptLow invalidado por iBarShift(-1) (timeSweptLow fuera de historial cargado).");
                   sweptLow = false;
+                  burnedLow = true; // FIX: Quemar el suelo para el resto del dia
                   patternFoundLow = false; // Reset
                   troughLow = 0;
                  }
@@ -1150,6 +1167,10 @@ void OnTick()
                        }
                      else Print("Error abriendo Venta SMC: ", GetLastError());
                     }
+                  else
+                    {
+                     Print("Venta SMC abortada: SL demasiado cerca del precio actual (stopLevel = ", stopLevel/Point, " points)");
+                    }
                  }
               }
            }
@@ -1198,6 +1219,10 @@ void OnTick()
                         patternFoundLow = false; // FIX bug1: faltaba este reset (simetria con el caso de venta)
                        }
                      else Print("Error abriendo Compra SMC: ", GetLastError());
+                    }
+                  else
+                    {
+                     Print("Compra SMC abortada: SL demasiado cerca del precio actual (stopLevel = ", stopLevel/Point, " points)");
                     }
                  }
               }
@@ -1323,12 +1348,16 @@ bool IsNewsTime()
   {
    bool isNews = false;
    
+   static datetime lastNewsCheck = 0;
+   bool shouldUpdateLines = (TimeCurrent() - lastNewsCheck >= 60);
+   if(shouldUpdateLines) lastNewsCheck = TimeCurrent();
+   
    if(FilterHighImpact)
      {
       if(GlobalVariableCheck("SMC_News_High"))
         {
          double minsHigh = GlobalVariableGet("SMC_News_High"); 
-         DrawNewsLine("SMC_News_High", clrRed, minsHigh);
+         if(shouldUpdateLines) DrawNewsLine("SMC_News_High", clrRed, minsHigh);
          if(minsHigh <= MinsBeforeNews && minsHigh >= -MinsAfterNews) isNews = true;
         }
      }
@@ -1338,7 +1367,7 @@ bool IsNewsTime()
       if(GlobalVariableCheck("SMC_News_Med"))
         {
          double minsMed = GlobalVariableGet("SMC_News_Med"); 
-         DrawNewsLine("SMC_News_Med", clrOrange, minsMed);
+         if(shouldUpdateLines) DrawNewsLine("SMC_News_Med", clrOrange, minsMed);
          if(minsMed <= MinsBeforeNews && minsMed >= -MinsAfterNews) isNews = true;
         }
      }

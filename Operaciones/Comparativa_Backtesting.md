@@ -3,7 +3,7 @@
 ## Resumen de Versiones
 
 | Versión | Fechas | Beneficio Neto | Factor Beneficio | Win Rate | Drawdown Máx | Operaciones | Ratio R:R |
-|---------|--------|----------------|------------------|----------|--------------|-------------|-----------|
+| --------- | -------- | ---------------- | ------------------ | ---------- | -------------- | ------------- | ----------- |
 | V1.0 | 2026.06.16 - 2026.07.31 | $1014.99 | 2.90 | 50.00% | 3.60% | 10 | 3.0 |
 | V1.01 | 2026.06.16 - 2026.07.31 | $0.00 | N/A | 0.00% | 0.00% | 0 | 3.0 |
 | V1.015 | 2026.06.16 - 2026.07.31 | $292.09 | 1.95 | 62.50% | 3.49% | 8 | 3.0 |
@@ -19,12 +19,14 @@
 ### Asian Breakout V1.0
 
 **Condiciones de Prueba:**
+
 - **Símbolo:** EURUSD
 - **Periodo:** M5 (Cada tick, 90% calidad)
 - **Fechas:** 2026.06.16 - 2026.07.31
 - **Spread:** 10
 
 **Parámetros Destacados:**
+
 - Lote Dinámico (1% riesgo)
 - Días Operativos: Martes, Miércoles, Jueves (Lunes y Viernes desactivados)
 - Ratio R:R: 3.0 (TP Fijo)
@@ -34,6 +36,7 @@
 - Gestión: Trailing Stop (False), Auto Break-Even (False), Cierre Parcial (False)
 
 **Resultados:**
+
 - **Depósito Inicial:** $10,000.00
 - **Beneficio Neto Total:** $1014.99 (Balance Final: $11,014.99)
 - **Factor de Beneficio (Profit Factor):** 2.90
@@ -47,12 +50,14 @@
 ### Asian Breakout V1.01
 
 **Condiciones de Prueba:**
+
 - **Símbolo:** EURUSD
 - **Periodo:** M5 (Cada tick, 90% calidad)
 - **Fechas:** 2026.06.16 - 2026.07.31
 - **Spread:** 10
 
 **Parámetros Destacados:**
+
 - Lote Dinámico (1% riesgo)
 - Días Operativos: Martes, Miércoles, Jueves (Lunes y Viernes desactivados)
 - Ratio R:R: 3.0 (TP Fijo)
@@ -64,6 +69,7 @@
 - Gestión: Auto Break-Even (**ACTIVADO** a los 15 pips)
 
 **Resultados:**
+
 - **Depósito Inicial:** $10,000.00
 - **Beneficio Neto Total:** $0.00 (Balance Final: $10,000.00)
 - **Total de Transacciones:** 0
@@ -75,12 +81,14 @@
 ### Asian Breakout V1.015
 
 **Condiciones de Prueba:**
+
 - **Símbolo:** EURUSD
 - **Periodo:** M5 (Cada tick, 90% calidad)
 - **Fechas:** 2026.06.16 - 2026.07.31
 - **Spread:** 10
 
 **Parámetros Destacados:**
+
 - Lote Dinámico (1% riesgo)
 - Ratio R:R: 3.0 (TP Fijo)
 - Tamaño Caja: 15 a 50 pips
@@ -91,6 +99,7 @@
 - Gestión: Trailing Stop (**ACTIVADO** - 15 pips), Auto Break-Even (**ACTIVADO** a los 15 pips)
 
 **Resultados:**
+
 - **Depósito Inicial:** $10,000.00
 - **Beneficio Neto Total:** $292.09 (Balance Final: $10,292.09)
 - **Factor de Beneficio (Profit Factor):** 1.95
@@ -106,12 +115,14 @@
 ### Asian Breakout V1.016
 
 **Condiciones de Prueba:**
+
 - **Símbolo:** EURUSD
 - **Periodo:** M5 (Cada tick, 90% calidad)
 - **Fechas:** 2026.06.16 - 2026.07.31
 - **Spread:** 10
 
 **Parámetros Destacados:**
+
 - Lote Dinámico (1% riesgo)
 - Días Operativos: Martes, Miércoles, Jueves (Lunes y Viernes desactivados)
 - Ratio R:R: 3.0 (TP Fijo)
@@ -121,6 +132,7 @@
 - Gestión: Trailing Stop (False), Auto Break-Even (False), Cierre Parcial (False)
 
 **Resultados:**
+
 - **Depósito Inicial:** $10,000.00
 - **Beneficio Neto Total:** $1014.57 (Balance Final: $11,014.57)
 - **Factor de Beneficio (Profit Factor):** 2.90
@@ -134,12 +146,14 @@
 ### Asian Breakout V1.03
 
 **Condiciones de Prueba:**
+
 - **Símbolo:** EURUSD
 - **Periodo:** M5 (Cada tick, 90% calidad)
 - **Fechas:** 2026.06.16 - 2026.07.31
 - **Spread:** 10
 
 **Parámetros Destacados:**
+
 - Lote Dinámico (1% riesgo)
 - Ratio R:R: 3.0 (TP Fijo)
 - Tamaño Caja: 10 a 50 pips
@@ -149,6 +163,7 @@
 - Modo Liquidez Avanzado (SMC MTF): Mínimo cuerpo vela ruptura (2 pips), Máx velas fuera de caja (6 velas), Tiempo máx caducidad (120 min).
 
 **Resultados:**
+
 - **Depósito Inicial:** $10,000.00
 - **Beneficio Neto Total:** $181.10 (Balance Final: $10,181.10)
 - **Factor de Beneficio (Profit Factor):** 1.45
@@ -164,12 +179,14 @@
 ### Asian Breakout V2.0
 
 **Condiciones de Prueba:**
+
 - **Símbolo:** EURUSD
 - **Periodo:** M5 (Cada tick, 90% calidad)
 - **Fechas:** 2026.06.16 - 2026.07.31
 - **Spread:** 10
 
 **Parámetros Destacados:**
+
 - Lote Dinámico (1% riesgo)
 - Ratio R:R: 3.0 (TP Fijo)
 - Tamaño Caja: 10 a 50 pips
@@ -183,6 +200,7 @@
   - Máx minutos absolutos para caducar: 240
 
 **Resultados:**
+
 - **Depósito Inicial:** $10,000.00
 - **Beneficio Neto Total:** $667.28 (Balance Final: $10,667.28)
 - **Factor de Beneficio (Profit Factor):** 1.59
@@ -198,18 +216,21 @@
 ### Asian Breakout V2.5
 
 **Condiciones de Prueba:**
+
 - **Símbolo:** EURUSD
 - **Periodo:** M5 (Cada tick, 90% calidad)
 - **Fechas:** 2026.06.16 - 2026.07.31
 - **Spread:** 10
 
 **Parámetros Destacados (Novedades respecto a V2.0):**
+
 - Slippage Máximo: 3 puntos (NUEVO)
 - Hora de corte diario: 23:00 (NUEVO)
 - Cerrar operaciones a final del día (EOD): **DESACTIVADO** (NUEVO)
 - *El resto de parámetros (Filtro API, SMC, R:R 3.0, sin Trailing) se mantienen idénticos a la V2.0.*
 
 **Resultados:**
+
 - **Depósito Inicial:** $10,000.00
 - **Beneficio Neto Total:** $667.28 (Balance Final: $10,667.28)
 - **Factor de Beneficio (Profit Factor):** 1.59
