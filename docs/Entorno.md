@@ -40,12 +40,12 @@ Para evitar confusiones con indicadores externos, la **Tabla de la Verdad** ofic
 
 | Sesión | Apertura (Broker) | Cierre (Broker) | Hora Madrid equivalente |
 | :--- | :--- | :--- | :--- |
-| **Tokio (Asiática)** | `02:00` | `08:00` | 01:00 a 07:00 |
+| **Tokio (Asiática)** | `03:00` | `09:00` | 02:00 a 08:00 |
 | **Europea** | `09:00` | `18:00` | 08:00 a 17:00 |
 | **Nueva York** | `14:00` | `23:00` | 13:00 a 22:00 |
 | **Apertura US (Nasdaq/Wall St)** | `16:30` | `-` | 15:30 |
 
-*Nota técnica: Tanto el indicador `AsianBox.mq4` como el EA `AsianBreakout_100D.mq4` tienen estos horarios de Broker integrados por defecto como `StartHour` y `EndHour`.*
+*Nota técnica: Tanto el indicador `AsianBox.mq4` como los EAs `Asian_V2.64` y `Anti_Asian_V2.13` usan por defecto `StartHour=3` / `EndHour=9` (hora broker verano). Con el ajuste automático de DST (calendario europeo), la caja asiática cubre la **misma franja real todo el año**: **00:00–06:00 GMT** = 03:00–09:00 (verano) / 02:00–08:00 (invierno) en hora del broker. Corresponde al box del indicador FXN - Asian Session Range del vídeo de Alex Ruiz (01:00–07:00 en gráfico UTC+1).*
 
 ## Herramientas de Análisis
 - **Plataforma:** [TradingView](https://es.tradingview.com/)

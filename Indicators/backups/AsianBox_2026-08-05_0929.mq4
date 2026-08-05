@@ -1,22 +1,18 @@
 //+------------------------------------------------------------------+
-//|                                                   AsianBox.mq4   |
+//|                                                  SessionsBox.mq4 |
 //|                                      Generado por Antigravity    |
 //|                                   Revisado y corregido           |
-//| V1.21: caja asiatica alineada al box del video de Alex Ruiz      |
-//| (indicador FXN): 01:00-07:00 en grafico UTC+1 = 00:00-06:00 GMT  |
-//| real. DST automatico por calendario europeo (idem EAs): Asia     |
-//| 03:00-09:00 verano / 02:00-08:00 invierno en hora del broker.    |
 //+------------------------------------------------------------------+
 #property copyright "Antigravity AI"
 #property link      ""
-#property version   "1.21"
+#property version   "1.20"
 #property strict
 #property indicator_chart_window
 
 //--- Input parameters
 input bool   EnableAsia      = true;         // Mostrar Sesion Asiatica
-input int    AsiaStartHour   = 3;            // Inicio Asia (Hora Broker verano, auto-DST)
-input int    AsiaEndHour     = 9;            // Fin Asia (Hora Broker verano, auto-DST)
+input int    AsiaStartHour   = 2;            // Inicio Asia (Hora Broker)
+input int    AsiaEndHour     = 8;            // Fin Asia (Hora Broker)
 input color  AsiaBoxColor    = clrAliceBlue; // Color Caja Asiatica
 
 input bool   EnableLondon    = true;         // Mostrar Sesion Londres
@@ -28,8 +24,6 @@ input bool   EnableNY        = true;         // Mostrar Sesion Nueva York
 input int    NYStartHour     = 14;           // Inicio NY (Hora Broker)
 input int    NYEndHour       = 23;           // Fin NY (Hora Broker)
 input color  NYBoxColor      = clrHoneydew;  // Color Caja Nueva York
-
-input int    RefGMTOffset    = 3;            // Offset GMT verano del broker (3 = Skilling GMT+3)
 
 input int    DaysToDraw      = 30;           // Días hacia atrás para dibujar
 
@@ -60,54 +54,6 @@ void ValidateHours(string name, int startH, int endH)
       Print("SessionsBox: advertencia - horas de sesión '", name, "' fuera de rango 0-23.");
    if(startH == endH)
       Print("SessionsBox: advertencia - sesión '", name, "' tiene duración cero (Start == End).");
-   }
-
-//+------------------------------------------------------------------+
-//| AJUSTE AUTOMATICO DE DST (Horario Verano/Invierno)               |
-//| Idem EAs Asian/Anti-Asian: calendario europeo DETERMINISTICO     |
-//| (ultimo domingo de marzo -> ultimo domingo de octubre). El broker|
-//| europeo (Skilling) pasa de GMT+3 (verano) a GMT+2 (invierno).    |
-//| Los inputs de sesion estan calibrados a RefGMTOffset (verano);   |
-//| en invierno se desplazan 1h antes para cubrir la misma franja    |
-//| real todo el ano (caja asiatica real: 00:00-06:00 GMT).          |
-//+------------------------------------------------------------------+
-int GetLastSundayDay(int year, int month)
-  {
-   int lastDay = 31;
-   if(month == 4 || month == 6 || month == 9 || month == 11) lastDay = 30;
-   if(month == 2) lastDay = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
-   string dateStr = StringFormat("%04d.%02d.%02d 00:00:00", year, month, lastDay);
-   datetime dt = StrToTime(dateStr);
-   int dow = TimeDayOfWeek(dt);
-   return lastDay - dow;
-  }
-
-bool IsBrokerSummerTime(datetime t)
-  {
-   int year  = TimeYear(t);
-   int month = TimeMonth(t);
-   int day   = TimeDay(t);
-   if(month < 3 || month > 10) return false;
-   if(month > 3 && month < 10) return true;
-   int lastSunday = GetLastSundayDay(year, month);
-   if(month == 3)  return (day >= lastSunday);
-   if(month == 10) return (day < lastSunday);
-   return false;
-  }
-
-int GetBrokerGMTOffset()
-  {
-   int refOffset = (RefGMTOffset >= 2 && RefGMTOffset <= 14) ? RefGMTOffset : 3;
-   return IsBrokerSummerTime(TimeCurrent()) ? refOffset : (refOffset - 1);
-  }
-
-// Ajusta una hora de sesion (calibrada a RefGMTOffset) a la hora del broker actual
-int AdjustBoxHour(int hour)
-  {
-   int h = hour + GetBrokerGMTOffset() - RefGMTOffset;
-   h = h % 24;
-   if(h < 0) h += 24;
-   return h;
   }
 
 //+------------------------------------------------------------------+
@@ -231,22 +177,14 @@ int OnCalculate(const int rates_total,
    // Si es la primera vez, dibuja todos los días. Si no, actualiza solo hoy y ayer.
    int daysLimit = (prev_calculated == 0) ? DaysToDraw : 2;
 
-   //--- Horas ajustadas por DST: franja real constante todo el ano
-   int adjAsiaStart = AdjustBoxHour(AsiaStartHour);
-   int adjAsiaEnd   = AdjustBoxHour(AsiaEndHour);
-   int adjLonStart  = AdjustBoxHour(LondonStartHour);
-   int adjLonEnd    = AdjustBoxHour(LondonEndHour);
-   int adjNYStart   = AdjustBoxHour(NYStartHour);
-   int adjNYEnd     = AdjustBoxHour(NYEndHour);
-
    for(int i = 0; i < daysLimit; i++)
      {
       datetime dayStart = iTime(Symbol(), PERIOD_D1, i);
       if(dayStart == 0) continue;
 
-      if(EnableAsia)   DrawSessionBox("Asia",   dayStart, adjAsiaStart, adjAsiaEnd, AsiaBoxColor,   currentTime, fullRecalc);
-      if(EnableLondon) DrawSessionBox("London", dayStart, adjLonStart,  adjLonEnd,  LondonBoxColor, currentTime, fullRecalc);
-      if(EnableNY)     DrawSessionBox("NY",     dayStart, adjNYStart,   adjNYEnd,   NYBoxColor,     currentTime, fullRecalc);
+      if(EnableAsia)   DrawSessionBox("Asia",   dayStart, AsiaStartHour,   AsiaEndHour,   AsiaBoxColor,   currentTime, fullRecalc);
+      if(EnableLondon) DrawSessionBox("London", dayStart, LondonStartHour, LondonEndHour, LondonBoxColor, currentTime, fullRecalc);
+      if(EnableNY)     DrawSessionBox("NY",     dayStart, NYStartHour,     NYEndHour,     NYBoxColor,     currentTime, fullRecalc);
      }
 
    ChartRedraw(0);

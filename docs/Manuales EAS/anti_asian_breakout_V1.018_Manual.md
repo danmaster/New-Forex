@@ -11,7 +11,7 @@ Este documento detalla la configuración óptima y los resultados de backtesting
 >
 > **Diferencia Horaria:** El servidor de Skilling tiene **una hora más (+1)** respecto a la hora local.
 >
-> - Si la sesión asiática abarca de 01:00 a 07:00 (hora local), en el EA se debe configurar de **02:00 a 08:00**.
+> - La caja asiática del vídeo de Alex Ruiz (indicador FXN) es **00:00 a 06:00 GMT** (01:00–07:00 en gráfico UTC+1). En Skilling se configura **03:00 a 09:00** (verano) / **02:00 a 08:00** (invierno); el EA lo ajusta automáticamente.
 
 ---
 

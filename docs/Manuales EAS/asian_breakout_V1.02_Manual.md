@@ -15,7 +15,7 @@ A diferencia de versiones anteriores, la V1.02 trabaja en dos marcos temporales 
 
 ## 2. Lógica de Operación (Paso a Paso)
 
-1.  **La Caja en M15:** El EA traza internamente el Máximo y el Mínimo de la sesión asiática (típicamente 02:00 a 08:00) leyendo el gráfico de 15 minutos.
+1.  **La Caja en M15:** El EA traza internamente el Máximo y el Mínimo de la sesión asiática (típicamente 03:00 a 09:00 hora broker verano; 02:00–08:00 en invierno) leyendo el gráfico de 15 minutos.
 2.  **La Ruptura en M15 (Sweep):** El EA espera a que una vela de **15 minutos** cierre por fuera del rango asiático. Para validarlo, exige que el cuerpo de esa vela de M15 mida un mínimo de pips (`MinBreakoutBodyPips`), demostrando intención institucional.
 3.  **Activación del Cronómetro en M5:** Al detectarse la ruptura en M15, el EA centra su atención en el marco temporal de **5 minutos**. Empieza a contar cuántas velas de M5 se forman por fuera de la caja (`MaxCandlesOutside`).
 4.  **Caducidad de la Trampa:** Si el precio no regresa a la caja dentro del límite estricto de velas (por defecto 3 velas M5, que equivalen a 15 minutos de margen), el EA **anula la trampa automáticamente**. Esto previene que el EA opere por la tarde en base a una ruptura ocurrida en la mañana.

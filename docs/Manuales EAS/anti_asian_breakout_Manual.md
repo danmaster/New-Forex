@@ -40,10 +40,10 @@ A continuación, se describen los parámetros exclusivos de esta versión de Con
 
 ## 3. Ejemplo Operativo (Compra)
 
-1.  La caja asiática se forma entre las 02:00 y las 08:00.
-2.  A las 08:15 se cierra una vela M15 por encima del techo de la caja (Ruptura). El EA marca el mínimo de esa vela como su "Zona de Invalidez".
-3.  A las 08:30 cierra una pequeña vela bajista roja que no llega a romper la zona de invalidez (Amago/Retroceso).
-4.  A las 08:45 cierra una fuerte vela verde alcista, superando el cuerpo de la vela anterior (Confirmación).
+1.  La caja asiática se forma entre las 03:00 y las 09:00 (hora broker verano; en invierno 02:00–08:00, se ajusta automáticamente).
+2.  A las 09:15 se cierra una vela M15 por encima del techo de la caja (Ruptura). El EA marca el mínimo de esa vela como su "Zona de Invalidez".
+3.  A las 09:30 cierra una pequeña vela bajista roja que no llega a romper la zona de invalidez (Amago/Retroceso).
+4.  A las 09:45 cierra una fuerte vela verde alcista, superando el cuerpo de la vela anterior (Confirmación).
 5.  El EA ejecuta una **COMPRA**.
-6.  Coloca el Stop Loss en la base de la vela original de las 08:15.
+6.  Coloca el Stop Loss en la base de la vela original de las 09:15.
 7.  A medida que el precio sube, el Trailing Stop asegura las ganancias automáticamente.

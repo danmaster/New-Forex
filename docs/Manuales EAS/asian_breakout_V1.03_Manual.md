@@ -9,7 +9,7 @@ Este documento detalla las características, lógica interna y parámetros del r
 La V1.03 incluye mejoras defensivas e institucionales diseñadas para evitar ser cazados por barridos de liquidez, ruido de sesión tarde y picos de noticias macroeconómicas:
 
 1. **Ventana de Operativa Restringida a Londres (`MaxTradeHour = 12`):**
-   * El EA únicamente escanea y ejecuta entradas entre las **08:00 y las 12:00 hora servidor** (Apertura de Londres).
+   * El EA únicamente escanea y ejecuta entradas entre las **09:00 y las 12:00 hora servidor** (Apertura de Londres; en invierno el inicio se desplaza a las 08:00).
    * Elimina cualquier operación fantasma o tardía por la tarde en la sesión de Nueva York.
 
 2. **Gatillo de Reversión Estricto SMC (Pinbar & Envolvente):**
@@ -29,8 +29,8 @@ La V1.03 incluye mejoras defensivas e institucionales diseñadas para evitar ser
 ## 2. Parámetros de Configuración Destacados (V1.03)
 
 ### Ajustes Generales
-* **`StartHour` (2):** Inicio de la caja asiática (02:00).
-* **`EndHour` (8):** Fin de la caja asiática e inicio del escaneo (08:00).
+* **`StartHour` (3):** Inicio de la caja asiática (03:00 hora broker verano; 02:00 en invierno).
+* **`EndHour` (9):** Fin de la caja asiática e inicio del escaneo (09:00 hora broker verano; 08:00 en invierno).
 * **`MaxTradeHour` (12):** Hora límite de entrada (se apaga a las 12:00).
 
 ### Ajustes de Stop Loss & ATR
