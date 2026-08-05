@@ -53,12 +53,12 @@ input bool     InpSendPush       = true;       // Enviar Notificacion al Movil
 
 input double   FixedLotSize      = 0.10;       // Lote Fijo (si Auto es false)
 input int      MinBoxPips        = 10;         // Tamano Minimo Caja (pips)
-input int      MaxBoxPips        = 70;         // V2.67: Tamano Maximo Caja (pips), ampliado 50->70 (EURUSD M5 excede 50 con frecuencia)
+input int      MaxBoxPips        = 50;         // Tamano Maximo Caja (pips)
 input int      MagicNumber       = 100100;     // Magic Number
 input int      StartHour         = 3;          // Hora inicio Asia (03:00 Skilling verano - Se ajustara auto por DST). Caja real 00:00-06:00 GMT (box del video de Alex Ruiz: 01:00-07:00 en grafico UTC+1)
 input int      EndHour           = 9;          // Hora fin Asia (09:00 Skilling verano - Se ajustara auto por DST). Invierno: 02:00-08:00
 input int      MaxEntryHour      = 23;         // Hora MAXIMA absoluta de la ventana de entrada (cap duro, fija en hora del broker)
-   input int      PendingExpiryHour = 13;         // V2.67: caducidad de ordenes pendientes. 11->13 para ampliar la ventana de entrada (con market-fallback y filtro de tendencia ya no pierde tanto)
+   input int      PendingExpiryHour = 11;         // V2.63: caducidad de ordenes pendientes (11:00 = apertura Londres). Si no se llenan, se borran. La banda 11-13h era 1W/8L (-802)
 input int      EndOfDayHour      = 23;         // Hora de corte diario (Time Stop - fija en hora del broker)
 input int      RefGMTOffset      = 3;          // V2.63: offset GMT del broker al que estan calibradas las horas de la caja (3 = GMT+3 verano Skilling)
 
@@ -75,11 +75,11 @@ input bool     UseFixedRR        = false;      // V2.63: TP Fijo por Ratio. fals
 
 input string   AlexRuiz_Settings = "--- ESTRATEGIA ALEX RUIZ (V2.63) ---";
 input int      ExternalEntryPips = 2;          // Distancia de la Limit al borde de la caja (pips) - inicio de la zona de liquidez externa
-input int      ExternalSLDistancePips = 12;    // V2.67: SL mas lejos (10->12) para dejar el SL MÁS FUERA de la caja y reducir los toques de Judas-swing que causaron los 5 SL
+input int      ExternalSLDistancePips = 10;    // Distancia del SL desde la Limit (pips) - por encima/debajo del nivel barrido
 input bool     UseMacroTrendFilter = true;     // V2.63: operar SOLO a favor de la tendencia macro (EMA)
 input int      MacroTrendPeriod  = 200;        // Periodo de la EMA de tendencia macro
 input int      MacroTrendTF      = PERIOD_H1;  // Timeframe de la EMA de tendencia macro
-input double   MinRR             = 1.2;        // V2.67: R:R minimo exigido (caja/SL), bajado 1.5->1.2 para no perder dias de caja pequeña con SL ligeramente mayor
+input double   MinRR             = 1.5;        // V2.63: R:R minimo exigido (caja/SL). Si no llega, se salta el dia (1.5 para no perder dias de caja pequeña)
 
 input string   LiquidityZone_Settings = "--- ZONA DE LIQUIDEZ EXTERNA (V2.65) ---";
 input bool     UseSwingLiquidity     = true;       // V2.65: detectar la zona de liquidez por SWING (fractal del grafico, ej. M5) en vez de offset fijo
@@ -89,30 +89,21 @@ input int      MaxLiquidityDistPips  = 60;         // V2.65: distancia maxima de
 input int      SwingLookbackBars     = 500;        // V2.65: velas hacia atras para buscar el swing
 input bool     DrawLiquidityZones    = true;       // V2.65: dibujar las zonas de liquidez detectadas (purpura) en el grafico
 input bool     WaitForBreakout       = true;       // V2.66: esperar a que el precio ROMPA el borde de la caja antes de colocar la Limit (fiel a Alex)
-input bool     UseMarketFallback     = true;       // V2.67: si la ruptura escapa sin que la Limit se llene, entrar a MERCADO a favor (evita quemar el dia con un pendiente que no se activa)
-input int      MarketFallbackPips    = 6;          // V2.67: pips mas alla del borde de la caja para considerar la ruptura "escapada" y pasar a mercado
 
 input string   Trailing_Settings = "--- TRAILING STOP ---";
 input bool     UseTrailingStop   = false;      // Activar Trailing Stop (False = Purista)
-input int      TrailingPips      = 20;         // V2.67: Distancia del Trailing (pips) para el trailing tras el lock a 1R
+input int      TrailingPips      = 0;          // Distancia del Trailing (pips)
 
 input string   StopLoss_Settings = "--- AJUSTES DE STOP LOSS ---";
 input int      SLBufferPips      = 3;          // Pips extra de margen (spread)
 input int      MinSLPips         = 5;          // Stop Loss minimo (pips)
-input int      MaxSLPips         = 40;         // V2.67: SL maximo permitido (pips). 30->40 permite SL ligeramente mas anchos
+input int      MaxSLPips         = 30;         // V2.62: SL maximo permitido (pips). En V2.63 topa ExternalSLDistancePips. Si lo excede, se ignora la operacion
 
 input string   Management_Settings = "--- GESTION DE OPERACIONES ---";
 input bool     UseAutoBreakEven    = false;      // Activar Auto Break-Even por PIPS FIJOS (ignorado si UseBreakEvenAt1R=true)
 input int      BreakEvenActivation = 10;         // Pips ganancia para activar BE (solo si UseBreakEvenAt1R=false)
 input int      BreakEvenExtraPips  = 1;          // Pips extra sobre SL para asegurar comisiones
-input bool     UseBreakEvenAt1R    = false;      // V2.67: BE a 1R DESACTIVADO. Sustituido por el LOCK POR RETROCESO (captura ganancia al revertir, no acaba en cero)
-
-input string   LockRetrace_Settings = "--- ESCALERA DE BENEFICIO POR RETROCESO (V2.67) ---";
-input bool     UseRetraceProfitLock = true;      // V2.67: probar el TP estructural (1:3) y, SOLO si el precio revierte desde su pico, capturar el ultimo escalon cruzado con una pendiente de salida
-input double   RetraceStepRR        = 1.0;       // V2.67: peldaño de la escalera (en R). En 1R, 2R, 3R... se coloca/suben las pendientes de proteccion
-input double   RetraceConfirmRR     = 0.4;       // V2.67: retroceso minimo (en R) DESDE EL PICO para considerar que el precio esta REVIRTIENDO y solo ahi armar la escalera (anti-capado: no se arma por tocar nivel)
-input double   RetraceMinPeakRR     = 1.3;       // V2.67: pico minimo (en R) que debe haber alcanzado la operacion antes de poder armar la proteccion al revertir
-input int      RetraceExitMagic     = 50505;     // V2.67: Magic de las ordenes pendientes de salida (separado del MagicNumber para no interferir con la entrada)
+input bool     UseBreakEvenAt1R    = false;      // Mover a BE al alcanzar 1:1 (R) y activar trailing por pips despues
 
 input string   Escalonado_Settings = "--- TP ESCALONADO (V2.63: DESACTIVADO por defecto - gestion purista) ---";
 input bool     UseEscalonadoTP     = false;      // Activar TP Escalonado a 1:1 (BE en 1:1, deja correr al TP 1:3)
@@ -134,12 +125,17 @@ input bool     FilterHighImpact  = true;       // Filtrar Carpetas Rojas (Alta)
 input bool     FilterMedImpact   = false;      // Filtrar Carpetas Naranjas (Media)
 input int      MaxTradesPerDay     = 1;          // Maximo de operaciones por dia (Reentradas)
 input bool     CloseAtEndOfDay     = false;      // Cerrar todas las operaciones a EndOfDayHour (Time Stop)
-input bool     UsePartialClose     = true;       // V2.67: Activar Cierre Parcial Automatico (50% al alcanzar ~1R, asegura ganancia)
-input int      PartialClosePips    = 18;         // Pips ganancia para cerrar parcial (cerca de 1R ~ 19 pips tipicos)
+input bool     UsePartialClose     = false;      // Activar Cierre Parcial Automatico (False = Purista)
+input int      PartialClosePips    = 15;         // Pips ganancia para cerrar parcial
 input double   PartialClosePercent = 50.0;       // % del lote original a cerrar (ej. 50%)
 
 input string   Mode_Settings     = "--- MODO DE LIQUIDEZ (SMC) ---";
 input bool     AutoFindLiquidity = true;       // Buscar Liquidez en AMBOS sentidos (Modo Auto)
+input int      MinBreakoutBodyPips = 2;        // Min pips cuerpo vela de ruptura (Vela Decidida)
+input double   MinReversalCandlePips = 8.0;    // Min pips TOTALES de la vela de entrada (Filtro Ruido NY)
+input double   MinDojiSizePips   = 2.0;        // Min pips TOTALES para considerar un Doji plano
+input int      MaxCandlesOutside = 6;          // Max velas fuera de caja antes de reversion (30m)
+input int      MaxMinutesForReversal = 60;     // Max. minutos absolutos para caducar (1h)
 input string   ManualBoxName     = "ZonaLiquidez"; // Nombre del Rectangulo Manual (Modo Manual)
 
 
@@ -148,6 +144,17 @@ input string   ManualBoxName     = "ZonaLiquidez"; // Nombre del Rectangulo Manu
 int lastTradeDay = -1;        // FIX bug3: ahora guarda una clave de fecha completa (YYYYMMDD), no solo el dia del mes
 int currentSessionDay = -1;   // FIX bug3: idem
 double Pip;                   // Multiplicador dinamico para brokers de 4 o 5 digitos
+
+bool sweptHigh = false;
+bool sweptLow = false;
+bool burnedHigh = false;
+bool burnedLow = false;
+bool patternFoundHigh = false;
+bool patternFoundLow = false;
+double peakHigh = 0;
+double troughLow = 0;
+datetime timeSweptHigh = 0;
+datetime timeSweptLow = 0;
 
 // FIX bug6: registro en memoria de tickets ya parcialmente cerrados,
 // como respaldo al chequeo de comentario (que depende del broker)
@@ -167,76 +174,6 @@ bool   g_mgmtFlag2Armed[200];       // true una vez que el precio ha alcanzado E
 double g_peakProfitLong[200];        // max Bid visto para tickets BUY (mientras Estado 1 ya activo).
 double g_peakProfitShort[200];       // min Ask visto para tickets SELL (mientras Estado 1 ya activo).
 int    g_mgmtCount = 0;
-
-// V2.67: seguimiento del LOCK DE BENEFICIO POR RETROCESO.
-// Pares {ticketOriginal, ticketExitPendiente}. Se rellenan/limpian en cada tick.
-int g_lockOrig[50];
-int g_lockExit[50];
-double g_lockPrice[50];   // V2.67: precio actual de la pendiente de salida (para el ratchet hacia arriba)
-int g_lockCount = 0;
-
-int GetLockIndexByOrig(int ticket)
-  {
-   for(int i = 0; i < g_lockCount; i++)
-      if(g_lockOrig[i] == ticket) return i;
-   return -1;
-  }
-
-int GetLockIndexByExit(int ticket)
-  {
-   for(int i = 0; i < g_lockCount; i++)
-      if(g_lockExit[i] == ticket) return i;
-   return -1;
-  }
-
-void RemoveLockIndex(int i)
-  {
-   if(i < 0 || i >= g_lockCount) return;
-   g_lockCount--;
-   g_lockOrig[i] = g_lockOrig[g_lockCount];
-   g_lockExit[i] = g_lockExit[g_lockCount];
-   g_lockPrice[i] = g_lockPrice[g_lockCount];
-  }
-
-// V2.67: pico de beneficio (en R) por ticket para confirmar que el precio esta REVIRTIENDO antes de armar la escalera
-int g_peakT[100];
-double g_peakR[100];
-int g_peakCount = 0;
-
-double GetPeakR(int ticket)
-  {
-   for(int i = 0; i < g_peakCount; i++)
-      if(g_peakT[i] == ticket) return g_peakR[i];
-   return 0;
-  }
-
-void SetPeakR(int ticket, double r)
-  {
-   for(int i = 0; i < g_peakCount; i++)
-      if(g_peakT[i] == ticket)
-        {
-         g_peakR[i] = r;
-         return;
-        }
-   if(g_peakCount < 100)
-     {
-      g_peakT[g_peakCount] = ticket;
-      g_peakR[g_peakCount] = r;
-      g_peakCount++;
-     }
-  }
-
-void RemovePeakR(int ticket)
-  {
-   for(int i = 0; i < g_peakCount; i++)
-      if(g_peakT[i] == ticket)
-        {
-         g_peakCount--;
-         g_peakT[i] = g_peakT[g_peakCount];
-         g_peakR[i] = g_peakR[g_peakCount];
-         return;
-        }
-  }
 
 //+------------------------------------------------------------------+
 //| Devuelve una clave de fecha completa AAAAMMDD para comparar dias |
@@ -879,199 +816,25 @@ void ManagePartialClose()
                      if(InpSendPush) SendNotification("Asian Breakout [" + Symbol() + "]: Cierre Parcial alcanzado");
                     }
                  }
-               }
-            }
-         }
-      }
-   }
+              }
+           }
+        }
+     }
+  }
 
 //+------------------------------------------------------------------+
-//| V2.67: ESCALERA DE BENEFICIO POR RETROCESO.                      |
-//| Fiel a Alex: se PRUEBA primero el TP estructural (1:3). Mientras  |
-//| el precio avanza en beneficio, se sigue el pico maximo alcanzado.  |
-//| ANTI-CAPADO (V2.67): la escalera NO se arma por tocar un nivel.    |
-//| Solo cuando el precio retrocede al menos RetraceConfirmRR desde su  |
-//| pico (senal de reversion) se coloca una orden pendiente de SALIDA   |
-//| (Sell Stop / Buy Stop) en el ultimo peldaño cruzado. Si el precio   |
-//| sigue y llega al TP, gana el 1:3 intacto. Si revierte, se llena la  |
-//| pendiente capturando el ultimo peldaño cruzado (p. ej. 2R) y se     |
-//| cierra la operacion, eliminando cualquier pendiente residual.       |
-//| Si despues de armar el precio vuelve a avanzar, la pendiente        |
-//| RATCHEA hacia arriba por peldaños de RetraceStepRR.                 |
-//| No modifica el SL original.                                         |
+//| Evaluar la tendencia macro basada en una EMA (V2.63)             |
+//| Estrategia Alex Ruiz: operar SIEMPRE a favor de la tendencia del |
+//| marco mayor. El barrido (Judas Swing) toma liquidez y el precio  |
+//| vuelve hacia la caja; hacerlo alineado con la EMA macro evita    |
+//| pelear contra la corriente estructural.                          |
 //+------------------------------------------------------------------+
-void ManageRetraceProfitLock()
+bool IsTrendAligned(bool isBuy)
   {
-   if(!UseRetraceProfitLock) return;
-
-   double stopLevel = MarketInfo(Symbol(), MODE_STOPLEVEL) * Point;
-
-   // Limpiar picos de posiciones ya cerradas (evita memoria estatica)
-   for(int i = g_peakCount - 1; i >= 0; i--)
-      if(!OrderSelect(g_peakT[i], SELECT_BY_TICKET, MODE_TRADES))
-         RemovePeakR(g_peakT[i]);
-
-   // --- 1) Armar / ratchear la escalera por cada posicion abierta ---
-   for(int i = OrdersTotal() - 1; i >= 0; i--)
-     {
-      if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue;
-      if(OrderMagicNumber() != MagicNumber || OrderSymbol() != Symbol()) continue;
-      int type = OrderType();
-      if(type != OP_BUY && type != OP_SELL) continue;
-
-      int ticket = OrderTicket();
-      double riskPips = GetInitialRisk(ticket);
-      if(riskPips <= 0) continue;
-
-      double profitPips = 0;
-      if(type == OP_BUY)  profitPips = (Bid - OrderOpenPrice()) / Pip;
-      else                profitPips = (OrderOpenPrice() - Ask) / Pip;
-      double profitR = profitPips / riskPips;
-
-      // Actualizar el pico maximo de beneficio (en R) alcanzado por esta posicion
-      double peakR = GetPeakR(ticket);
-      if(profitR > peakR)
-        {
-         peakR = profitR;
-         SetPeakR(ticket, profitR);
-        }
-
-      // Ultimo peldaño cruzado con el beneficio ACTUAL
-      double crossedR = MathFloor(profitR / RetraceStepRR + 1e-9) * RetraceStepRR;
-
-      int li = GetLockIndexByOrig(ticket);
-
-      if(li < 0)
-        {
-         // ANTI-CAPADO: solo armar cuando el precio ha alcanzado un pico suficiente
-         // y desde el ha RETROCEDIDO al menos RetraceConfirmRR (reversion confirmada).
-         if(peakR < RetraceMinPeakRR) continue;          // el pico no llego al minimo
-         if(peakR - profitR < RetraceConfirmRR) continue; // aun no confirma reversion
-         if(crossedR < RetraceStepRR) continue;          // el retroceso ya se comio el primer peldaño
-
-         double lockPrice = 0;
-         int exitType = 0;
-         if(type == OP_BUY)
-           {
-            lockPrice = NormalizeDouble(OrderOpenPrice() + crossedR * riskPips * Pip, Digits);
-            exitType  = OP_SELLSTOP;
-           }
-         else
-           {
-            lockPrice = NormalizeDouble(OrderOpenPrice() - crossedR * riskPips * Pip, Digits);
-            exitType  = OP_BUYSTOP;
-           }
-
-         bool distOk = false;
-         if(type == OP_BUY)  distOk = (Bid - lockPrice) >= stopLevel;
-         else                distOk = (lockPrice - Ask)  >= stopLevel;
-         if(!distOk) continue;
-
-         int et = OrderSend(Symbol(), exitType, OrderLots(), lockPrice, SlippagePoints, 0, 0, "SMC V2.67 LockExit", RetraceExitMagic, 0, clrOrange);
-         if(et > 0)
-           {
-            if(g_lockCount < 50)
-              {
-               g_lockOrig[g_lockCount] = ticket;
-               g_lockExit[g_lockCount] = et;
-               g_lockPrice[g_lockCount] = lockPrice;
-               g_lockCount++;
-              }
-            Print("SMC V2.67: Reversion confirmada (pico ", DoubleToStr(peakR,1), "R, retroceso ",
-                  DoubleToStr(peakR - profitR,2), "R). Escalera armada en ", DoubleToStr(crossedR,1),
-                  "R. Pendiente de salida #", et, " a ", DoubleToStr(lockPrice, Digits), ".");
-           }
-         else
-            Print("SMC V2.67: Error armando escalera en #", ticket, " (err ", GetLastError(), ").");
-        }
-      else
-        {
-         // Ya hay escalera: subir el peldaño si el precio cruzo un nuevo multiplo.
-         // BUY -> el nivel de proteccion SUBE en precio. SELL -> BAJA en precio.
-         if(crossedR < RetraceStepRR) continue;
-
-         double newLockPrice = 0;
-         if(type == OP_BUY)
-            newLockPrice = NormalizeDouble(OrderOpenPrice() + crossedR * riskPips * Pip, Digits);
-         else
-            newLockPrice = NormalizeDouble(OrderOpenPrice() - crossedR * riskPips * Pip, Digits);
-
-         bool improved = false;
-         if(type == OP_BUY)  improved = (newLockPrice > g_lockPrice[li] + Point);
-         else                improved = (newLockPrice < g_lockPrice[li] - Point);
-
-         if(improved)
-           {
-            bool distOk2 = false;
-            if(type == OP_BUY)  distOk2 = (Bid - newLockPrice) >= stopLevel;
-            else                distOk2 = (newLockPrice - Ask)  >= stopLevel;
-            if(distOk2
-               && OrderSelect(g_lockExit[li], SELECT_BY_TICKET, MODE_TRADES)
-               && (OrderType() == OP_SELLSTOP || OrderType() == OP_BUYSTOP)
-               && OrderModify(OrderTicket(), newLockPrice, 0, 0, 0, clrOrange))
-              {
-               g_lockPrice[li] = newLockPrice;
-               Print("SMC V2.67: Escalera sube a ", DoubleToStr(crossedR,1), "R (pendiente #",
-                     g_lockExit[li], " a ", DoubleToStr(newLockPrice, Digits), ").");
-              }
-           }
-        }
-     }
-
-   // --- 2) Mantenimiento de escaleras existentes ---
-   for(int i = g_lockCount - 1; i >= 0; i--)
-     {
-      int origT = g_lockOrig[i];
-      int exitT = g_lockExit[i];
-
-      bool origOpen = OrderSelect(origT, SELECT_BY_TICKET, MODE_TRADES)
-                      && (OrderType() == OP_BUY || OrderType() == OP_SELL);
-      bool exitPending = OrderSelect(exitT, SELECT_BY_TICKET, MODE_TRADES)
-                         && (OrderType() == OP_SELLSTOP || OrderType() == OP_BUYSTOP);
-
-      if(!origOpen)
-        {
-         // La operacion original se cerro (TP/SL) -> borrar la pendiente de salida si sigue viva
-if(exitPending)
-             if(!OrderDelete(exitT)) Print("SMC V2.67: Error borrando pendiente #", exitT, " (err ", GetLastError(), ").");
-         RemoveLockIndex(i);
-         continue;
-        }
-
-      if(exitPending)
-        {
-         // Ambos vivos: esperando a que se llene la salida o a que gane el TP
-         continue;
-        }
-
-      // La pendiente de salida ya no es pendiente -> se ha LLENADO (retroceso).
-      // Cerrar la operacion original (captura el ultimo peldaño) y aplanar
-      // cualquier posicion de salida residual (broker con hedging).
-      RefreshRates();
-      if(OrderSelect(origT, SELECT_BY_TICKET, MODE_TRADES))
-        {
-         double cp = (OrderType() == OP_BUY) ? Bid : Ask;
-         if(OrderClose(OrderTicket(), OrderLots(), cp, SlippagePoints, clrMagenta))
-            Print("SMC V2.67: Retroceso capturado. Operacion #", origT, " cerrada a ", DoubleToStr(cp, Digits),
-                  " (escalera en ", DoubleToStr(g_lockPrice[i], Digits), ").");
-         else
-            Print("SMC V2.67: Error cerrando #", origT, " tras llenarse la escalera (err ", GetLastError(), ").");
-        }
-
-if(OrderSelect(exitT, SELECT_BY_TICKET, MODE_TRADES))
-         {
-          if(OrderType() == OP_BUY || OrderType() == OP_SELL)
-             {
-              if(!OrderClose(OrderTicket(), OrderLots(), (OrderType() == OP_BUY) ? Bid : Ask, SlippagePoints, clrMagenta))
-                 Print("SMC V2.67: Error cerrando posicion residual #", OrderTicket(), " (err ", GetLastError(), ").");
-             }
-          else
-             {
-              if(!OrderDelete(OrderTicket())) Print("SMC V2.67: Error borrando pendiente #", OrderTicket(), " (err ", GetLastError(), ").");
-             }
-         }
-      RemoveLockIndex(i);
-     }
+   if(!UseMacroTrendFilter) return true;
+   double ema = iMA(Symbol(), MacroTrendTF, MacroTrendPeriod, 0, MODE_EMA, PRICE_CLOSE, 0);
+   if(isBuy) return (Ask > ema);
+   else      return (Bid < ema);
   }
 
 //+------------------------------------------------------------------+
@@ -1195,8 +958,91 @@ bool HasActiveTrades()
            }
         }
      }
-return false;
-   }
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+//| Patrones de Reversion SMC (Alex Ruiz)                            |
+//+------------------------------------------------------------------+
+bool isBearishReversal(int shift)
+  {
+   double open = Open[shift];
+   double close = Close[shift];
+   double high = High[shift];
+   double low = Low[shift];
+
+   // Filtro de ruido EXCLUSIVO para la tarde (Nueva York):
+   // Por la manana (Londres) cualquier vela es valida porque la manipulacion es mas fiable.
+   double totalSize = (high - low) / (Pip);
+   if(TimeHour(Time[shift]) >= 13 && totalSize < MinReversalCandlePips) return false;
+
+   // La vela de gatillo idealmente debe cerrar bajista o plana
+   if(close > open) return false;
+
+   double body = MathAbs(open - close);
+   double upperWick = high - MathMax(open, close);
+   double lowerWick = MathMin(open, close) - low;
+
+   // 1. Pinbar Bajista (Martillo invertido / Shooting star)
+   bool isPinbar = false;
+   if(body > 0)
+     {
+      if(upperWick >= 1.5 * body && lowerWick <= body * 1.5) isPinbar = true;
+     }
+   else
+     {
+      // Si es un Doji plano
+      if(upperWick > MinDojiSizePips * Pip && lowerWick < upperWick * 0.5) isPinbar = true;
+     }
+
+   // 2. Envolvente Bajista (Bearish Engulfing) - Ajustado para Forex
+   double prevOpen = Open[shift+1];
+   double prevClose = Close[shift+1];
+   bool isBullishPrev = prevClose >= prevOpen; // Permite que la anterior sea un Doji plano
+   bool isEngulfing = isBullishPrev && (close < prevOpen) && (body > MathAbs(prevClose - prevOpen));
+
+   return isPinbar || isEngulfing;
+  }
+
+bool isBullishReversal(int shift)
+  {
+   double open = Open[shift];
+   double close = Close[shift];
+   double high = High[shift];
+   double low = Low[shift];
+
+   // Filtro de ruido EXCLUSIVO para la tarde (Nueva York):
+   // Por la manana (Londres) cualquier vela es valida porque la manipulacion es mas fiable.
+   double totalSize = (high - low) / (Pip);
+   if(TimeHour(Time[shift]) >= 13 && totalSize < MinReversalCandlePips) return false;
+
+   // La vela de gatillo idealmente debe cerrar alcista o plana
+   if(close < open) return false;
+
+   double body = MathAbs(close - open);
+   double upperWick = high - MathMax(open, close);
+   double lowerWick = MathMin(open, close) - low;
+
+   // 1. Pinbar Alcista (Martillo)
+   bool isPinbar = false;
+   if(body > 0)
+     {
+      if(lowerWick >= 1.5 * body && upperWick <= body * 1.5) isPinbar = true;
+     }
+   else
+     {
+      // Si es un Doji plano
+      if(lowerWick > MinDojiSizePips * Pip && upperWick < lowerWick * 0.5) isPinbar = true;
+     }
+
+   // 2. Envolvente Alcista (Bullish Engulfing) - Ajustado para Forex
+   double prevOpen = Open[shift+1];
+   double prevClose = Close[shift+1];
+   bool isBearishPrev = prevOpen >= prevClose; // Permite que la anterior sea un Doji plano o roja
+   bool isEngulfing = isBearishPrev && (close > prevOpen) && (body > MathAbs(prevOpen - prevClose));
+
+   return isPinbar || isEngulfing;
+  }
 
 //+------------------------------------------------------------------+
 //| Gestionar Take Profit Escalonado (Opcion A3: BE a 1:1, deja      |
@@ -1457,7 +1303,6 @@ void OnTick()
       ManageAutoBreakEven();
      }
    ManagePartialClose();
-   ManageRetraceProfitLock();
 
    int currentHour = Hour();
    int currentDay = GetDateKey(TimeCurrent()); // FIX bug3: clave de fecha completa, no solo Day()
@@ -1544,15 +1389,26 @@ void OnTick()
    // Solo buscar operaciones despues de cerrar la caja asiatica y antes de la caducidad de Londres
    if(currentHour >= adjEndHour && currentHour < adjExpiryHour)
      {
-       // Resetear estado de gestion cada nuevo dia
-       if(currentDay != currentSessionDay)
-         {
-          // Fix Bug: Solo resetear memoria de gestion si no hay operaciones vivas
-          if(!HasActiveTrades())
-            {
-             g_partialClosedCount = 0; // Limpiar memoria de cierres parciales
-             g_mgmtCount = 0;          // Limpiar memoria de gestion BreakEven/Trailing
-            }
+      // Resetear variables de barrido cada nuevo dia
+      if(currentDay != currentSessionDay)
+        {
+         sweptHigh = false;
+         sweptLow = false;
+         burnedHigh = false;
+         burnedLow = false;
+         patternFoundHigh = false;
+         patternFoundLow = false;
+         peakHigh = 0;
+         troughLow = 0;
+         timeSweptHigh = 0;
+         timeSweptLow = 0;
+         
+         // Fix Bug: Solo resetear memoria de gestion si no hay operaciones vivas
+         if(!HasActiveTrades())
+           {
+            g_partialClosedCount = 0; // Limpiar memoria de cierres parciales
+            g_mgmtCount = 0;          // Limpiar memoria de gestion BreakEven/Trailing
+           }
             
          // Fuga de GlobalVariables: limpiar SMC_Risk_* huerfanas
          for(int i = GlobalVariablesTotal() - 1; i >= 0; i--)
@@ -1603,13 +1459,7 @@ void OnTick()
          return;
         }
 
-      if(currentDay == lastTradeDay)
-        {
-         // V2.67: si ya hay un pendiente de HOY sin rellenar, dejamos pasar para
-         // poder convertirlo a mercado si la ruptura escapa (market fallback).
-         // En cualquier otro caso (operacion cerrada o pendiente ya limpiado) no se re-entra.
-         if(!(UseMarketFallback && HasPendingOrders())) return;
-        }
+      if(currentDay == lastTradeDay) { return; }
       if(GetTradesTodayCount() >= MaxTradesPerDay) { return; }
       if(HasActiveTrades()) { return; }
 
@@ -1757,7 +1607,7 @@ void OnTick()
              return;
             }
 
-          if((doSell || doBuy) && !HasActiveTrades())
+          if((doSell || doBuy) && !HasPendingOrders())
             {
              if(UseNewsFilter && IsNewsTime())
                {
@@ -1798,81 +1648,6 @@ void OnTick()
                 lastTradeDay = currentDay; // UNA colocacion al dia
                 double stopLevel = MarketInfo(Symbol(), MODE_STOPLEVEL) * Point;
 
-                // V2.67: MARKET FALLBACK. Si la ruptura ya escapo sin que la Limit
-                // pudiera llenarse (precio MarketFallbackPips mas alla del borde),
-                // entramos a MERCADO a favor en vez de quemar el dia con un pendiente
-                // que no se activa. Convierte los dias "Limits borradas a las 11h" en operaciones.
-                bool sellRunaway = doSell && (Bid > asianHigh + MarketFallbackPips * Pip);
-                bool buyRunaway  = doBuy  && (Ask < asianLow  - MarketFallbackPips * Pip);
-                if(UseMarketFallback && (sellRunaway || buyRunaway))
-                  {
-                   CleanPendingOrders();
-                   lastTradeDay = currentDay;
-                   if(doSell)
-                     {
-                      double mSellSL = 0, mSellSl;
-                      if(sellZoneTop > 0)
-                        {
-                         mSellSL = NormalizeDouble(sellZoneTop + ExternalSLDistancePips * Pip, Digits);
-                         mSellSl = sellSlDistPips;
-                        }
-                      else
-                        {
-                         mSellSL = NormalizeDouble(extHigh + slDistPips * Pip, Digits);
-                         mSellSl = slDistPips;
-                        }
-                      double mSellLot = CalculateLotSize(mSellSl);
-                      if((mSellSL - Bid) >= stopLevel)
-                        {
-                         int mst = OrderSend(Symbol(), OP_SELL, mSellLot, Bid, SlippagePoints, mSellSL, asianLow, "SMC V2.67 MktFallback SELL", MagicNumber, 0, clrRed);
-                         if(mst > 0)
-                           {
-                            RegisterInitialRisk(mst, mSellSl);
-                            GlobalVariableSet("SMC_Risk_" + IntegerToString(mst), mSellSl);
-                            Print("SMC V2.67: Market Fallback SELL a ", Bid, " (TP estructura ", DoubleToStr(asianLow, Digits), ").");
-                            if(InpSendPush) SendNotification("Asian V2.67 [" + Symbol() + "]: Market SELL " + DoubleToStr(Bid, Digits) + " (TP " + DoubleToStr(asianLow, Digits) + ")");
-                           }
-                         else Print("SMC V2.67 Error Market SELL: ", GetLastError());
-                        }
-                     }
-                   else if(doBuy)
-                     {
-                      double mBuySL = 0, mBuySl;
-                      if(buyZoneTop > 0)
-                        {
-                         mBuySL = NormalizeDouble(buyZoneBottom - ExternalSLDistancePips * Pip, Digits);
-                         mBuySl = buySlDistPips;
-                        }
-                      else
-                        {
-                         mBuySL = NormalizeDouble(extLow - slDistPips * Pip, Digits);
-                         mBuySl = slDistPips;
-                        }
-                      double mBuyLot = CalculateLotSize(mBuySl);
-                      if((Ask - mBuySL) >= stopLevel)
-                        {
-                         int mbt = OrderSend(Symbol(), OP_BUY, mBuyLot, Ask, SlippagePoints, mBuySL, asianHigh, "SMC V2.67 MktFallback BUY", MagicNumber, 0, clrBlue);
-                         if(mbt > 0)
-                           {
-                            RegisterInitialRisk(mbt, mBuySl);
-                            GlobalVariableSet("SMC_Risk_" + IntegerToString(mbt), mBuySl);
-                            Print("SMC V2.67: Market Fallback BUY a ", Ask, " (TP estructura ", DoubleToStr(asianHigh, Digits), ").");
-                            if(InpSendPush) SendNotification("Asian V2.67 [" + Symbol() + "]: Market BUY " + DoubleToStr(Bid, Digits) + " (TP " + DoubleToStr(asianHigh, Digits) + ")");
-                           }
-                         else Print("SMC V2.67 Error Market BUY: ", GetLastError());
-                        }
-                     }
-                   return;
-                  }
-
-                // V2.67: si ya hay un pendiente del dia sin rellenar y NO ha escapado,
-                // esperamos a que se llene durante la ventana (no duplicamos ni recolocamos).
-                if(HasPendingOrders())
-                  {
-                   lastTradeDay = currentDay;
-                   return;
-                  }
-
                 if(doSell)
                   {
                    double sellLimit, sellSL, sellTP, sellLot, sellSl;
@@ -1906,7 +1681,7 @@ void OnTick()
                    else Print("SMC V2.66: Sell Limit abortada (Bid ", Bid, " >= Limit ", sellLimit, " o stopLevel insuficiente).");
                   }
 
-                if(doBuy && !HasPendingOrders())
+                if(doBuy)
                   {
                    double buyLimit, buySL, buyTP, buyLot, buySl;
                    // V2.65: entrada en el borde superior (mas cercano a la caja) de la zona BUY
