@@ -77,8 +77,7 @@ f_isTradingDay() =>
 // -----------------------------------------------------------------------------
 var float boxHigh = na
 var float boxLow  = na
-var int   boxDay  = na
-var int   barsSinceBreakStart = 0
+
 var int   entryBarsOutside    = 0
 var float entryStartBarIdx   = na
 var box   currentBox         = na
