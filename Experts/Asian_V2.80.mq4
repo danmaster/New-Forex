@@ -46,6 +46,26 @@
 //| V2.71c = DEFAULTS FINALES (los que validaste en Asian_V2.70_4):        |
 //|  MinRR=1.2 (no 1.5), PauseAfterLossStreak=2, StreakCooldownDays=30,    |
 //|  StreakLookbackDays=30, VirtualLadderBE_LockRR=0.5.                    |
+//| V2.80 = FILTRO PRICE ACTION (hecho por el usuario): vela de rechazo    |
+//|  (mecha) para confirmar Judas swing antes de colocar la Limit.         |
+//| V2.80b = FILTRO PA ROBUSTECIDO + LIMPIEZA:                             |
+//|  - Busca el rechazo en las ultimas RejectionLookbackCandles velas (no  |
+//|    solo [1]) y exige que la vela de rechazo CIERRE de vuelta dentro de |
+//|    la caja (Judas real: pica y retorna), con tolerancia                |
+//|    RejectionCloseBufferPips.                                           |
+//|  - Invalida el lado si la vela mas reciente cerro FUERA (escalada      |
+//|    decidida, no Judas) - caso 10.03 reporte V2.70_5.                   |
+//|  - UsePriceActionFilter REEMPLAZA a WaitForBreakout (else-if), se      |
+//|    elimino el codigo muerto donde el filtro sobrescribia la ruptura.   |
+//| V2.82 = RELAJACION DE FILTROS (basado en Asian_V2.80_1: +318.37, el PA  |
+//|  estricto corto 4 ganadoras incl. TP 1.79-1.87R y retraso la entrada del|
+//|  28.01 convirtiendolo en SL). Ajustes:                                  |
+//|  - MinWickRejectionPercent 50->30 (Judas sin perder tendencias limpias)|
+//|  - RejectionLookbackCandles 3->4 (mas tolerancia)                      |
+//|  - RejectionCloseBufferPips 2->5 (04.02/30.03 cerraron FUERA y fueron  |
+//|    a TP: el cierre-dentro estricto es demasiado)                       |
+//|  - PauseAfterLossStreak 2->3 y StreakCooldownDays 30->20 (el filtro PA |
+//|    ya bloquea las entradas malas; la pausa es solo seguro residual).   |
 //| V2.67 = GESTION AVANZADA DE SALIDA (validada ENE-JUL 2026):       |
 //|  - MARKET FALLBACK: si la ruptura escapa (Bid > asianHigh +        |
 //|    MarketFallbackPips) sin llenar la Limit, entra a MERCADO a      |
@@ -92,7 +112,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Dan Master"
 #property link      ""
-#property version   "2.71"
+#property version   "2.81"
 #property strict
 
 //--- Input parameters
@@ -158,8 +178,8 @@ input double VirtualLadderBE_LockRR= 0.5; // V2.71b: R al que se cierra cuando e
 
 input string   Streak_Settings     = "--- CONTROL DE RACHAS ---";
 input int      SkipDaysAfterTPWin  = 0;          // V2.62: Dias de espera tras cerrar en TP 1:3 (evita operar contra la tendencia que produjo el 1:3). 0 = desactivado
-input int      PauseAfterLossStreak = 2;          // V2.71b: Tras N perdidas consecutivas, pausar la operativa StreakCooldownDays (0 = desactivado). Valores: V2.70_4 real +750.58 (MinRR 1.2, cd 30, lookback 30); proyeccion combo completo (MinRR 1.5) +851, 73.3%, PF 3.05.
-input int      StreakCooldownDays  = 30;         // V2.71b: dias de cooldown FIJO tras activar la pausa por racha. 30 (no 14): las perdidas de la racha Abr-Jun 2026 estan separadas ~14-16 dias; con 14 se salta solo 1 de cada 2 (V2.70_2: +639), con 30 se saltan 2 de 5 (+849).
+input int      PauseAfterLossStreak = 3;          // V2.82: 2->3: con el filtro PA (V2.80) bloqueando las entradas malas (Judas no confirmados), la pausa por rachas es menos necesaria. Las perdidas restantes son aisladas (16.04, 12.05 en V2.80_1). 0=off.
+input int      StreakCooldownDays  = 20;         // V2.82: 30->20: con menos operaciones (filtro PA) un cooldown de 30 dias salta demasiados dias. 20 balancea.
 input int      StreakLookbackDays  = 30;         // V2.71b: ventana (dias) para contar la racha; perdidas mas antiguas no cuentan (evita el lockout). 60->30: el A/B real (V2.70_4) se corrio con 30 y saltó 2 de 5 perdidas correctamente.
 
 input string   News_Settings     = "--- NEWS FILTER (API) ---";
@@ -173,6 +193,11 @@ input bool     CloseAtEndOfDay     = false;      // Cerrar todas las operaciones
 input bool     UsePartialClose     = false;      // V2.67: Activar Cierre Parcial Automatico (50% al alcanzar ~1R, asegura ganancia)
 input int      PartialClosePips    = 18;         // Pips ganancia para cerrar parcial (cerca de 1R ~ 19 pips tipicos)
 input double   PartialClosePercent = 50.0;       // % del lote original a cerrar (ej. 50%)
+input string   PriceAction_Settings = "--- PRICE ACTION (V2.80) ---";
+input bool     UsePriceActionFilter = true;       // V2.80: Exigir vela de rechazo (mecha) para confirmar Judas Swing
+input double   MinWickRejectionPercent = 30.0;    // V2.82: 50->30: el 50% mato los TP 1.79-1.87R (30.03, 30.07) y dejo +318. Con 30% el Judas se confirma sin perder tendencias limpias
+input int      RejectionLookbackCandles = 4;     // V2.82: 3->4: un poco mas de tolerancia para no perder la vela de rechazo (fragil con solo [1])
+input double   RejectionCloseBufferPips = 5.0;   // V2.82: 2->5: el 04.02 y 30.03 cerraron FUERA de la caja y aun asi fueron a TP; cierre-dentro estricto es demasiado. Permite cierre ligeramente fuera (aun Judas)
 
 input string   Mode_Settings     = "--- MODO DE LIQUIDEZ (SMC) ---";
 input bool     AutoFindLiquidity = true;       // Buscar Liquidez en AMBOS sentidos (Modo Auto)
@@ -204,11 +229,35 @@ int g_peakT[100];
 double g_peakR[100];
 int g_peakCount = 0;
 
+// V2.82: diagnostico de la vela de rechazo que SI paso el filtro y disparo la
+// entrada. Se rellena en el bloque del filtro PA y se escribe al CSV al colocar
+// la orden, para buscar un discriminador entre Judas buenos (TP) y malos (SL).
+datetime g_rejTime = 0;
+double   g_rejWick = -1.0;
+double   g_rejClose = 999.0;
+int      g_rejSide = 0;   // 1=SELL, 2=BUY
+
 double GetPeakR(int ticket)
   {
    for(int i = 0; i < g_peakCount; i++)
       if(g_peakT[i] == ticket) return g_peakR[i];
    return 0;
+  }
+
+// V2.82: registra la vela de rechazo que disparo la entrada (diagnostico).
+// Permite cruzar con el informe para buscar un discriminador Judas bueno/malo.
+void LogRejectionEntry(string orderType)
+  {
+   if(g_rejTime == 0) return;
+   int fh = FileOpen("Asian_PA_entry.csv", FILE_READ | FILE_WRITE | FILE_CSV, ';');
+   if(fh == INVALID_HANDLE) return;
+   FileSeek(fh, 0, SEEK_END);
+   if(FileSize(fh) == 0)
+      FileWrite(fh, "RechazoHora", "Lado", "Mecha%", "CierreFueraPips", "Orden");
+   FileWrite(fh, TimeToStr(g_rejTime, TIME_DATE | TIME_MINUTES),
+             (g_rejSide == 1 ? "SELL" : "BUY"),
+             DoubleToStr(g_rejWick, 1), DoubleToStr(g_rejClose, 2), orderType);
+   FileClose(fh);
   }
 
 void SetPeakR(int ticket, double r)
@@ -1097,12 +1146,153 @@ void OnTick()
                  // FIX V2.70: antes se exigian ambos bordes a la vez, condicion
                  // imposible (Bid>techo y Ask<suelo simultaneamente), y el dia
                  // se quemaba esperando una ruptura que nunca llegaba.
-                 bool sellBreakOK = true;
-                 bool buyBreakOK  = true;
-                 if(WaitForBreakout)
+                  bool sellBreakOK = true;
+                  bool buyBreakOK  = true;
+                  
+                  // V2.80: Price Action Filter (Rechazo Judas). Cuando esta activo
+                  // REEMPLAZA el chequeo en vivo de WaitForBreakout: tras una vela de
+                  // rechazo el precio ya volvio a la caja, asi que exigir Bid>techo
+                  // simultaneo bloquearia la entrada del retest.
+                  // V2.80b: busca el rechazo en las ultimas RejectionLookbackCandles
+                  // velas (no solo [1], para no depender de la ultima vela cerrada) y
+                  // exige que la vela de rechazo CIERRE de vuelta dentro de la caja
+                  // (Judas real: pica el nivel y retorna). Con solo % de mecha, una vela
+                  // bajista con mecha arriba puede ser la pausa antes del rompimiento.
+                   if(UsePriceActionFilter)
+                     {
+                      bool validSellRejection = false;
+                      bool validBuyRejection  = false;
+                      double rejectCloseBuffer = RejectionCloseBufferPips * Pip;
+
+                      // V2.82: diagnostico - mejor candidato por lado (mecha % mas cercana a pasar)
+                      double bestSellWick = -1.0, bestSellClosePips = 999.0;
+                      datetime bestSellTime = 0;
+                      double bestBuyWick = -1.0, bestBuyClosePips = 999.0;
+                      datetime bestBuyTime = 0;
+                      g_rejTime = 0; g_rejWick = -1.0; g_rejClose = 999.0; g_rejSide = 0;
+
+                      for(int i = 1; i <= RejectionLookbackCandles; i++)
+                        {
+                         double candleSize = High[i] - Low[i];
+                         if(candleSize <= 0) continue;
+
+                         double upperWick = High[i] - MathMax(Open[i], Close[i]);
+                         double lowerWick = MathMin(Open[i], Close[i]) - Low[i];
+
+                         // SELL: pico arriba del techo con mecha >= % y cierre de vuelta dentro de la caja
+                         if(High[i] > asianHigh
+                            && (upperWick / candleSize) * 100.0 >= MinWickRejectionPercent
+                            && Close[i] <= asianHigh + rejectCloseBuffer)
+                           {
+                            validSellRejection = true;
+                            if(g_rejTime == 0)   // V2.82: guarda la vela de rechazo valida MAS RECIENTE
+                              {
+                               g_rejTime  = Time[i];
+                               g_rejWick  = (upperWick / candleSize) * 100.0;
+                               g_rejClose = (Close[i] - asianHigh) / Pip;
+                               g_rejSide  = 1;
+                              }
+                           }
+
+                         // BUY: pico abajo del suelo con mecha >= % y cierre de vuelta dentro de la caja
+                         if(Low[i] < asianLow
+                            && (lowerWick / candleSize) * 100.0 >= MinWickRejectionPercent
+                            && Close[i] >= asianLow - rejectCloseBuffer)
+                           {
+                            validBuyRejection = true;
+                            if(g_rejTime == 0)   // V2.82: guarda la vela de rechazo valida MAS RECIENTE
+                              {
+                               g_rejTime  = Time[i];
+                               g_rejWick  = (lowerWick / candleSize) * 100.0;
+                               g_rejClose = (asianLow - Close[i]) / Pip;
+                               g_rejSide  = 2;
+                              }
+                           }
+
+                         // V2.82: seguimiento del mejor candidato para el diagnostico
+                         if(High[i] > asianHigh)
+                           {
+                            double sw = (upperWick / candleSize) * 100.0;
+                            double scp = (Close[i] - asianHigh) / Pip;
+                            if(sw > bestSellWick) { bestSellWick = sw; bestSellClosePips = scp; bestSellTime = Time[i]; }
+                           }
+                         if(Low[i] < asianLow)
+                           {
+                            double bw = (lowerWick / candleSize) * 100.0;
+                            double bcp = (asianLow - Close[i]) / Pip;
+                            if(bw > bestBuyWick) { bestBuyWick = bw; bestBuyClosePips = bcp; bestBuyTime = Time[i]; }
+                           }
+                        }
+
+                     // V2.80b: invalida el lado si la vela MAS RECIENTE ya cerro FUERA de la caja
+                     // (escalada decidida, no Judas): en ese caso el SELL/BUY en el borde perderia.
+                     if(Close[1] > asianHigh + rejectCloseBuffer) validSellRejection = false;
+                     if(Close[1] < asianLow  - rejectCloseBuffer) validBuyRejection  = false;
+
+                     sellBreakOK = (!doSell || validSellRejection);
+                     buyBreakOK  = (!doBuy  || validBuyRejection);
+
+                     // V2.82: diagnostico (una vez por barra): que habria salvado al trade bloqueado
+                     static datetime lastPaDiag = 0;
+                     if(Time[0] != lastPaDiag)
+                       {
+                        lastPaDiag = Time[0];
+                        if((!validSellRejection && doSell && bestSellWick > 0.0) ||
+                           (!validBuyRejection && doBuy && bestBuyWick > 0.0))
+                          {
+                           int diagH = FileOpen("Asian_PA_diag.csv", FILE_READ | FILE_WRITE | FILE_CSV, ';');
+                           if(diagH != INVALID_HANDLE)
+                             {
+                              FileSeek(diagH, 0, SEEK_END);
+                              if(FileSize(diagH) == 0)
+                                 FileWrite(diagH, "Hora", "Lado", "Mecha%", "CierreFueraPips", "Motivo", "pas_w35b4", "pas_w40b4", "pas_w30b5");
+                              if(!validSellRejection && doSell && bestSellWick > 0.0)
+                                 FileWrite(diagH, TimeToStr(bestSellTime, TIME_DATE | TIME_MINUTES), "SELL",
+                                           DoubleToStr(bestSellWick, 1), DoubleToStr(bestSellClosePips, 2),
+                                           (bestSellWick >= MinWickRejectionPercent ? "cierre+" + DoubleToStr(bestSellClosePips, 2) + "p" : "mecha"),
+                                           (bestSellWick >= 35.0 && bestSellClosePips <= 4.0),
+                                           (bestSellWick >= 40.0 && bestSellClosePips <= 4.0),
+                                           (bestSellWick >= 30.0 && bestSellClosePips <= 5.0));
+                              if(!validBuyRejection && doBuy && bestBuyWick > 0.0)
+                                 FileWrite(diagH, TimeToStr(bestBuyTime, TIME_DATE | TIME_MINUTES), "BUY",
+                                           DoubleToStr(bestBuyWick, 1), DoubleToStr(bestBuyClosePips, 2),
+                                           (bestBuyWick >= MinWickRejectionPercent ? "cierre+" + DoubleToStr(bestBuyClosePips, 2) + "p" : "mecha"),
+                                           (bestBuyWick >= 35.0 && bestBuyClosePips <= 4.0),
+                                           (bestBuyWick >= 40.0 && bestBuyClosePips <= 4.0),
+                                           (bestBuyWick >= 30.0 && bestBuyClosePips <= 5.0));
+                              FileClose(diagH);
+                             }
+                          }
+                        if(!validSellRejection && doSell && bestSellWick > 0.0)
+                          {
+                           string sellWhy = "mecha";
+                           if(bestSellWick >= MinWickRejectionPercent) sellWhy = "cierre+" + DoubleToStr(bestSellClosePips, 2) + "p";
+                           Print("PA-DIAG SELL ", TimeToStr(bestSellTime, TIME_DATE | TIME_MINUTES),
+                                 " mecha=", DoubleToStr(bestSellWick, 1), "% close=+", DoubleToStr(bestSellClosePips, 2), "p fuera",
+                                 " -> BLOQUEADO por [", sellWhy, "]", "  pasaria wick35/buf4: ", (bestSellWick >= 35.0 && bestSellClosePips <= 4.0),
+                                 "  wick40/buf4: ", (bestSellWick >= 40.0 && bestSellClosePips <= 4.0),
+                                 "  wick30/buf5: ", (bestSellWick >= 30.0 && bestSellClosePips <= 5.0));
+                          }
+                        if(!validBuyRejection && doBuy && bestBuyWick > 0.0)
+                          {
+                           string buyWhy = "mecha";
+                           if(bestBuyWick >= MinWickRejectionPercent) buyWhy = "cierre+" + DoubleToStr(bestBuyClosePips, 2) + "p";
+                           Print("PA-DIAG BUY  ", TimeToStr(bestBuyTime, TIME_DATE | TIME_MINUTES),
+                                 " mecha=", DoubleToStr(bestBuyWick, 1), "% close=+", DoubleToStr(bestBuyClosePips, 2), "p fuera",
+                                 " -> BLOQUEADO por [", buyWhy, "]", "  pasaria wick35/buf4: ", (bestBuyWick >= 35.0 && bestBuyClosePips <= 4.0),
+                                 "  wick40/buf4: ", (bestBuyWick >= 40.0 && bestBuyClosePips <= 4.0),
+                                 "  wick30/buf5: ", (bestBuyWick >= 30.0 && bestBuyClosePips <= 5.0));
+                          }
+                       }
+                    }
+                  else if(WaitForBreakout)
+                    {
+                     sellBreakOK = (!doSell || Bid > asianHigh);
+                     buyBreakOK  = (!doBuy  || Ask < asianLow);
+                    }
+                   
+                 if(WaitForBreakout || UsePriceActionFilter)
                    {
-                    sellBreakOK = (!doSell || Bid > asianHigh);
-                    buyBreakOK  = (!doBuy  || Ask < asianLow);
                     if(doSell && doBuy)
                       {
                        if(!sellBreakOK && !buyBreakOK)
@@ -1173,6 +1363,7 @@ void OnTick()
                             GlobalVariableSet("SMC_Risk_" + IntegerToString(mst), mSellSl);
                             Print("SMC V2.67: Market Fallback SELL a ", Bid, " (TP estructura ", DoubleToStr(asianLow, Digits), ").");
                             if(InpSendPush) SendNotification("Asian V2.67 [" + Symbol() + "]: Market SELL " + DoubleToStr(Bid, Digits) + " (TP " + DoubleToStr(asianLow, Digits) + ")");
+                            LogRejectionEntry("MktFallbackSELL");
                            }
                          else Print("SMC V2.67 Error Market SELL: ", GetLastError());
                         }
@@ -1198,6 +1389,7 @@ void OnTick()
                             GlobalVariableSet("SMC_Risk_" + IntegerToString(mbt), mBuySl);
                             Print("SMC V2.67: Market Fallback BUY a ", Ask, " (TP estructura ", DoubleToStr(asianHigh, Digits), ").");
                             if(InpSendPush) SendNotification("Asian V2.67 [" + Symbol() + "]: Market BUY " + DoubleToStr(Bid, Digits) + " (TP " + DoubleToStr(asianHigh, Digits) + ")");
+                            LogRejectionEntry("MktFallbackBUY");
                            }
                          else Print("SMC V2.67 Error Market BUY: ", GetLastError());
                         }
@@ -1234,13 +1426,14 @@ void OnTick()
                    if(Bid < sellLimit && (sellSL - sellLimit) >= stopLevel)
                      {
                       int ts = OrderSend(Symbol(), OP_SELLLIMIT, sellLot, sellLimit, SlippagePoints, sellSL, sellTP, "SMC V2.66 SellLimit", MagicNumber, 0, clrRed);
-                      if(ts > 0)
-                        {
-                         GlobalVariableSet("SMC_Risk_" + IntegerToString(ts), sellSl);
-                         Print("SMC V2.66: Sell Limit colocada a ", sellLimit, ". SL ", DoubleToStr(sellSl, 1), " pips. TP estructura ", sellTP);
-                         if(InpSendPush) SendNotification("Asian V2.66 [" + Symbol() + "]: Sell Limit a " + DoubleToStr(sellLimit, Digits) + " (TP " + DoubleToStr(sellTP, Digits) + ")");
-                        }
-                      else Print("SMC V2.66 Error Sell Limit: ", GetLastError());
+                       if(ts > 0)
+                         {
+                          GlobalVariableSet("SMC_Risk_" + IntegerToString(ts), sellSl);
+                          Print("SMC V2.66: Sell Limit colocada a ", sellLimit, ". SL ", DoubleToStr(sellSl, 1), " pips. TP estructura ", sellTP);
+                          if(InpSendPush) SendNotification("Asian V2.66 [" + Symbol() + "]: Sell Limit a " + DoubleToStr(sellLimit, Digits) + " (TP " + DoubleToStr(sellTP, Digits) + ")");
+                          LogRejectionEntry("SellLimit");
+                         }
+                       else Print("SMC V2.66 Error Sell Limit: ", GetLastError());
                      }
                    else Print("SMC V2.66: Sell Limit abortada (Bid ", Bid, " >= Limit ", sellLimit, " o stopLevel insuficiente).");
                   }
@@ -1266,13 +1459,14 @@ void OnTick()
                    if(Ask > buyLimit && (buyLimit - buySL) >= stopLevel)
                      {
                       int tb = OrderSend(Symbol(), OP_BUYLIMIT, buyLot, buyLimit, SlippagePoints, buySL, buyTP, "SMC V2.66 BuyLimit", MagicNumber, 0, clrBlue);
-                      if(tb > 0)
-                        {
-                         GlobalVariableSet("SMC_Risk_" + IntegerToString(tb), buySl);
-                         Print("SMC V2.66: Buy Limit colocada a ", buyLimit, ". SL ", DoubleToStr(buySl, 1), " pips. TP estructura ", buyTP);
-                         if(InpSendPush) SendNotification("Asian V2.66 [" + Symbol() + "]: Buy Limit a " + DoubleToStr(buyLimit, Digits) + " (TP " + DoubleToStr(buyTP, Digits) + ")");
-                        }
-                      else Print("SMC V2.66 Error Buy Limit: ", GetLastError());
+                       if(tb > 0)
+                         {
+                          GlobalVariableSet("SMC_Risk_" + IntegerToString(tb), buySl);
+                          Print("SMC V2.66: Buy Limit colocada a ", buyLimit, ". SL ", DoubleToStr(buySl, 1), " pips. TP estructura ", buyTP);
+                          if(InpSendPush) SendNotification("Asian V2.66 [" + Symbol() + "]: Buy Limit a " + DoubleToStr(buyLimit, Digits) + " (TP " + DoubleToStr(buyTP, Digits) + ")");
+                          LogRejectionEntry("BuyLimit");
+                         }
+                       else Print("SMC V2.66 Error Buy Limit: ", GetLastError());
                      }
                    else Print("SMC V2.66: Buy Limit abortada (Ask ", Ask, " <= Limit ", buyLimit, " o stopLevel insuficiente).");
                   }
