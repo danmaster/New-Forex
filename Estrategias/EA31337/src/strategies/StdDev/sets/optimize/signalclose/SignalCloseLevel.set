@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+StdDev_SignalCloseLevel,1=10
+StdDev_SignalCloseLevel,2=5
+StdDev_SignalCloseLevel,3=40
+StdDev_SignalCloseLevel,F=1
+StdDev_SignalOpenFilterMethod=1
+StdDev_TickFilterMethod=1

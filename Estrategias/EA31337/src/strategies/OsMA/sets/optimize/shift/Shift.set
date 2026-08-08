@@ -1,0 +1,7 @@
+; Optimize strategy shift param.
+OsMA_Shift,1=0
+OsMA_Shift,2=1
+OsMA_Shift,3=1
+OsMA_Shift,F=1
+OsMA_SignalOpenFilterMethod=1
+OsMA_TickFilterMethod=1

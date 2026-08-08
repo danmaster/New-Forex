@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+CCI_SignalCloseLevel,1=10
+CCI_SignalCloseLevel,2=5
+CCI_SignalCloseLevel,3=40
+CCI_SignalCloseLevel,F=1
+CCI_SignalOpenFilterMethod=1
+CCI_TickFilterMethod=1

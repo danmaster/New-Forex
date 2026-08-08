@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+StdDev_PriceStopLevel,1=10
+StdDev_PriceStopLevel,2=5
+StdDev_PriceStopLevel,3=40
+StdDev_PriceStopLevel,F=1
+StdDev_SignalOpenFilterMethod=1
+StdDev_TickFilterMethod=1

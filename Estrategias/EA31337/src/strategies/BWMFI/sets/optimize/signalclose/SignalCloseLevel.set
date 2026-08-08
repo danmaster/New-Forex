@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+BWMFI_SignalCloseLevel,1=10
+BWMFI_SignalCloseLevel,2=5
+BWMFI_SignalCloseLevel,3=40
+BWMFI_SignalCloseLevel,F=1
+BWMFI_SignalOpenFilterMethod=1
+BWMFI_TickFilterMethod=1

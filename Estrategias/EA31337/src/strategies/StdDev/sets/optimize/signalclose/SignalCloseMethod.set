@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+StdDev_SignalCloseMethod,1=-4
+StdDev_SignalCloseMethod,2=1
+StdDev_SignalCloseMethod,3=4
+StdDev_SignalCloseMethod,F=1
+StdDev_SignalOpenFilterMethod=1
+StdDev_TickFilterMethod=1

@@ -1,0 +1,6 @@
+; Optimize signal open filter method param.
+StdDev_SignalOpenFilterMethod,1=0
+StdDev_SignalOpenFilterMethod,2=1
+StdDev_SignalOpenFilterMethod,3=31
+StdDev_SignalOpenFilterMethod,F=1
+StdDev_TickFilterMethod=1

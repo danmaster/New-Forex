@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+StdDev_PriceStopMethod,1=0
+StdDev_PriceStopMethod,2=1
+StdDev_PriceStopMethod,3=4
+StdDev_PriceStopMethod,F=1
+StdDev_OrderCloseTime=-20
+StdDev_SignalOpenFilterMethod=1
+StdDev_TickFilterMethod=1

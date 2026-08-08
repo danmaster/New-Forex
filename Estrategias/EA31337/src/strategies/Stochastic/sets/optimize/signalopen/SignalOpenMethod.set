@@ -1,0 +1,7 @@
+; Optimize signal open method param.
+Stochastic_SignalOpenFilterMethod=1
+Stochastic_SignalOpenMethod,1=-4
+Stochastic_SignalOpenMethod,2=1
+Stochastic_SignalOpenMethod,3=4
+Stochastic_SignalOpenMethod,F=1
+Stochastic_TickFilterMethod=1

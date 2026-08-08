@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+RVI_PriceStopLevel,1=10
+RVI_PriceStopLevel,2=5
+RVI_PriceStopLevel,3=40
+RVI_PriceStopLevel,F=1
+RVI_SignalOpenFilterMethod=1
+RVI_TickFilterMethod=1

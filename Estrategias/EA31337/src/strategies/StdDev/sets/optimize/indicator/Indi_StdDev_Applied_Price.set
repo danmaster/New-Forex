@@ -1,0 +1,7 @@
+; Optimize strategy indicator's StdDev applied price param.
+StdDev_Indi_StdDev_Applied_Price,1=0
+StdDev_Indi_StdDev_Applied_Price,2=0
+StdDev_Indi_StdDev_Applied_Price,3=6
+StdDev_Indi_StdDev_Applied_Price,F=1
+StdDev_SignalOpenFilterMethod=1
+StdDev_TickFilterMethod=1

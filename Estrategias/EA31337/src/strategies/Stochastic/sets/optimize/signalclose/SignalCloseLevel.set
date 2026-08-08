@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+Stochastic_SignalCloseLevel,1=10
+Stochastic_SignalCloseLevel,2=5
+Stochastic_SignalCloseLevel,3=40
+Stochastic_SignalCloseLevel,F=1
+Stochastic_SignalOpenFilterMethod=1
+Stochastic_TickFilterMethod=1

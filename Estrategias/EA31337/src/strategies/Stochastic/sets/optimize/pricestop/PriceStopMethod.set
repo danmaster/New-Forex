@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+Stochastic_PriceStopMethod,1=0
+Stochastic_PriceStopMethod,2=1
+Stochastic_PriceStopMethod,3=4
+Stochastic_PriceStopMethod,F=1
+Stochastic_OrderCloseTime=-20
+Stochastic_SignalOpenFilterMethod=1
+Stochastic_TickFilterMethod=1

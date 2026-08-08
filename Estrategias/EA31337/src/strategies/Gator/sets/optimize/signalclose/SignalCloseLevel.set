@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+Gator_SignalCloseLevel,1=10
+Gator_SignalCloseLevel,2=5
+Gator_SignalCloseLevel,3=40
+Gator_SignalCloseLevel,F=1
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1

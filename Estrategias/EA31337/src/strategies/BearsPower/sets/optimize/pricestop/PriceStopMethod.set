@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+BearsPower_PriceStopMethod,1=0
+BearsPower_PriceStopMethod,2=1
+BearsPower_PriceStopMethod,3=4
+BearsPower_PriceStopMethod,F=1
+BearsPower_OrderCloseTime=-20
+BearsPower_SignalOpenFilterMethod=1
+BearsPower_TickFilterMethod=1

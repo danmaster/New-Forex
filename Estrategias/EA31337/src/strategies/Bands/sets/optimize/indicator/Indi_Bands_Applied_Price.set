@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Bands applied price param.
+Bands_Indi_Bands_Applied_Price,1=0
+Bands_Indi_Bands_Applied_Price,2=0
+Bands_Indi_Bands_Applied_Price,3=6
+Bands_Indi_Bands_Applied_Price,F=1
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

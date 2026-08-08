@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+RVI_SignalOpenFilterMethod=1
+RVI_SignalOpenLevel,1=0
+RVI_SignalOpenLevel,2=1
+RVI_SignalOpenLevel,3=10
+RVI_SignalOpenLevel,F=1
+RVI_TickFilterMethod=1

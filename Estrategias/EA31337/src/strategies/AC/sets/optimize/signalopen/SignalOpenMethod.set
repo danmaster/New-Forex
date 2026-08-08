@@ -1,0 +1,7 @@
+; Optimize signal open method param.
+AC_SignalOpenFilterMethod=1
+AC_SignalOpenMethod,1=-4
+AC_SignalOpenMethod,2=1
+AC_SignalOpenMethod,3=4
+AC_SignalOpenMethod,F=1
+AC_TickFilterMethod=1

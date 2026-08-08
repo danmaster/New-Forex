@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+DEMA_SignalCloseLevel,1=10
+DEMA_SignalCloseLevel,2=5
+DEMA_SignalCloseLevel,3=40
+DEMA_SignalCloseLevel,F=1
+DEMA_SignalOpenFilterMethod=1
+DEMA_TickFilterMethod=1

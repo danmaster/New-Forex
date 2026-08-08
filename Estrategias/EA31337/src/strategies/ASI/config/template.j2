@@ -1,0 +1,29 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_ASI_Params_{{ Timeframe }} : ASIIndiParams {
+  Indi_ASI_Params_{{ Timeframe }}() : ASIIndiParams(indi_asi_defaults, PERIOD_{{ Timeframe }}) {
+    shift = {{ ASI_Indi_ASI_Shift | default(0) }};
+  }
+} indi_asi_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_ASI_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_ASI_Params_{{ Timeframe }}() : StgParams(stg_asi_defaults) {
+    lot_size = {{ ASI_LotSize | default(0) }};
+    signal_open_method = {{ ASI_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ ASI_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ ASI_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ ASI_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ ASI_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ ASI_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ ASI_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ ASI_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ ASI_TickFilterMethod  | default(1) }};
+    max_spread = {{ ASI_MaxSpread | default(0) }};
+  }
+} stg_asi_{{ Timeframe | lower }};

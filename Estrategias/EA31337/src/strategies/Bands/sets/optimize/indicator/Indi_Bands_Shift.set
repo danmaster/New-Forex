@@ -1,0 +1,7 @@
+; Optimize indicator's shift param.
+Bands_Indi_Bands_Shift,1=0
+Bands_Indi_Bands_Shift,2=1
+Bands_Indi_Bands_Shift,3=4
+Bands_Indi_Bands_Shift,F=1
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

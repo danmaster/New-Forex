@@ -1,0 +1,27 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_Fractals_Params_{{ Timeframe }} : Indi_Fractals_Params {
+  Indi_Fractals_Params_{{ Timeframe }}() : Indi_Fractals_Params(indi_fractals_defaults, PERIOD_{{ Timeframe }}) { shift = {{ Fractals_Indi_Fractals_Shift | default(0) }}; }
+} indi_fractals_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_Fractals_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_Fractals_Params_{{ Timeframe }}() : StgParams(stg_fractals_defaults) {
+    lot_size = {{ Fractals_LotSize | default(0) }};
+    signal_open_method = {{ Fractals_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ Fractals_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ Fractals_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ Fractals_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ Fractals_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ Fractals_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ Fractals_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ Fractals_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ Fractals_TickFilterMethod  | default(1) }};
+    max_spread = {{ Fractals_MaxSpread | default(0) }};
+  }
+} stg_fractals_{{ Timeframe | lower }};

@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+BearsPower_SignalOpenFilterMethod=1
+BearsPower_SignalOpenLevel,1=0
+BearsPower_SignalOpenLevel,2=1
+BearsPower_SignalOpenLevel,3=10
+BearsPower_SignalOpenLevel,F=1
+BearsPower_TickFilterMethod=1

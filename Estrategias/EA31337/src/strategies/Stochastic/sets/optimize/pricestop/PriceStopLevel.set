@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+Stochastic_PriceStopLevel,1=10
+Stochastic_PriceStopLevel,2=5
+Stochastic_PriceStopLevel,3=40
+Stochastic_PriceStopLevel,F=1
+Stochastic_SignalOpenFilterMethod=1
+Stochastic_TickFilterMethod=1

@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+SVE_Bollinger_Bands_PriceStopMethod,1=0
+SVE_Bollinger_Bands_PriceStopMethod,2=1
+SVE_Bollinger_Bands_PriceStopMethod,3=4
+SVE_Bollinger_Bands_PriceStopMethod,F=1
+SVE_Bollinger_Bands_OrderCloseTime=-20
+SVE_Bollinger_Bands_SignalOpenFilterMethod=1
+SVE_Bollinger_Bands_TickFilterMethod=1

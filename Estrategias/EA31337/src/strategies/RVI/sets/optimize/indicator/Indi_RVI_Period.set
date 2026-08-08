@@ -1,0 +1,7 @@
+; Optimize strategy indicator's RVI period param.
+RVI_Indi_RVI_Period,1=4
+RVI_Indi_RVI_Period,2=4
+RVI_Indi_RVI_Period,3=24
+RVI_Indi_RVI_Period,F=1
+RVI_SignalOpenFilterMethod=1
+RVI_TickFilterMethod=1

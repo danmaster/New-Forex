@@ -1,0 +1,14 @@
+
+TMA_True_Indi_TMA_True_AtrMultiplier,1={{ [(atr_multiplier | default(1) | float) - 2, 1] | max }}
+TMA_True_Indi_TMA_True_AtrMultiplier,2=0.5
+TMA_True_Indi_TMA_True_AtrMultiplier,3={{ (atr_multiplier | default(1) | float) + 2 }}
+TMA_True_Indi_TMA_True_AtrMultiplier,F=1
+TMA_True_Indi_TMA_True_AtrMultiplier={{ (atr_multiplier | default(1) | float) }}
+TMA_True_Indi_TMA_True_AtrPeriod={{ (atr_period | default(1) | int) }}
+TMA_True_Indi_TMA_True_BarsToProcess={{ (bars_to_process | default(1) | float) }}
+TMA_True_Indi_TMA_True_HalfLength={{ (half_length | default(0) | float) }}
+TMA_True_Indi_TMA_True_Shift={{ (shift | default(0) | int) }}
+TMA_True_Indi_TMA_True_Timeframe={{ (atr_tf | default(0) | float) }}
+TMA_True_SignalOpenFilterMethod=1
+TMA_True_SignalOpenLevel={{ signal_open_level | default(0) | float }}
+TMA_True_TickFilterMethod=1

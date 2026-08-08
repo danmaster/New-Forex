@@ -1,0 +1,30 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_DeMarker_Params_{{ Timeframe }} : DeMarkerParams {
+  Indi_DeMarker_Params_{{ Timeframe }}() : DeMarkerParams(indi_demarker_defaults, PERIOD_{{ Timeframe }}) {
+    period = {{ DeMarker_Indi_DeMarker_Period | default(0) }};
+    shift = {{ DeMarker_Indi_DeMarker_Shift | default(0) }};
+  }
+} indi_demarker_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_DeMarker_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_DeMarker_Params_{{ Timeframe }}() : StgParams(stg_demarker_defaults) {
+    lot_size = {{ DeMarker_LotSize | default(0) }};
+    signal_open_method = {{ DeMarker_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ DeMarker_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ DeMarker_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ DeMarker_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ DeMarker_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ DeMarker_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ DeMarker_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ DeMarker_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ DeMarker_TickFilterMethod  | default(1) }};
+    max_spread = {{ DeMarker_MaxSpread | default(0) }};
+  }
+} stg_demarker_{{ Timeframe | lower }};

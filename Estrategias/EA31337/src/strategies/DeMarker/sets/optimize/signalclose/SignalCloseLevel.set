@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+DeMarker_SignalCloseLevel,1=10
+DeMarker_SignalCloseLevel,2=5
+DeMarker_SignalCloseLevel,3=40
+DeMarker_SignalCloseLevel,F=1
+DeMarker_SignalOpenFilterMethod=1
+DeMarker_TickFilterMethod=1

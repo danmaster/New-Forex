@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+Bands_SignalCloseMethod,1=-4
+Bands_SignalCloseMethod,2=1
+Bands_SignalCloseMethod,3=4
+Bands_SignalCloseMethod,F=1
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

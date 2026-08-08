@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+SVE_Bollinger_Bands_PriceStopLevel,1=10
+SVE_Bollinger_Bands_PriceStopLevel,2=5
+SVE_Bollinger_Bands_PriceStopLevel,3=40
+SVE_Bollinger_Bands_PriceStopLevel,F=1
+SVE_Bollinger_Bands_SignalOpenFilterMethod=1
+SVE_Bollinger_Bands_TickFilterMethod=1

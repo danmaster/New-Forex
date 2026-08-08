@@ -1,0 +1,7 @@
+; Optimize signal open method param.
+Gator_SignalOpenFilterMethod=1
+Gator_SignalOpenMethod,1=-4
+Gator_SignalOpenMethod,2=1
+Gator_SignalOpenMethod,3=4
+Gator_SignalOpenMethod,F=1
+Gator_TickFilterMethod=1

@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+Bands_SignalCloseLevel,1=10
+Bands_SignalCloseLevel,2=5
+Bands_SignalCloseLevel,3=40
+Bands_SignalCloseLevel,F=1
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

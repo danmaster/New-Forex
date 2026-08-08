@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+TMAT_SVEBB_PriceStopMethod,1=0
+TMAT_SVEBB_PriceStopMethod,2=1
+TMAT_SVEBB_PriceStopMethod,3=4
+TMAT_SVEBB_PriceStopMethod,F=1
+TMAT_SVEBB_OrderCloseTime=-20
+TMAT_SVEBB_SignalOpenFilterMethod=1
+TMAT_SVEBB_TickFilterMethod=1

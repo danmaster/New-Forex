@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Bands period param.
+Bands_Indi_Bands_Period,1=4
+Bands_Indi_Bands_Period,2=4
+Bands_Indi_Bands_Period,3=24
+Bands_Indi_Bands_Period,F=1
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

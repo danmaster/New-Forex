@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+BWMFI_SignalOpenFilterMethod=1
+BWMFI_SignalOpenLevel,1=0
+BWMFI_SignalOpenLevel,2=1
+BWMFI_SignalOpenLevel,3=10
+BWMFI_SignalOpenLevel,F=1
+BWMFI_TickFilterMethod=1

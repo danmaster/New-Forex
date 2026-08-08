@@ -1,0 +1,33 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_Bands_Params_{{ Timeframe }} : BandsParams {
+  Indi_Bands_Params_{{ Timeframe }}() : BandsParams(indi_bands_defaults, PERIOD_{{ Timeframe }}) {
+    applied_price = (ENUM_APPLIED_PRICE){{ Bands_Indi_Bands_Applied_Price | default(0) }};
+    bshift = {{ Bands_Indi_Bands_HShift | default(0) }};
+    deviation = {{ Bands_Indi_Bands_Deviation | default(0) | float }};
+    period = {{ Bands_Indi_Bands_Period | default(0) }};
+    shift = {{ Bands_Indi_Bands_Shift | default(0) }};
+  }
+} indi_bands_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_Bands_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_Bands_Params_{{ Timeframe }}() : StgParams(stg_bands_defaults) {
+    lot_size = {{ Bands_LotSize | default(0) }};
+    signal_open_method = {{ Bands_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ Bands_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ Bands_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ Bands_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ Bands_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ Bands_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ Bands_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ Bands_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ Bands_TickFilterMethod  | default(1) }};
+    max_spread = {{ Bands_MaxSpread | default(0) }};
+  }
+} stg_bands_{{ Timeframe | lower }};

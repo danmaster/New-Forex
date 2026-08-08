@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+BullsPower_SignalCloseMethod,1=-4
+BullsPower_SignalCloseMethod,2=1
+BullsPower_SignalCloseMethod,3=4
+BullsPower_SignalCloseMethod,F=1
+BullsPower_SignalOpenFilterMethod=1
+BullsPower_TickFilterMethod=1

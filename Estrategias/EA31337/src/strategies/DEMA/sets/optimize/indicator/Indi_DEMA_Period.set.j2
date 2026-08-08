@@ -1,0 +1,13 @@
+DEMA_Indi_DEMA_Applied_Price={{ applied_price | replace("(ENUM_APPLIED_PRICE)", "") | int | default(0) }}
+DEMA_Indi_DEMA_MA_Shift={{ ma_shift | default(0) }}
+DEMA_Indi_DEMA_Period,1={{ [((period | default(0) | int) - 20), 2] | max }}
+DEMA_Indi_DEMA_Period,2=4
+DEMA_Indi_DEMA_Period,3={{ (period | default(0) | int) + 20 }}
+DEMA_Indi_DEMA_Period,F=1
+DEMA_Indi_DEMA_Period={{ (period | default(0) | int) }}
+DEMA_Indi_DEMA_Shift={{ (shift | default(0) | int) }}
+DEMA_LotSize={{ lot_size | default(0) }}
+DEMA_PriceStopMethod=0
+DEMA_SignalOpenFilterMethod=1
+DEMA_SignalOpenLevel={{ signal_open_level | default(0) | float }}
+DEMA_TickFilterMethod=1

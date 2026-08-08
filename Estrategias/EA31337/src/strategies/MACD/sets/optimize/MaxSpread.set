@@ -1,0 +1,7 @@
+; Optimize max spread param.
+MACD_MaxSpread,1=10
+MACD_MaxSpread,2=10
+MACD_MaxSpread,3=40
+MACD_MaxSpread,F=1
+MACD_SignalOpenFilterMethod=1
+MACD_TickFilterMethod=1

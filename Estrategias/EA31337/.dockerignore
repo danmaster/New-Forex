@@ -1,0 +1,12 @@
+# Ignores binaries.
+**/*.ex?
+# Ignores data files.
+**/*.fxt
+**/*.hst
+# Ignores git files.
+.git
+# Ignores test results.
+**/*.htm
+**/*.json
+**/*.log
+**/*.txt

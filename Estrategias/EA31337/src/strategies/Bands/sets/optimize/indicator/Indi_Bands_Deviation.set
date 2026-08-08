@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Bands period param.
+Bands_Indi_Bands_Deviation,1=0.1
+Bands_Indi_Bands_Deviation,2=0.2
+Bands_Indi_Bands_Deviation,3=1
+Bands_Indi_Bands_Deviation,F=1
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

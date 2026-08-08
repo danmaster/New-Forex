@@ -1,0 +1,7 @@
+; Optimize strategy indicator's MACD applied price param.
+MACD_Indi_MACD_Applied_Price,1=0
+MACD_Indi_MACD_Applied_Price,2=0
+MACD_Indi_MACD_Applied_Price,3=6
+MACD_Indi_MACD_Applied_Price,F=1
+MACD_SignalOpenFilterMethod=1
+MACD_TickFilterMethod=1

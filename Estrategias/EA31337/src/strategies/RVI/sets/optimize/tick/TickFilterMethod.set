@@ -1,0 +1,6 @@
+; Optimize tick filter method param.
+RVI_SignalOpenFilterMethod=1
+RVI_TickFilterMethod,1=1
+RVI_TickFilterMethod,2=1
+RVI_TickFilterMethod,3=32
+RVI_TickFilterMethod,F=1

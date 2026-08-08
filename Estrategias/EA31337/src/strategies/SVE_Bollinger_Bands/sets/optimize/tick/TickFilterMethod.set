@@ -1,0 +1,6 @@
+; Optimize tick filter method param.
+SVE_Bollinger_Bands_SignalOpenFilterMethod=1
+SVE_Bollinger_Bands_TickFilterMethod,1=1
+SVE_Bollinger_Bands_TickFilterMethod,2=1
+SVE_Bollinger_Bands_TickFilterMethod,3=32
+SVE_Bollinger_Bands_TickFilterMethod,F=1

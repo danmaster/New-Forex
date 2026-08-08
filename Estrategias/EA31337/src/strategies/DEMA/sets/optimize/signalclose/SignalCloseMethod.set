@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+DEMA_SignalCloseMethod,1=-4
+DEMA_SignalCloseMethod,2=1
+DEMA_SignalCloseMethod,3=4
+DEMA_SignalCloseMethod,F=1
+DEMA_SignalOpenFilterMethod=1
+DEMA_TickFilterMethod=1

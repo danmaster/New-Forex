@@ -1,0 +1,27 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct ACParams_{{ Timeframe }} : ACParams {
+  ACParams_{{ Timeframe }}() : ACParams(indi_ac_defaults, PERIOD_{{ Timeframe }}) { shift = {{ AC_Indi_AC_Shift | default(0) }}; }
+} indi_ac_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_AC_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_AC_Params_{{ Timeframe }}() : StgParams(stg_ac_defaults) {
+    lot_size = {{ AC_LotSize | default(0) }};
+    signal_open_method = {{ AC_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ AC_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ AC_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ AC_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ AC_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ AC_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ AC_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ AC_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ AC_TickFilterMethod  | default(1) }};
+    max_spread = {{ AC_MaxSpread | default(0) }};
+  }
+} stg_ac_{{ Timeframe | lower }};

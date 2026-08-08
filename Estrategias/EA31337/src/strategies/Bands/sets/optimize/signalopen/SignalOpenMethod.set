@@ -1,0 +1,7 @@
+; Optimize signal open method param.
+Bands_SignalOpenFilterMethod=1
+Bands_SignalOpenMethod,1=-4
+Bands_SignalOpenMethod,2=1
+Bands_SignalOpenMethod,3=4
+Bands_SignalOpenMethod,F=1
+Bands_TickFilterMethod=1

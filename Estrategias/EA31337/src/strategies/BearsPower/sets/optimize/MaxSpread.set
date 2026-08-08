@@ -1,0 +1,7 @@
+; Optimize max spread param.
+BearsPower_MaxSpread,1=10
+BearsPower_MaxSpread,2=10
+BearsPower_MaxSpread,3=40
+BearsPower_MaxSpread,F=1
+BearsPower_SignalOpenFilterMethod=1
+BearsPower_TickFilterMethod=1

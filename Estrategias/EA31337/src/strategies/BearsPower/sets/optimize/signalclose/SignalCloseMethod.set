@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+BearsPower_SignalCloseMethod,1=-4
+BearsPower_SignalCloseMethod,2=1
+BearsPower_SignalCloseMethod,3=4
+BearsPower_SignalCloseMethod,F=1
+BearsPower_SignalOpenFilterMethod=1
+BearsPower_TickFilterMethod=1

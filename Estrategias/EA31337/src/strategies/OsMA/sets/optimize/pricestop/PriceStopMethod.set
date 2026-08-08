@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+OsMA_PriceStopMethod,1=0
+OsMA_PriceStopMethod,2=1
+OsMA_PriceStopMethod,3=4
+OsMA_PriceStopMethod,F=1
+OsMA_OrderCloseTime=-20
+OsMA_SignalOpenFilterMethod=1
+OsMA_TickFilterMethod=1

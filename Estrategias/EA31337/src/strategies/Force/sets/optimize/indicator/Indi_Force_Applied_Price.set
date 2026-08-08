@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Force applied price param.
+Force_Indi_Force_Applied_Price,1=0
+Force_Indi_Force_Applied_Price,2=0
+Force_Indi_Force_Applied_Price,3=6
+Force_Indi_Force_Applied_Price,F=1
+Force_SignalOpenFilterMethod=1
+Force_TickFilterMethod=1

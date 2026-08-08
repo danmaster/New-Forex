@@ -1,0 +1,7 @@
+; Optimize strategy indicator's OsMA applied price param.
+OsMA_Indi_OsMA_Applied_Price,1=0
+OsMA_Indi_OsMA_Applied_Price,2=0
+OsMA_Indi_OsMA_Applied_Price,3=6
+OsMA_Indi_OsMA_Applied_Price,F=1
+OsMA_SignalOpenFilterMethod=1
+OsMA_TickFilterMethod=1

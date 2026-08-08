@@ -1,0 +1,6 @@
+; Optimize signal open filter method param.
+RVI_SignalOpenFilterMethod,1=0
+RVI_SignalOpenFilterMethod,2=1
+RVI_SignalOpenFilterMethod,3=31
+RVI_SignalOpenFilterMethod,F=1
+RVI_TickFilterMethod=1

@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Ichimoku period param.
+Ichimoku_Indi_Ichimoku_Period_Kijun_Sen,1=4
+Ichimoku_Indi_Ichimoku_Period_Kijun_Sen,2=4
+Ichimoku_Indi_Ichimoku_Period_Kijun_Sen,3=24
+Ichimoku_Indi_Ichimoku_Period_Kijun_Sen,F=1
+Ichimoku_SignalOpenFilterMethod=1
+Ichimoku_TickFilterMethod=1

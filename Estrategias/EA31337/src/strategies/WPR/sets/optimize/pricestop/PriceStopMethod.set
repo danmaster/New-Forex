@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+WPR_PriceStopMethod,1=0
+WPR_PriceStopMethod,2=1
+WPR_PriceStopMethod,3=4
+WPR_PriceStopMethod,F=1
+WPR_OrderCloseTime=-20
+WPR_SignalOpenFilterMethod=1
+WPR_TickFilterMethod=1

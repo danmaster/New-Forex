@@ -1,0 +1,7 @@
+; Optimize signal open boost method param.
+BullsPower_SignalOpenBoostMethod,1=1
+BullsPower_SignalOpenBoostMethod,2=1
+BullsPower_SignalOpenBoostMethod,3=8
+BullsPower_SignalOpenBoostMethod,F=1
+BullsPower_SignalOpenFilterMethod=1
+BullsPower_TickFilterMethod=1

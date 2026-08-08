@@ -1,0 +1,7 @@
+; Optimize signal open boost method param.
+DeMarker_SignalOpenBoostMethod,1=1
+DeMarker_SignalOpenBoostMethod,2=1
+DeMarker_SignalOpenBoostMethod,3=8
+DeMarker_SignalOpenBoostMethod,F=1
+DeMarker_SignalOpenFilterMethod=1
+DeMarker_TickFilterMethod=1

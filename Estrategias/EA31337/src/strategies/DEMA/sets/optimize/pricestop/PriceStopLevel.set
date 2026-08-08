@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+DEMA_PriceStopLevel,1=10
+DEMA_PriceStopLevel,2=5
+DEMA_PriceStopLevel,3=40
+DEMA_PriceStopLevel,F=1
+DEMA_SignalOpenFilterMethod=1
+DEMA_TickFilterMethod=1

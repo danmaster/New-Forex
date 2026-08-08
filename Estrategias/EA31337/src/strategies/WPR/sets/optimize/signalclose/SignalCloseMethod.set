@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+WPR_SignalCloseMethod,1=-4
+WPR_SignalCloseMethod,2=1
+WPR_SignalCloseMethod,3=4
+WPR_SignalCloseMethod,F=1
+WPR_SignalOpenFilterMethod=1
+WPR_TickFilterMethod=1

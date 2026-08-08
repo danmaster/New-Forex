@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+Gator_SignalOpenFilterMethod=1
+Gator_SignalOpenLevel,1=0
+Gator_SignalOpenLevel,2=1
+Gator_SignalOpenLevel,3=10
+Gator_SignalOpenLevel,F=1
+Gator_TickFilterMethod=1

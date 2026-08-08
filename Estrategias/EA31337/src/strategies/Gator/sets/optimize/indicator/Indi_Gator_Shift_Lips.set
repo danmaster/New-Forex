@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Gator params.
+Gator_Indi_Gator_Shift_Lips,1=0
+Gator_Indi_Gator_Shift_Lips,2=1
+Gator_Indi_Gator_Shift_Lips,3=6
+Gator_Indi_Gator_Shift_Lips,F=1
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1

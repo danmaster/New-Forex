@@ -1,0 +1,7 @@
+; Optimize strategy indicator's CCI applied price param.
+CCI_Indi_CCI_Applied_Price,1=0
+CCI_Indi_CCI_Applied_Price,2=0
+CCI_Indi_CCI_Applied_Price,3=6
+CCI_Indi_CCI_Applied_Price,F=1
+CCI_SignalOpenFilterMethod=1
+CCI_TickFilterMethod=1

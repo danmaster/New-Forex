@@ -1,0 +1,7 @@
+; Optimize max spread param.
+Gator_MaxSpread,1=10
+Gator_MaxSpread,2=10
+Gator_MaxSpread,3=40
+Gator_MaxSpread,F=1
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1

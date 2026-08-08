@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+CCI_PriceStopMethod,1=0
+CCI_PriceStopMethod,2=1
+CCI_PriceStopMethod,3=4
+CCI_PriceStopMethod,F=1
+CCI_OrderCloseTime=-20
+CCI_SignalOpenFilterMethod=1
+CCI_TickFilterMethod=1

@@ -1,0 +1,7 @@
+; Optimize max spread param.
+SVE_Bollinger_Bands_MaxSpread,1=10
+SVE_Bollinger_Bands_MaxSpread,2=10
+SVE_Bollinger_Bands_MaxSpread,3=40
+SVE_Bollinger_Bands_MaxSpread,F=1
+SVE_Bollinger_Bands_SignalOpenFilterMethod=1
+SVE_Bollinger_Bands_TickFilterMethod=1

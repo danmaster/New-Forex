@@ -1,0 +1,207 @@
+[submodule "AC"]
+	path = AC
+	url = https://github.com/EA31337/Strategy-AC.git
+[submodule "AD"]
+	path = AD
+	url = https://github.com/EA31337/Strategy-AD.git
+[submodule "ADX"]
+	path = ADX
+	url = https://github.com/EA31337/Strategy-ADX.git
+[submodule "AMA"]
+	path = AMA
+	url = https://github.com/EA31337/Strategy-AMA.git
+[submodule "ASI"]
+	path = ASI
+	url = https://github.com/EA31337/Strategy-ASI.git
+[submodule "ATR"]
+	path = ATR
+	url = https://github.com/EA31337/Strategy-ATR.git
+[submodule "ATR_MA_Trend"]
+	path = ATR_MA_Trend
+	url = https://github.com/EA31337/Strategy-ATR_MA_Trend.git
+[submodule "Alligator"]
+	path = Alligator
+	url = https://github.com/EA31337/Strategy-Alligator.git
+[submodule "Arrows"]
+	path = Arrows
+	url = https://github.com/EA31337/Strategy-Arrows.git
+[submodule "Awesome"]
+	path = Awesome
+	url = https://github.com/EA31337/Strategy-Awesome.git
+[submodule "BWMFI"]
+	path = BWMFI
+	url = https://github.com/EA31337/Strategy-BWMFI.git
+[submodule "Bands"]
+	path = Bands
+	url = https://github.com/EA31337/Strategy-Bands.git
+[submodule "BearsPower"]
+	path = BearsPower
+	url = https://github.com/EA31337/Strategy-BearsPower.git
+[submodule "BullsPower"]
+	path = BullsPower
+	url = https://github.com/EA31337/Strategy-BullsPower.git
+[submodule "CCI"]
+	path = CCI
+	url = https://github.com/EA31337/Strategy-CCI.git
+[submodule "Chaikin"]
+	path = Chaikin
+	url = https://github.com/EA31337/Strategy-Chaikin.git
+[submodule "Demo"]
+	path = Demo
+	url = https://github.com/EA31337/Strategy-Demo.git
+[submodule "DEMA"]
+	path = DEMA
+	url = https://github.com/EA31337/Strategy-DEMA.git
+[submodule "DeMarker"]
+	path = DeMarker
+	url = https://github.com/EA31337/Strategy-DeMarker.git
+[submodule "DPO"]
+	path = DPO
+	url = https://github.com/EA31337/Strategy-DPO.git
+[submodule "ElliottWave"]
+	path = ElliottWave
+	url = https://github.com/EA31337/Strategy-ElliottWave.git
+[submodule "Envelopes"]
+	path = Envelopes
+	url = https://github.com/EA31337/Strategy-Envelopes.git
+[submodule "Force"]
+	path = Force
+	url = https://github.com/EA31337/Strategy-Force.git
+[submodule "Fractals"]
+	path = Fractals
+	url = https://github.com/EA31337/Strategy-Fractals.git
+[submodule "Gator"]
+	path = Gator
+	url = https://github.com/EA31337/Strategy-Gator.git
+[submodule "HeikenAshi"]
+	path = HeikenAshi
+	url = https://github.com/EA31337/Strategy-HeikenAshi.git
+[submodule "Ichimoku"]
+	path = Ichimoku
+	url = https://github.com/EA31337/Strategy-Ichimoku.git
+[submodule "Indicator"]
+	path = Indicator
+	url = https://github.com/EA31337/Strategy-Indicator.git
+[submodule "MA"]
+	path = MA
+	url = https://github.com/EA31337/Strategy-MA.git
+[submodule "MA_Breakout"]
+	path = MA_Breakout
+	url = https://github.com/EA31337/Strategy-MA_Breakout.git
+[submodule "MA_Cross_Candle"]
+	path = MA_Cross_Candle
+	url = https://github.com/EA31337/Strategy-MA_Cross_Candle.git
+[submodule "MA_Cross_Pivot"]
+	path = MA_Cross_Pivot
+	url = https://github.com/EA31337/Strategy-MA_Cross_Pivot.git
+[submodule "MA_Cross_Shift"]
+	path = MA_Cross_Shift
+	url = https://github.com/EA31337/Strategy-MA_Cross_Shift.git
+[submodule "MA_Cross_Sup_Res"]
+	path = MA_Cross_Sup_Res
+	url = https://github.com/EA31337/Strategy-MA_Cross_Sup_Res.git
+[submodule "MA_Cross_Timeframe"]
+	path = MA_Cross_Timeframe
+	url = https://github.com/EA31337/Strategy-MA_Cross_Timeframe.git
+[submodule "MA_Trend"]
+	path = MA_Trend
+	url = https://github.com/EA31337/Strategy-MA_Trend.git
+[submodule "MACD"]
+	path = MACD
+	url = https://github.com/EA31337/Strategy-MACD.git
+[submodule "Momentum"]
+	path = Momentum
+	url = https://github.com/EA31337/Strategy-Momentum.git
+[submodule "MFI"]
+	path = MFI
+	url = https://github.com/EA31337/Strategy-MFI.git
+[submodule "OBV"]
+	path = OBV
+	url = https://github.com/EA31337/Strategy-OBV.git
+[submodule "OsMA"]
+	path = OsMA
+	url = https://github.com/EA31337/Strategy-OsMA.git
+[submodule "Oscillator"]
+	path = Oscillator
+	url = https://github.com/EA31337/Strategy-Oscillator.git
+[submodule "Oscillator_Cross"]
+	path = Oscillator_Cross
+	url = https://github.com/EA31337/Strategy-Oscillator_Cross.git
+[submodule "Oscillator_Cross_Shift"]
+	path = Oscillator_Cross_Shift
+	url = https://github.com/EA31337/Strategy-Oscillator_Cross_Shift.git
+[submodule "Oscillator_Cross_Timeframe"]
+	path = Oscillator_Cross_Timeframe
+	url = https://github.com/EA31337/Strategy-Oscillator_Cross_Timeframe.git
+[submodule "Oscillator_Cross_Zero"]
+	path = Oscillator_Cross_Zero
+	url = https://github.com/EA31337/Strategy-Oscillator_Cross_Zero.git
+[submodule "Oscillator_Divergence"]
+	path = Oscillator_Divergence
+	url = https://github.com/EA31337/Strategy-Oscillator_Divergence.git
+[submodule "Oscillator_Martingale"]
+	path = Oscillator_Martingale
+	url = https://github.com/EA31337/Strategy-Oscillator_Martingale.git
+[submodule "Oscillator_Multi"]
+	path = Oscillator_Multi
+	url = https://github.com/EA31337/Strategy-Oscillator_Multi.git
+[submodule "Oscillator_Overlay"]
+	path = Oscillator_Overlay
+	url = https://github.com/EA31337/Strategy-Oscillator_Overlay.git
+[submodule "Oscillator_Range"]
+	path = Oscillator_Range
+	url = https://github.com/EA31337/Strategy-Oscillator_Range.git
+[submodule "Oscillator_Trend"]
+	path = Oscillator_Trend
+	url = https://github.com/EA31337/Strategy-Oscillator_Trend.git
+[submodule "Pattern"]
+	path = Pattern
+	url = https://github.com/EA31337/Strategy-Pattern.git
+[submodule "Pinbar"]
+	path = Pinbar
+	url = https://github.com/EA31337/Strategy-Pinbar.git
+[submodule "Pivot"]
+	path = Pivot
+	url = https://github.com/EA31337/Strategy-Pivot.git
+[submodule "Retracement"]
+	path = Retracement
+	url = https://github.com/EA31337/Strategy-Retracement.git
+[submodule "RSI"]
+	path = RSI
+	url = https://github.com/EA31337/Strategy-RSI.git
+[submodule "RVI"]
+	path = RVI
+	url = https://github.com/EA31337/Strategy-RVI.git
+[submodule "SAR"]
+	path = SAR
+	url = https://github.com/EA31337/Strategy-SAR.git
+[submodule "SAWA"]
+	path = SAWA
+	url = https://github.com/EA31337/Strategy-SAWA.git
+[submodule "SVE_Bollinger_Bands"]
+	path = SVE_Bollinger_Bands
+	url = https://github.com/EA31337/Strategy-SVE_Bollinger_Bands.git
+[submodule "StdDev"]
+	path = StdDev
+	url = https://github.com/EA31337/Strategy-StdDev.git
+[submodule "Stochastic"]
+	path = Stochastic
+	url = https://github.com/EA31337/Strategy-Stochastic.git
+[submodule "SuperTrend"]
+	path = SuperTrend
+	url = https://github.com/EA31337/Strategy-SuperTrend.git
+[submodule "TMA_CG"]
+	path = TMA_CG
+	url = https://github.com/EA31337/Strategy-TMA_CG.git
+[submodule "TMA_True"]
+	path = TMA_True
+	url = https://github.com/EA31337/Strategy-TMA_True.git
+[submodule "TMAT_SVEBB"]
+	path = TMAT_SVEBB
+	url = https://github.com/EA31337/Strategy-TMAT_SVEBB.git
+[submodule "WPR"]
+	path = WPR
+	url = https://github.com/EA31337/Strategy-WPR.git
+[submodule "ZigZag"]
+	path = ZigZag
+	url = https://github.com/EA31337/Strategy-ZigZag.git

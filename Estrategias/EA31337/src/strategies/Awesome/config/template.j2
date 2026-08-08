@@ -1,0 +1,27 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_Awesome_Params_{{ Timeframe }} : AOParams {
+  Indi_Awesome_Params_{{ Timeframe }}() : AOParams(indi_awesome_defaults, PERIOD_{{ Timeframe }}) { shift = {{ Awesome_Indi_Awesome_Shift | default(0) }}; }
+} indi_awesome_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_Awesome_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_Awesome_Params_{{ Timeframe }}() : StgParams(stg_awesome_defaults) {
+    lot_size = {{ Awesome_LotSize | default(0) }};
+    signal_open_method = {{ Awesome_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ Awesome_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ Awesome_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ Awesome_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ Awesome_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ Awesome_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ Awesome_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ Awesome_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ Awesome_TickFilterMethod  | default(1) }};
+    max_spread = {{ Awesome_MaxSpread | default(0) }};
+  }
+} stg_awesome_{{ Timeframe | lower }};

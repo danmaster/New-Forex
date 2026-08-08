@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+Awesome_SignalCloseMethod,1=-4
+Awesome_SignalCloseMethod,2=1
+Awesome_SignalCloseMethod,3=4
+Awesome_SignalCloseMethod,F=1
+Awesome_SignalOpenFilterMethod=1
+Awesome_TickFilterMethod=1

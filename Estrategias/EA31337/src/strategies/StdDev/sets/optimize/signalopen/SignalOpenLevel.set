@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+StdDev_SignalOpenFilterMethod=1
+StdDev_SignalOpenLevel,1=0
+StdDev_SignalOpenLevel,2=1
+StdDev_SignalOpenLevel,3=10
+StdDev_SignalOpenLevel,F=1
+StdDev_TickFilterMethod=1

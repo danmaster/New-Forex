@@ -1,0 +1,7 @@
+; Optimize max spread param.
+StdDev_MaxSpread,1=10
+StdDev_MaxSpread,2=10
+StdDev_MaxSpread,3=40
+StdDev_MaxSpread,F=1
+StdDev_SignalOpenFilterMethod=1
+StdDev_TickFilterMethod=1

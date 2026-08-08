@@ -1,0 +1,7 @@
+; Optimize signal open method param.
+Ichimoku_SignalOpenFilterMethod=1
+Ichimoku_SignalOpenMethod,1=-4
+Ichimoku_SignalOpenMethod,2=1
+Ichimoku_SignalOpenMethod,3=4
+Ichimoku_SignalOpenMethod,F=1
+Ichimoku_TickFilterMethod=1

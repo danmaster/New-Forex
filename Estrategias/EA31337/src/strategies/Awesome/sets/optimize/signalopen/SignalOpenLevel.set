@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+Awesome_SignalOpenFilterMethod=1
+Awesome_SignalOpenLevel,1=0
+Awesome_SignalOpenLevel,2=10
+Awesome_SignalOpenLevel,3=100
+Awesome_SignalOpenLevel,F=1
+Awesome_TickFilterMethod=1

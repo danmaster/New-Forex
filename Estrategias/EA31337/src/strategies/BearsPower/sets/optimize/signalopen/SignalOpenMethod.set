@@ -1,0 +1,7 @@
+; Optimize signal open method param.
+BearsPower_SignalOpenFilterMethod=1
+BearsPower_SignalOpenMethod,1=-4
+BearsPower_SignalOpenMethod,2=1
+BearsPower_SignalOpenMethod,3=4
+BearsPower_SignalOpenMethod,F=1
+BearsPower_TickFilterMethod=1

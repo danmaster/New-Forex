@@ -1,0 +1,7 @@
+; Optimize signal open boost method param.
+RVI_SignalOpenBoostMethod,1=1
+RVI_SignalOpenBoostMethod,2=1
+RVI_SignalOpenBoostMethod,3=8
+RVI_SignalOpenBoostMethod,F=1
+RVI_SignalOpenFilterMethod=1
+RVI_TickFilterMethod=1

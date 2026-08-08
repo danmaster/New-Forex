@@ -1,0 +1,7 @@
+; Optimize signal open boost method param.
+SVE_Bollinger_Bands_SignalOpenBoostMethod,1=1
+SVE_Bollinger_Bands_SignalOpenBoostMethod,2=1
+SVE_Bollinger_Bands_SignalOpenBoostMethod,3=8
+SVE_Bollinger_Bands_SignalOpenBoostMethod,F=1
+SVE_Bollinger_Bands_SignalOpenFilterMethod=1
+SVE_Bollinger_Bands_TickFilterMethod=1

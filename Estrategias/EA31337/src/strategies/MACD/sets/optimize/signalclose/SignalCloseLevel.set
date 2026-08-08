@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+MACD_SignalCloseLevel,1=10
+MACD_SignalCloseLevel,2=5
+MACD_SignalCloseLevel,3=40
+MACD_SignalCloseLevel,F=1
+MACD_SignalOpenFilterMethod=1
+MACD_TickFilterMethod=1

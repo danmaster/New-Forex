@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+WPR_SignalOpenFilterMethod=1
+WPR_SignalOpenLevel,1=0
+WPR_SignalOpenLevel,2=1
+WPR_SignalOpenLevel,3=10
+WPR_SignalOpenLevel,F=1
+WPR_TickFilterMethod=1

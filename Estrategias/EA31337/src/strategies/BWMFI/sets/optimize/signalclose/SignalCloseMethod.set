@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+BWMFI_SignalCloseMethod,1=-4
+BWMFI_SignalCloseMethod,2=1
+BWMFI_SignalCloseMethod,3=4
+BWMFI_SignalCloseMethod,F=1
+BWMFI_SignalOpenFilterMethod=1
+BWMFI_TickFilterMethod=1

@@ -1,0 +1,7 @@
+; Optimize max spread param.
+BWMFI_MaxSpread,1=10
+BWMFI_MaxSpread,2=10
+BWMFI_MaxSpread,3=40
+BWMFI_MaxSpread,F=1
+BWMFI_SignalOpenFilterMethod=1
+BWMFI_TickFilterMethod=1

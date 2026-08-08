@@ -1,0 +1,6 @@
+; Optimize tick filter method param.
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod,1=1
+Gator_TickFilterMethod,2=1
+Gator_TickFilterMethod,3=32
+Gator_TickFilterMethod,F=1

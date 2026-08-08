@@ -1,0 +1,7 @@
+; Optimize strategy indicator's StdDev params.
+StdDev_Indi_StdDev_MA_Method,1=0
+StdDev_Indi_StdDev_MA_Method,2=1
+StdDev_Indi_StdDev_MA_Method,3=3
+StdDev_Indi_StdDev_MA_Method,F=1
+StdDev_SignalOpenFilterMethod=1
+StdDev_TickFilterMethod=1

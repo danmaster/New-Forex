@@ -1,0 +1,7 @@
+; Optimize strategy indicator's param.
+TMA_True_Indi_TMA_True_AtrMultiplier,1=1
+TMA_True_Indi_TMA_True_AtrMultiplier,2=0.5
+TMA_True_Indi_TMA_True_AtrMultiplier,3=4
+TMA_True_Indi_TMA_True_AtrMultiplier,F=1
+TMA_True_SignalOpenFilterMethod=1
+TMA_True_TickFilterMethod=1

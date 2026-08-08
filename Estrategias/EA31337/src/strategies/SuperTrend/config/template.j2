@@ -1,0 +1,29 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct IndiSuperTrendParams_{{ Timeframe }} : IndiSuperTrendParams {
+  IndiSuperTrendParams_{{ Timeframe }}() : IndiSuperTrendParams(indi_supertrend_defaults, PERIOD_{{ Timeframe }}) {
+    shift = {{ SuperTrend_Indi_SuperTrend_Shift | default(0) }};
+  }
+} indi_supertrend_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_SuperTrend_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_SuperTrend_Params_{{ Timeframe }}() : StgParams(stg_supertrend_defaults) {
+    lot_size = {{ SuperTrend_LotSize | default(0) }};
+    signal_open_method = {{ SuperTrend_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ SuperTrend_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ SuperTrend_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ SuperTrend_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ SuperTrend_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ SuperTrend_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ SuperTrend_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ SuperTrend_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ SuperTrend_TickFilterMethod  | default(1) }};
+    max_spread = {{ SuperTrend_MaxSpread | default(0) }};
+  }
+} stg_supertrend_{{ Timeframe | lower }};

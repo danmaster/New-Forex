@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+SVE_Bollinger_Bands_SignalCloseMethod,1=-4
+SVE_Bollinger_Bands_SignalCloseMethod,2=1
+SVE_Bollinger_Bands_SignalCloseMethod,3=4
+SVE_Bollinger_Bands_SignalCloseMethod,F=1
+SVE_Bollinger_Bands_SignalOpenFilterMethod=1
+SVE_Bollinger_Bands_TickFilterMethod=1

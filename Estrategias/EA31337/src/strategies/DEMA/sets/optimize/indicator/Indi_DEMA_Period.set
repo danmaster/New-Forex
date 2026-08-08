@@ -1,0 +1,7 @@
+; Optimize strategy indicator's DEMA period param.
+DEMA_Indi_DEMA_Period,1=4
+DEMA_Indi_DEMA_Period,2=4
+DEMA_Indi_DEMA_Period,3=24
+DEMA_Indi_DEMA_Period,F=1
+DEMA_SignalOpenFilterMethod=1
+DEMA_TickFilterMethod=1

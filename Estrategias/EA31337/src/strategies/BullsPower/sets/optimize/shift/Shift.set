@@ -1,0 +1,7 @@
+; Optimize strategy shift param.
+BullsPower_Shift,1=0
+BullsPower_Shift,2=1
+BullsPower_Shift,3=1
+BullsPower_Shift,F=1
+BullsPower_SignalOpenFilterMethod=1
+BullsPower_TickFilterMethod=1

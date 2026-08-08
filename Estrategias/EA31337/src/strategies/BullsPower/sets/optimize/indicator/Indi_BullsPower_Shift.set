@@ -1,0 +1,7 @@
+; Optimize indicator's shift param.
+BullsPower_Indi_BullsPower_Shift,1=0
+BullsPower_Indi_BullsPower_Shift,2=1
+BullsPower_Indi_BullsPower_Shift,3=4
+BullsPower_Indi_BullsPower_Shift,F=1
+BullsPower_SignalOpenFilterMethod=1
+BullsPower_TickFilterMethod=1

@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+Force_PriceStopLevel,1=10
+Force_PriceStopLevel,2=5
+Force_PriceStopLevel,3=40
+Force_PriceStopLevel,F=1
+Force_SignalOpenFilterMethod=1
+Force_TickFilterMethod=1

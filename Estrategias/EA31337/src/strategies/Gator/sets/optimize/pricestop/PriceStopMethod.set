@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+Gator_PriceStopMethod,1=0
+Gator_PriceStopMethod,2=1
+Gator_PriceStopMethod,3=4
+Gator_PriceStopMethod,F=1
+Gator_OrderCloseTime=-20
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1

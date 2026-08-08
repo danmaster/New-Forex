@@ -1,0 +1,7 @@
+; Optimize strategy indicator's BearsPower period param.
+BearsPower_Indi_BearsPower_Period,1=4
+BearsPower_Indi_BearsPower_Period,2=4
+BearsPower_Indi_BearsPower_Period,3=24
+BearsPower_Indi_BearsPower_Period,F=1
+BearsPower_SignalOpenFilterMethod=1
+BearsPower_TickFilterMethod=1

@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+RVI_PriceStopMethod,1=0
+RVI_PriceStopMethod,2=1
+RVI_PriceStopMethod,3=4
+RVI_PriceStopMethod,F=1
+RVI_OrderCloseTime=-20
+RVI_SignalOpenFilterMethod=1
+RVI_TickFilterMethod=1

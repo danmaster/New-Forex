@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+BearsPower_PriceStopLevel,1=10
+BearsPower_PriceStopLevel,2=5
+BearsPower_PriceStopLevel,3=40
+BearsPower_PriceStopLevel,F=1
+BearsPower_SignalOpenFilterMethod=1
+BearsPower_TickFilterMethod=1

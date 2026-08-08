@@ -1,0 +1,15 @@
+[submodule "Common"]
+	path = Common
+	url = https://github.com/EA31337/EA31337-indicators-common.git
+[submodule "Oscillators"]
+	path = Oscillators
+	url = https://github.com/EA31337/EA31337-indicators-oscillators.git
+[submodule "Other"]
+	path = Other
+	url = https://github.com/EA31337/EA31337-indicators-other.git
+[submodule "Price"]
+	path = Price
+	url = https://github.com/EA31337/EA31337-indicators-price.git
+[submodule "Stats"]
+	path = Stats
+	url = https://github.com/EA31337/EA31337-indicators-stats.git

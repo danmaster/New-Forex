@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Gator params.
+Gator_Indi_Gator_MA_Method,1=0
+Gator_Indi_Gator_MA_Method,2=1
+Gator_Indi_Gator_MA_Method,3=3
+Gator_Indi_Gator_MA_Method,F=1
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1

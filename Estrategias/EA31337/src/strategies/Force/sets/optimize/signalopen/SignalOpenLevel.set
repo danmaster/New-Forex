@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+Force_SignalOpenFilterMethod=1
+Force_SignalOpenLevel,1=0
+Force_SignalOpenLevel,2=1
+Force_SignalOpenLevel,3=10
+Force_SignalOpenLevel,F=1
+Force_TickFilterMethod=1

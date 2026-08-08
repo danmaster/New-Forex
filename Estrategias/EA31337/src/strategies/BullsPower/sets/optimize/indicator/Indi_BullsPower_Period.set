@@ -1,0 +1,7 @@
+; Optimize strategy indicator's BullsPower period param.
+BullsPower_Indi_BullsPower_Period,1=4
+BullsPower_Indi_BullsPower_Period,2=4
+BullsPower_Indi_BullsPower_Period,3=24
+BullsPower_Indi_BullsPower_Period,F=1
+BullsPower_SignalOpenFilterMethod=1
+BullsPower_TickFilterMethod=1

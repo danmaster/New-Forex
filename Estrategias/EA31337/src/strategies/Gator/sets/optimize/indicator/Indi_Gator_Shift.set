@@ -1,0 +1,7 @@
+; Optimize indicator's shift param.
+Gator_Indi_Gator_Shift,1=0
+Gator_Indi_Gator_Shift,2=1
+Gator_Indi_Gator_Shift,3=4
+Gator_Indi_Gator_Shift,F=1
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1

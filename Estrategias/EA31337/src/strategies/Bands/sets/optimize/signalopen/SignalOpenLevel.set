@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+Bands_SignalOpenFilterMethod=1
+Bands_SignalOpenLevel,1=0
+Bands_SignalOpenLevel,2=1
+Bands_SignalOpenLevel,3=10
+Bands_SignalOpenLevel,F=1
+Bands_TickFilterMethod=1

@@ -1,0 +1,7 @@
+; Optimize signal open boost method param.
+StdDev_SignalOpenBoostMethod,1=1
+StdDev_SignalOpenBoostMethod,2=1
+StdDev_SignalOpenBoostMethod,3=8
+StdDev_SignalOpenBoostMethod,F=1
+StdDev_SignalOpenFilterMethod=1
+StdDev_TickFilterMethod=1

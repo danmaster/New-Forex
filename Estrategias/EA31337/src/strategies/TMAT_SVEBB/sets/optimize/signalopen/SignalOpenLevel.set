@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+TMAT_SVEBB_SignalOpenFilterMethod=1
+TMAT_SVEBB_SignalOpenLevel,1=0
+TMAT_SVEBB_SignalOpenLevel,2=1
+TMAT_SVEBB_SignalOpenLevel,3=10
+TMAT_SVEBB_SignalOpenLevel,F=1
+TMAT_SVEBB_TickFilterMethod=1

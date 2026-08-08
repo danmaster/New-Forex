@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+Bands_PriceStopLevel,1=10
+Bands_PriceStopLevel,2=5
+Bands_PriceStopLevel,3=40
+Bands_PriceStopLevel,F=1
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

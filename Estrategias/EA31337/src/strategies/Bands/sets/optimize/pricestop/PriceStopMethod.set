@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+Bands_PriceStopMethod,1=0
+Bands_PriceStopMethod,2=1
+Bands_PriceStopMethod,3=4
+Bands_PriceStopMethod,F=1
+Bands_OrderCloseTime=-20
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

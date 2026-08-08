@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+SVE_Bollinger_Bands_SignalCloseLevel,1=10
+SVE_Bollinger_Bands_SignalCloseLevel,2=5
+SVE_Bollinger_Bands_SignalCloseLevel,3=40
+SVE_Bollinger_Bands_SignalCloseLevel,F=1
+SVE_Bollinger_Bands_SignalOpenFilterMethod=1
+SVE_Bollinger_Bands_TickFilterMethod=1

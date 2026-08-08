@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Force params.
+Force_Indi_Force_MA_Method,1=0
+Force_Indi_Force_MA_Method,2=1
+Force_Indi_Force_MA_Method,3=3
+Force_Indi_Force_MA_Method,F=1
+Force_SignalOpenFilterMethod=1
+Force_TickFilterMethod=1

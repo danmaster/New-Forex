@@ -1,0 +1,7 @@
+; Optimize max spread param.
+RVI_MaxSpread,1=10
+RVI_MaxSpread,2=10
+RVI_MaxSpread,3=40
+RVI_MaxSpread,F=1
+RVI_SignalOpenFilterMethod=1
+RVI_TickFilterMethod=1

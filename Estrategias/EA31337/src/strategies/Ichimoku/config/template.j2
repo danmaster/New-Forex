@@ -1,0 +1,32 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_Ichimoku_Params_{{ Timeframe }} : IchimokuParams {
+  Indi_Ichimoku_Params_{{ Timeframe }}() : IchimokuParams(indi_ichi_defaults, PERIOD_{{ Timeframe }}) {
+    kijun_sen = {{ Ichimoku_Indi_Ichimoku_Period_Kijun_Sen | default(0) }}
+    senkou_span_b = {{ Ichimoku_Indi_Ichimoku_Period_Senkou_Span_B | default(0) }}
+    shift = {{ Ichimoku_Indi_Ichimoku_Shift | default(0) }};
+    tenkan_sen = {{ Ichimoku_Indi_Ichimoku_Period_Tenkan_Sen | default(0) }}
+  }
+} indi_ichi_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_Ichimoku_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_Ichimoku_Params_{{ Timeframe }}() : StgParams(stg_ichi_defaults) {
+    lot_size = {{ Ichimoku_LotSize | default(0) }};
+    signal_open_method = {{ Ichimoku_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ Ichimoku_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ Ichimoku_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ Ichimoku_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ Ichimoku_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ Ichimoku_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ Ichimoku_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ Ichimoku_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ Ichimoku_TickFilterMethod  | default(1) }};
+    max_spread = {{ Ichimoku_MaxSpread | default(0) }};
+  }
+} stg_ichi_{{ Timeframe | lower }};

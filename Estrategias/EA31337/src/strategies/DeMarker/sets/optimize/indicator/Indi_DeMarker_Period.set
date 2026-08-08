@@ -1,0 +1,7 @@
+; Optimize strategy indicator's DeMarker period param.
+DeMarker_Indi_DeMarker_Period,1=4
+DeMarker_Indi_DeMarker_Period,2=4
+DeMarker_Indi_DeMarker_Period,3=24
+DeMarker_Indi_DeMarker_Period,F=1
+DeMarker_SignalOpenFilterMethod=1
+DeMarker_TickFilterMethod=1

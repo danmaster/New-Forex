@@ -1,0 +1,8 @@
+; Optimize price stop method param.
+DeMarker_PriceStopMethod,1=0
+DeMarker_PriceStopMethod,2=1
+DeMarker_PriceStopMethod,3=4
+DeMarker_PriceStopMethod,F=1
+DeMarker_OrderCloseTime=-20
+DeMarker_SignalOpenFilterMethod=1
+DeMarker_TickFilterMethod=1

@@ -1,0 +1,7 @@
+; Optimize max spread param.
+DeMarker_MaxSpread,1=10
+DeMarker_MaxSpread,2=10
+DeMarker_MaxSpread,3=40
+DeMarker_MaxSpread,F=1
+DeMarker_SignalOpenFilterMethod=1
+DeMarker_TickFilterMethod=1

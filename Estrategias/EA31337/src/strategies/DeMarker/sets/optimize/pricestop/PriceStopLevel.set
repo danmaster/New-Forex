@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+DeMarker_PriceStopLevel,1=10
+DeMarker_PriceStopLevel,2=5
+DeMarker_PriceStopLevel,3=40
+DeMarker_PriceStopLevel,F=1
+DeMarker_SignalOpenFilterMethod=1
+DeMarker_TickFilterMethod=1

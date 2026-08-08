@@ -1,0 +1,35 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_ElliottWave_Params_{{ Timeframe }} : Indi_ElliottWave_Params {
+  Indi_ElliottWave_Params_{{ Timeframe }}() : Indi_ElliottWave_Params(indi_ewo_defaults, PERIOD_{{ Timeframe }}) {
+    ewo_ap1 = (ENUM_APPLIED_PRICE){{ ElliottWave_Indi_EWO_Applied_Price1 | default(0) }};
+    ewo_ap2 = (ENUM_APPLIED_PRICE){{ ElliottWave_Indi_EWO_Applied_Price2 | default(0) }};
+    ewo_mm1 = {{ ElliottWave_Indi_EWO_MA_Method1 | default(0) }};
+    ewo_mm2 = {{ ElliottWave_Indi_EWO_MA_Method2 | default(0) }};
+    ewo_period1 = {{ ElliottWave_Indi_EWO_Period1 | default(0) }};
+    ewo_period2 = {{ ElliottWave_Indi_EWO_Period2 | default(0) }};
+    shift = {{ ElliottWave_Indi_EWO_Shift | default(0) }};
+  }
+} indi_ewo_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_ElliottWave_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_ElliottWave_Params_{{ Timeframe }}() : StgParams(stg_ewo_defaults) {
+    lot_size = {{ ElliottWave_LotSize | default(0) }};
+    signal_open_method = {{ ElliottWave_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ ElliottWave_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ ElliottWave_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ ElliottWave_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ ElliottWave_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ ElliottWave_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ ElliottWave_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ ElliottWave_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ ElliottWave_TickFilterMethod  | default(1) }};
+    max_spread = {{ ElliottWave_MaxSpread | default(0) }};
+  }
+} stg_ewo_{{ Timeframe | lower }};

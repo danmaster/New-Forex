@@ -1,0 +1,7 @@
+; Optimize max spread param.
+AC_MaxSpread,1=10
+AC_MaxSpread,2=10
+AC_MaxSpread,3=40
+AC_MaxSpread,F=1
+AC_SignalOpenFilterMethod=1
+AC_TickFilterMethod=1

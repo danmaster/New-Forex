@@ -1,0 +1,29 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_Pivot_Params_{{ Timeframe }} : PivotIndiParams {
+  Indi_Pivot_Params_{{ Timeframe }}() : PivotIndiParams(indi_pivot_defaults, PERIOD_{{ Timeframe }}) {
+    shift = {{ Pivot_Indi_Pivot_Shift | default(0) }};
+  }
+} indi_pivot_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_Pivot_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_Pivot_Params_{{ Timeframe }}() : StgParams(stg_pivot_defaults) {
+    lot_size = {{ Pivot_LotSize | default(0) }};
+    signal_open_method = {{ Pivot_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ Pivot_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ Pivot_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ Pivot_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ Pivot_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ Pivot_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ Pivot_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ Pivot_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ Pivot_TickFilterMethod  | default(1) }};
+    max_spread = {{ Pivot_MaxSpread | default(0) }};
+  }
+} stg_pivot_{{ Timeframe | lower }};

@@ -1,0 +1,7 @@
+; Optimize signal close level param.
+RVI_SignalCloseLevel,1=10
+RVI_SignalCloseLevel,2=5
+RVI_SignalCloseLevel,3=40
+RVI_SignalCloseLevel,F=1
+RVI_SignalOpenFilterMethod=1
+RVI_TickFilterMethod=1

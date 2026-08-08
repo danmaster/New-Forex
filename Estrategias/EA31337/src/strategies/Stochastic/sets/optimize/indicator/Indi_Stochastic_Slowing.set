@@ -1,0 +1,6 @@
+Stochastic_Indi_Stochastic_Slowing,1=5
+Stochastic_Indi_Stochastic_Slowing,2=5
+Stochastic_Indi_Stochastic_Slowing,3=30
+Stochastic_Indi_Stochastic_Slowing,F=1
+Stochastic_SignalOpenFilterMethod=1
+Stochastic_TickFilterMethod=1

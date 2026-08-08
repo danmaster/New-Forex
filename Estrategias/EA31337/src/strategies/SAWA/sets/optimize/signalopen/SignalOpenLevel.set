@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+SAWA_SignalOpenFilterMethod=1
+SAWA_SignalOpenLevel,1=0
+SAWA_SignalOpenLevel,2=1
+SAWA_SignalOpenLevel,3=10
+SAWA_SignalOpenLevel,F=1
+SAWA_TickFilterMethod=1

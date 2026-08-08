@@ -1,0 +1,7 @@
+; Optimize max spread param.
+Bands_MaxSpread,1=10
+Bands_MaxSpread,2=10
+Bands_MaxSpread,3=40
+Bands_MaxSpread,F=1
+Bands_SignalOpenFilterMethod=1
+Bands_TickFilterMethod=1

@@ -1,0 +1,7 @@
+; Optimize signal open boost method param.
+BWMFI_SignalOpenBoostMethod,1=1
+BWMFI_SignalOpenBoostMethod,2=1
+BWMFI_SignalOpenBoostMethod,3=8
+BWMFI_SignalOpenBoostMethod,F=1
+BWMFI_SignalOpenFilterMethod=1
+BWMFI_TickFilterMethod=1

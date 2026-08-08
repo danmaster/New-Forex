@@ -1,0 +1,7 @@
+; Optimize signal open level param.
+SVE_Bollinger_Bands_SignalOpenFilterMethod=1
+SVE_Bollinger_Bands_SignalOpenLevel,1=0
+SVE_Bollinger_Bands_SignalOpenLevel,2=1
+SVE_Bollinger_Bands_SignalOpenLevel,3=10
+SVE_Bollinger_Bands_SignalOpenLevel,F=1
+SVE_Bollinger_Bands_TickFilterMethod=1

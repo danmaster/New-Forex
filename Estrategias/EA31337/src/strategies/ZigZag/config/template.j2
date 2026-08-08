@@ -1,0 +1,32 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_ZigZag_Params_{{ Timeframe }} : ZigZagParams {
+  Indi_ZigZag_Params_{{ Timeframe }}() : ZigZagParams(indi_zigzag_defaults, PERIOD_{{ Timeframe }}) {
+    backstep = {{ ZigZag_Indi_ZigZag_Backstep | default(0) }};
+    depth = {{ ZigZag_Indi_ZigZag_Depth | default(0) }};
+    deviation = {{ ZigZag_Indi_ZigZag_Deviation | default(0) }};
+    shift = {{ ZigZag_Indi_ZigZag_Shift | default(0) }};
+  }
+} indi_zigzag_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_ZigZag_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_ZigZag_Params_{{ Timeframe }}() : StgParams(stg_zigzag_defaults) {
+    lot_size = {{ ZigZag_LotSize | default(0) }};
+    signal_open_method = {{ ZigZag_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ ZigZag_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ ZigZag_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ ZigZag_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ ZigZag_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ ZigZag_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ ZigZag_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ ZigZag_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ ZigZag_TickFilterMethod  | default(1) }};
+    max_spread = {{ ZigZag_MaxSpread | default(0) }};
+  }
+} stg_zigzag_{{ Timeframe | lower }};

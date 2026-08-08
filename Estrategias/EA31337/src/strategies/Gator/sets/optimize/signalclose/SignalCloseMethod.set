@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+Gator_SignalCloseMethod,1=-4
+Gator_SignalCloseMethod,2=1
+Gator_SignalCloseMethod,3=4
+Gator_SignalCloseMethod,F=1
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1

@@ -1,0 +1,16 @@
+Bands_Indi_Bands_Applied_Price,1=0
+Bands_Indi_Bands_Applied_Price,2=0
+Bands_Indi_Bands_Applied_Price,3=6
+Bands_Indi_Bands_Applied_Price,F=1
+Bands_Indi_Bands_Applied_Price={{ applied_price | replace("(ENUM_APPLIED_PRICE)", "") | int | default(0) }}
+Bands_Indi_Bands_Deviation={{ (deviation | default(0) | float) }}
+Bands_Indi_Bands_Deviation={{ deviation | default(0) }}
+Bands_Indi_Bands_HShift={{ bshift | default(0) }}
+Bands_Indi_Bands_MA_Method={{ ma_method | default(0) }}
+Bands_Indi_Bands_Period={{ (period | default(0) | int) }}
+Bands_Indi_Bands_Shift={{ (shift | default(0) | int) }}
+Bands_LotSize={{ lot_size | default(0) }}
+Bands_PriceStopMethod=0
+Bands_SignalOpenFilterMethod=1
+Bands_SignalOpenLevel={{ signal_open_level | default(0) | float }}
+Bands_TickFilterMethod=1

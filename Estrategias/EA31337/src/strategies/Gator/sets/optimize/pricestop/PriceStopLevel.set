@@ -1,0 +1,7 @@
+; Optimize price stop level param.
+Gator_PriceStopLevel,1=10
+Gator_PriceStopLevel,2=5
+Gator_PriceStopLevel,3=40
+Gator_PriceStopLevel,F=1
+Gator_SignalOpenFilterMethod=1
+Gator_TickFilterMethod=1

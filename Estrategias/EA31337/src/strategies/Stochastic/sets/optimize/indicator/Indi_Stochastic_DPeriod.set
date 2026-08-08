@@ -1,0 +1,6 @@
+Stochastic_Indi_Stochastic_DPeriod,1=5
+Stochastic_Indi_Stochastic_DPeriod,2=5
+Stochastic_Indi_Stochastic_DPeriod,3=30
+Stochastic_Indi_Stochastic_DPeriod,F=1
+Stochastic_SignalOpenFilterMethod=1
+Stochastic_TickFilterMethod=1

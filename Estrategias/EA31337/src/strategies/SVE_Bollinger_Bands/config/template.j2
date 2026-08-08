@@ -1,0 +1,32 @@
+/**
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
+
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_SVE_Bollinger_Bands_Params_{{ Timeframe }} : Indi_SVE_Bollinger_Bands_Params {
+  Indi_SVE_Bollinger_Bands_Params_{{ Timeframe }}() : Indi_SVE_Bollinger_Bands_Params(indi_svebbands_defaults, PERIOD_{{ Timeframe }}) {
+    applied_price = (ENUM_APPLIED_PRICE){{ SVE_Bollinger_Bands_Indi_SVE_Bollinger_Bands_Applied_Price | default(0) }};
+    ma_method = (ENUM_MA_METHOD){{ SVE_Bollinger_Bands_Indi_SVE_Bollinger_Bands_MA_Method | default(0) }};
+    period = {{ SVE_Bollinger_Bands_Indi_SVE_Bollinger_Bands_Period | default(0) }};
+    shift = {{ SVE_Bollinger_Bands_Shift | default(0) }};
+  }
+} indi_svebbands_{{ Timeframe | lower }};
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_SVE_Bollinger_Bands_Params_{{ Timeframe }} : StgParams {
+  // Struct constructor.
+  Stg_SVE_Bollinger_Bands_Params_{{ Timeframe }}() : StgParams(stg_svebbands_defaults) {
+    lot_size = {{ SVE_Bollinger_Bands_LotSize | default(0) }};
+    signal_open_method = {{ SVE_Bollinger_Bands_SignalOpenMethod | default(0) }};
+    signal_open_filter_method = {{ SVE_Bollinger_Bands_SignalOpenFilterMethod | default(1) }};
+    signal_open_level = (float){{ SVE_Bollinger_Bands_SignalOpenLevel | default(0) }};
+    signal_open_boost = {{ SVE_Bollinger_Bands_SignalOpenBoostMethod | default(0) }};
+    signal_close_method = {{ SVE_Bollinger_Bands_SignalCloseMethod | default(0) }};
+    signal_close_level = (float){{ SVE_Bollinger_Bands_SignalCloseLevel | default(0) }};
+    price_stop_method = {{ SVE_Bollinger_Bands_PriceStopMethod | default(0) }};
+    price_stop_level = (float){{ SVE_Bollinger_Bands_SignalCloseLevel | default(1) }};
+    tick_filter_method = {{ SVE_Bollinger_Bands_TickFilterMethod  | default(1) }};
+    max_spread = {{ SVE_Bollinger_Bands_MaxSpread | default(0) }};
+  }
+} stg_svebbands_{{ Timeframe | lower }};

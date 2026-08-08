@@ -1,0 +1,7 @@
+; Optimize strategy indicator's Force period param.
+Force_Indi_Force_Period,1=4
+Force_Indi_Force_Period,2=4
+Force_Indi_Force_Period,3=24
+Force_Indi_Force_Period,F=1
+Force_SignalOpenFilterMethod=1
+Force_TickFilterMethod=1

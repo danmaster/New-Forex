@@ -1,0 +1,7 @@
+; Optimize signal open boost method param.
+Force_SignalOpenBoostMethod,1=1
+Force_SignalOpenBoostMethod,2=1
+Force_SignalOpenBoostMethod,3=8
+Force_SignalOpenBoostMethod,F=1
+Force_SignalOpenFilterMethod=1
+Force_TickFilterMethod=1

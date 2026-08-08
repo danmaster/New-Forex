@@ -1,0 +1,7 @@
+; Optimize signal close method param.
+CCI_SignalCloseMethod,1=-4
+CCI_SignalCloseMethod,2=1
+CCI_SignalCloseMethod,3=4
+CCI_SignalCloseMethod,F=1
+CCI_SignalOpenFilterMethod=1
+CCI_TickFilterMethod=1

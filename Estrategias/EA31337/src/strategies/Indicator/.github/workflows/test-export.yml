@@ -1,0 +1,94 @@
+---
+name: Test (Export)
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    branches:
+      - 'master'
+      - 'dev*'
+    paths-ignore:
+      - '*.md'
+  push:
+    branches:
+      - 'master'
+      - 'dev*'
+    paths-ignore:
+      - '*.md'
+
+jobs:
+  Compile:
+    defaults:
+      run:
+        shell: powershell
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          path: Include/EA31337-classes
+          ref: v3.000.2
+          repository: EA31337/EA31337-classes
+      - name: Compile for MQL4
+        uses: fx31337/mql-compile-action@master
+        with:
+          include: .
+          init-platform: true
+          mt-version: 5.0.0.2361
+          path: Stg_Indicator.mq4
+          verbose: true
+      - name: Compile for MQL5
+        uses: fx31337/mql-compile-action@master
+        with:
+          include: .
+          mt-version: 5.0.0.2515
+          path: Stg_Indicator.mq5
+          verbose: true
+      - name: List compiled files
+        run: '(Get-ChildItem -Recurse -Path . -Include *.ex[45]).fullname'
+      - run: Get-Location
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: EA
+          path: '*.ex[45]'
+  Test:
+    needs: Compile
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ea-param:
+          - Indicator_Indi_Indicator_DataExportMethod=0
+          - Indicator_Indi_Indicator_DataExportMethod=1
+          - Indicator_Indi_Indicator_DataExportMethod=2
+          - Indicator_Indi_Indicator_DataExportMethod=3
+          - Indicator_Indi_Indicator_DataExportMethod=4
+        month: [1]
+        year: [2020]
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: EA
+      - uses: finnp/create-file-action@master
+        env:
+          FILE_NAME: Stg_Indicator.set
+          FILE_DATA: ${{ matrix.ea-param }}
+      - name: Run strategy
+        uses: ea31337/mql-tester-action@dev
+        with:
+          BtDeposit: 100000
+          BtDest: ${{ github.workspace }}/_results
+          BtMonths: ${{ matrix.month }}
+          BtYears: ${{ matrix.year }}
+          OptFormatBrief: true
+          OptFormatJson: true
+          OptVerbose: true
+          SetFile: ${{ github.workspace }}/Stg_Indicator.set
+          TestExpert: Stg_Indicator
+          TestPeriod: M1
+          TestReportName: Report-${{ matrix.year }}-${{ matrix.month }}
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: results
+          path: ${{ github.workspace }}/_results/*.*
