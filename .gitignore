@@ -8,3 +8,6 @@
 # Archivos del sistema
 .DS_Store
 Thumbs.db
+
+# Repositorio externo de EAs (EA31337)
+Estrategias/EA31337/
