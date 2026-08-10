@@ -1,6 +1,0 @@
-; Optimize signal open filter method param.
-TMAT_SVEBB_SignalOpenFilterMethod,1=0
-TMAT_SVEBB_SignalOpenFilterMethod,2=1
-TMAT_SVEBB_SignalOpenFilterMethod,3=31
-TMAT_SVEBB_SignalOpenFilterMethod,F=1
-TMAT_SVEBB_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize indicator's shift param.
-OsMA_Indi_OsMA_Shift,1=0
-OsMA_Indi_OsMA_Shift,2=1
-OsMA_Indi_OsMA_Shift,3=4
-OsMA_Indi_OsMA_Shift,F=1
-OsMA_SignalOpenFilterMethod=1
-OsMA_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize strategy indicator's MACD period param.
-MACD_Indi_MACD_Period_Slow,1=4
-MACD_Indi_MACD_Period_Slow,2=4
-MACD_Indi_MACD_Period_Slow,3=24
-MACD_Indi_MACD_Period_Slow,F=1
-MACD_SignalOpenFilterMethod=1
-MACD_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize signal close level param.
-BearsPower_SignalCloseLevel,1=10
-BearsPower_SignalCloseLevel,2=5
-BearsPower_SignalCloseLevel,3=40
-BearsPower_SignalCloseLevel,F=1
-BearsPower_SignalOpenFilterMethod=1
-BearsPower_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize signal close method param.
-Stochastic_SignalCloseMethod,1=-4
-Stochastic_SignalCloseMethod,2=1
-Stochastic_SignalCloseMethod,3=4
-Stochastic_SignalCloseMethod,F=1
-Stochastic_SignalOpenFilterMethod=1
-Stochastic_TickFilterMethod=1

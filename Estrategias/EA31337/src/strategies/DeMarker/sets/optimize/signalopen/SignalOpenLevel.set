@@ -1,7 +1,0 @@
-; Optimize signal open level param.
-DeMarker_SignalOpenFilterMethod=1
-DeMarker_SignalOpenLevel,1=0
-DeMarker_SignalOpenLevel,2=1
-DeMarker_SignalOpenLevel,3=10
-DeMarker_SignalOpenLevel,F=1
-DeMarker_TickFilterMethod=1

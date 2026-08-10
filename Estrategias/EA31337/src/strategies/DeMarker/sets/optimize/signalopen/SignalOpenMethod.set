@@ -1,7 +1,0 @@
-; Optimize signal open method param.
-DeMarker_SignalOpenFilterMethod=1
-DeMarker_SignalOpenMethod,1=-4
-DeMarker_SignalOpenMethod,2=1
-DeMarker_SignalOpenMethod,3=4
-DeMarker_SignalOpenMethod,F=1
-DeMarker_TickFilterMethod=1

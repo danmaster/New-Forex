@@ -1,7 +1,0 @@
-; Optimize indicator's shift param.
-BearsPower_Indi_BearsPower_Shift,1=0
-BearsPower_Indi_BearsPower_Shift,2=1
-BearsPower_Indi_BearsPower_Shift,3=4
-BearsPower_Indi_BearsPower_Shift,F=1
-BearsPower_SignalOpenFilterMethod=1
-BearsPower_TickFilterMethod=1

@@ -1,6 +1,0 @@
-; Optimize signal open filter method param.
-Gator_SignalOpenFilterMethod,1=0
-Gator_SignalOpenFilterMethod,2=1
-Gator_SignalOpenFilterMethod,3=31
-Gator_SignalOpenFilterMethod,F=1
-Gator_TickFilterMethod=1

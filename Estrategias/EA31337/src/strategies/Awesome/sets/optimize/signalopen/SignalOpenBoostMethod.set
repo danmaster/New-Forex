@@ -1,7 +1,0 @@
-; Optimize signal open boost method param.
-Awesome_SignalOpenBoostMethod,1=1
-Awesome_SignalOpenBoostMethod,2=1
-Awesome_SignalOpenBoostMethod,3=8
-Awesome_SignalOpenBoostMethod,F=1
-Awesome_SignalOpenFilterMethod=1
-Awesome_TickFilterMethod=1

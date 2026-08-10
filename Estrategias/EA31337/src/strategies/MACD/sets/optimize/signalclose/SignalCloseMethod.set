@@ -1,7 +1,0 @@
-; Optimize signal close method param.
-MACD_SignalCloseMethod,1=-4
-MACD_SignalCloseMethod,2=1
-MACD_SignalCloseMethod,3=4
-MACD_SignalCloseMethod,F=1
-MACD_SignalOpenFilterMethod=1
-MACD_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize signal open level param.
-Stochastic_SignalOpenFilterMethod=1
-Stochastic_SignalOpenLevel,1=0
-Stochastic_SignalOpenLevel,2=1
-Stochastic_SignalOpenLevel,3=10
-Stochastic_SignalOpenLevel,F=1
-Stochastic_TickFilterMethod=1

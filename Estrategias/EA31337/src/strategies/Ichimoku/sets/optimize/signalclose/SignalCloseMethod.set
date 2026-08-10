@@ -1,7 +1,0 @@
-; Optimize signal close method param.
-Ichimoku_SignalCloseMethod,1=-4
-Ichimoku_SignalCloseMethod,2=1
-Ichimoku_SignalCloseMethod,3=4
-Ichimoku_SignalCloseMethod,F=1
-Ichimoku_SignalOpenFilterMethod=1
-Ichimoku_TickFilterMethod=1

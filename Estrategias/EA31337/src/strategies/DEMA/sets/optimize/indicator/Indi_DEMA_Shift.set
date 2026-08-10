@@ -1,7 +1,0 @@
-; Optimize indicator's shift param.
-DEMA_Indi_DEMA_Shift,1=0
-DEMA_Indi_DEMA_Shift,2=1
-DEMA_Indi_DEMA_Shift,3=4
-DEMA_Indi_DEMA_Shift,F=1
-DEMA_SignalOpenFilterMethod=1
-DEMA_TickFilterMethod=1

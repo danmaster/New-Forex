@@ -1,7 +1,0 @@
-; Optimize signal open boost method param.
-CCI_SignalOpenBoostMethod,1=1
-CCI_SignalOpenBoostMethod,2=1
-CCI_SignalOpenBoostMethod,3=8
-CCI_SignalOpenBoostMethod,F=1
-CCI_SignalOpenFilterMethod=1
-CCI_TickFilterMethod=1

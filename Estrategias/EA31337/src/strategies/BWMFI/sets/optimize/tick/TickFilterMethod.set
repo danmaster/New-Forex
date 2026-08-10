@@ -1,6 +1,0 @@
-; Optimize tick filter method param.
-BWMFI_SignalOpenFilterMethod=1
-BWMFI_TickFilterMethod,1=1
-BWMFI_TickFilterMethod,2=1
-BWMFI_TickFilterMethod,3=32
-BWMFI_TickFilterMethod,F=1

@@ -1,7 +1,0 @@
-; Optimize max spread param.
-Ichimoku_MaxSpread,1=10
-Ichimoku_MaxSpread,2=10
-Ichimoku_MaxSpread,3=40
-Ichimoku_MaxSpread,F=1
-Ichimoku_SignalOpenFilterMethod=1
-Ichimoku_TickFilterMethod=1

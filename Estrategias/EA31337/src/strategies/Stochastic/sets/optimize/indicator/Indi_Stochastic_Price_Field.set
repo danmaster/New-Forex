@@ -1,7 +1,0 @@
-; Optimize strategy indicator's Stochastic params.
-Stochastic_Indi_Stochastic_Price_Field,1=0
-Stochastic_Indi_Stochastic_Price_Field,2=1
-Stochastic_Indi_Stochastic_Price_Field,3=2
-Stochastic_Indi_Stochastic_Price_Field,F=1
-Stochastic_SignalOpenFilterMethod=1
-Stochastic_TickFilterMethod=1

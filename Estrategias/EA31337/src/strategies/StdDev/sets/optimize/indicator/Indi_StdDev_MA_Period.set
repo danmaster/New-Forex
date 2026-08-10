@@ -1,7 +1,0 @@
-; Optimize strategy indicator's StdDev ma_period param.
-StdDev_Indi_StdDev_MA_Period,1=4
-StdDev_Indi_StdDev_MA_Period,2=4
-StdDev_Indi_StdDev_MA_Period,3=24
-StdDev_Indi_StdDev_MA_Period,F=1
-StdDev_SignalOpenFilterMethod=1
-StdDev_TickFilterMethod=1

@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>Strategy Tester: Anti_Asian_V2.00</title>
+    <meta name="version" content="Build 1473">
+    <meta name="server" content="SkillingLimited-Demo">
+    <style type="text/css" media="screen">
+    <!--
+    td { font: 8pt Tahoma,Arial; }
+    //-->
+    </style>
+    <style type="text/css" media="print">
+    <!--
+    td { font: 7pt Tahoma,Arial; }
+    //-->
+    </style>
+    <style type="text/css">
+    <!--
+    .msdate { mso-number-format:"General Date"; }
+    .mspt   { mso-number-format:\#\,\#\#0\.00;  }
+    //-->
+    </style>
+  </head>
+<body topmargin=1 marginheight=1>
+<div align=center>
+<div style="font: 20pt Times New Roman"><b>Strategy Tester Report</b></div>
+<div style="font: 16pt Times New Roman"><b>Anti_Asian_V2.00</b></div>
+<div style="font: 10pt Times New Roman"><b>SkillingLimited-Demo (Build 1473)</b></div><br>
+
+<table width=820 cellspacing=1 cellpadding=3 border=0>
+<tr align=left><td colspan=2>Símbolo</td><td colspan=4>EURUSD (Euro vs. US Dollar)</td></tr>
+<tr align=left><td colspan=2>Período</td><td colspan=4>15 minutos (M5)  2026.01.01 00:00 - 2026.07.30 23:45    (2026.01.01 - 2026.07.31)</td></tr>
+<tr align=left><td colspan=2>Modelo</td><td colspan=4>Cada tick (el método más preciso basado en todos los períodos menores disponibles)</td></tr>
+<tr align=left><td colspan=2>Parámetros</td><td colspan=4>General_Settings="--- AJUSTES GENERALES ---"; UseDynamicLot=true; 
+RiskPercent=1; InpSendPush=true; 
+FixedLotSize=0.1; MinBoxPips=10; MaxBoxPips=50; MagicNumber=200200; StartHour=3; EndHour=9; MaxEntryHour=13; RefGMTOffset=3; Days_Settings="--- FILTRO DE DIAS ---"; TradeMonday=true; 
+TradeTuesday=true; 
+TradeWednesday=true; 
+TradeThursday=true; 
+TradeFriday=false; 
+Target_Settings="--- OBJETIVOS DE BENEFICIO ---"; FixedRiskReward=3; UseFixedRR=false; 
+Trailing_Settings="--- TRAILING STOP ---"; UseTrailingStop=true; 
+TrailingPips=15; StopLoss_Settings="--- AJUSTES DE STOP LOSS ---"; MinSLPips=5; ExternalSLDistancePips=12; MinRR=1.2; Management_Settings="--- GESTION DE OPERACIONES ---"; UseAutoBreakEven=true; 
+BreakEvenActivation=15; BreakEvenExtraPips=1; UsePartialClose=false; 
+PartialClosePips=15; PartialClosePercent=50; MaxTradesPerDay=1; CloseAtEndOfDay=false; 
+Mode_Settings="--- MODO CONTINUACION (SMC) ---"; MinBreakoutTotalPips=5; MinBreakoutBodyPips=2; MaxPullbackIntoBoxPercent=40; MaxPatternBars=8; JudasPA_Settings="--- FILTRO JUDAS PRICE ACTION (V2.16) ---"; UseJudasPAFilter=false; 
+MinWickRejectionPercent=30; RejectionCloseBufferPips=5; JudasLookbackCandles=12; News_Settings="--- NEWS FILTER (API) ---"; UseNewsFilter=true; 
+MinsBeforeNews=30; MinsAfterNews=30; FilterHighImpact=true; 
+FilterMedImpact=false; 
+Trend_Settings="--- FILTRO DE TENDENCIA ---"; UseTrendFilter=true; 
+TrendTF=60; FastEMAPeriod=50; SlowEMAPeriod=200; </td></tr>
+<tr align=left><td colspan=2><tr align=left><td>Barras en el historial</td><td align=right>15369</td><td>Ticks modelados</td><td align=right>15555944</td><td>Calidad del modelado</td><td align=right>90.00%</td></tr>
+<tr align=left><td>Errores de desalineación de gráficos</td><td align=right>6</td><td></td><td align=right></td><td></td><td align=right></td></tr>
+<tr height=8><td colspan=6></td></tr>
+<tr align=left><td>Depósito inicial</td><td align=right>10000.00</td><td></td><td align=right></td><td>Spread</td><td align=right>10</td></tr>
+<tr align=left><td>Beneficio neto total</td><td align=right>123.56</td><td>Beneficio bruto</td><td align=right>225.40</td><td>Pérdida bruta</td><td align=right>-101.84</td></tr>
+<tr align=left><td>Factor de beneficio</td><td align=right>2.21</td><td>Beneficio esperado</td><td align=right>61.78</td><td></td><td align=right></td></tr>
+<tr align=left><td>Drawdown absoluto</td><td align=right>80.04</td><td>Drawdown máximo</td><td align=right>110.40 (1.10%)</td><td>Drawdown relativo</td><td align=right>1.10% (110.40)</td></tr>
+<tr height=8><td colspan=6></td></tr>
+<tr align=left><td>Total de transacciones</td><td align=right>2</td><td>Posiciones cortas (% ganadoras)</td><td align=right>0 (0.00%)</td><td>Posiciones largas (% ganadoras)</td><td align=right>2 (50.00%)</td></tr>
+<tr align=left><td colspan=2 align=right></td><td>Transacciones rentables (% del total)</td><td align=right>1 (50.00%)</td><td>Transacciones no rentables (% del total)</td><td align=right>1 (50.00%)</td></tr>
+<tr align=left><td colspan=2 align=right>Mayor</td><td>transacción rentable</td><td align=right>225.40</td><td>transacción no rentable</td><td align=right>-101.84</td></tr>
+<tr align=left><td colspan=2 align=right>Media</td><td>transacción rentable</td><td align=right>225.40</td><td>transacción no rentable</td><td align=right>-101.84</td></tr>
+<tr align=left><td colspan=2 align=right>Número máximo</td><td>ganancias consecutivas (beneficio en dinero)</td><td align=right>1 (225.40)</td><td>pérdidas consecutivas (pérdidas en dinero)</td><td align=right>1 (-101.84)</td></tr>
+<tr align=left><td colspan=2 align=right>Máx.</td><td>beneficio consecutivo (número de ganancias)</td><td align=right>225.40 (1)</td><td>pérdidas consecutivas (número de pérdidas)</td><td align=right>-101.84 (1)</td></tr>
+<tr align=left><td colspan=2 align=right>Promedio</td><td>ganancias consecutivas</td><td align=right>1</td><td>pérdidas consecutivas</td><td align=right>1</td></tr>
+
+</table>
+<img src="Anti_Asian_V2.00_3.gif" width=820 height=200 border=0 alt="Graph"><br>
+<table width=820 cellspacing=1 cellpadding=3 border=0>
+<tr bgcolor="#C0C0C0" align=right><td>#</td><td>Tiempo</td><td>Tipo</td><td>Orden</td><td>Volumen</td><td>Precio</td><td>S / L</td><td>T / P</td><td>Beneficios</td><td>Balance</td></tr>
+<tr align=right><td>1</td><td class=msdate>2026.01.22 09:15</td><td>buy</td><td>1</td><td class=mspt>0.92</td><td style="mso-number-format:0\.00000;">1.16926</td><td style="mso-number-format:0\.00000;" align=right>1.16818</td><td style="mso-number-format:0\.00000;" align=right>1.17171</td><td colspan=2></td></tr>
+<tr bgcolor="#E0E0E0" align=right><td>2</td><td class=msdate>2026.01.22 16:22</td><td>modify</td><td>1</td><td class=mspt>0.92</td><td style="mso-number-format:0\.00000;">1.16926</td><td style="mso-number-format:0\.00000;" align=right>1.16936</td><td style="mso-number-format:0\.00000;" align=right>1.17171</td><td colspan=2></td></tr>
+<tr align=right><td>3</td><td class=msdate>2026.01.22 17:18</td><td>t/p</td><td>1</td><td class=mspt>0.92</td><td style="mso-number-format:0\.00000;">1.17171</td><td style="mso-number-format:0\.00000;" align=right>1.16936</td><td style="mso-number-format:0\.00000;" align=right>1.17171</td><td class=mspt>225.40</td><td class=mspt>10225.40</td></tr>
+<tr bgcolor="#E0E0E0" align=right><td>4</td><td class=msdate>2026.04.13 12:00</td><td>buy</td><td>2</td><td class=mspt>0.67</td><td style="mso-number-format:0\.00000;">1.16978</td><td style="mso-number-format:0\.00000;" align=right>1.16826</td><td style="mso-number-format:0\.00000;" align=right>1.17161</td><td colspan=2></td></tr>
+<tr align=right><td>5</td><td class=msdate>2026.04.13 12:51</td><td>s/l</td><td>2</td><td class=mspt>0.67</td><td style="mso-number-format:0\.00000;">1.16826</td><td style="mso-number-format:0\.00000;" align=right>1.16826</td><td style="mso-number-format:0\.00000;" align=right>1.17161</td><td class=mspt>-101.84</td><td class=mspt>10123.56</td></tr>
+
+</table>
+</div></body></html>

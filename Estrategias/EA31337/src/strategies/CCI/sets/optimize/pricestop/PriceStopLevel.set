@@ -1,7 +1,0 @@
-; Optimize price stop level param.
-CCI_PriceStopLevel,1=10
-CCI_PriceStopLevel,2=5
-CCI_PriceStopLevel,3=40
-CCI_PriceStopLevel,F=1
-CCI_SignalOpenFilterMethod=1
-CCI_TickFilterMethod=1

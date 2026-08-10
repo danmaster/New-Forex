@@ -1,6 +1,0 @@
-; Optimize signal open filter method param.
-BullsPower_SignalOpenFilterMethod,1=0
-BullsPower_SignalOpenFilterMethod,2=1
-BullsPower_SignalOpenFilterMethod,3=31
-BullsPower_SignalOpenFilterMethod,F=1
-BullsPower_TickFilterMethod=1

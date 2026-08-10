@@ -1,6 +1,0 @@
-; Optimize tick filter method param.
-Stochastic_SignalOpenFilterMethod=1
-Stochastic_TickFilterMethod,1=1
-Stochastic_TickFilterMethod,2=1
-Stochastic_TickFilterMethod,3=32
-Stochastic_TickFilterMethod,F=1

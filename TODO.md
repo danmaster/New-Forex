@@ -74,3 +74,18 @@ Comparativa `Asian_V2.70_1.htm` (regresión) vs `Asian_V2.70_2.htm` (baseline re
 - `VirtualLadderBE_LockRR` (nuevo input, 0.5): cierre a +0.5R en vez de +0.1R cuando el pico solo llegó a [1.0,1.3)R. En `Asian_V2.70_3.htm` recupera ~+82 USD (2 trades que regalaron su pico) sin tocar ningún otro trade.
 - `MinRR` 1.2 -> **1.5** (valor V2.63) aplicado para paliar la racha de SL de rango. Proyección trade-by-trade (`Asian_V2.70_2.htm`): rechaza Feb-25 (+102.6, WIN) + Apr-06 (-108, LOSS) + Jun-09 (-104.4, LOSS). Neto +556 -> ~+666, PF 1.66 -> ~2.06, racha 5 -> 3 (-529 -> -317), DD ~604 -> ~450. Validar en `Asian_V2.70_3.htm`.
 
+## Diagnóstico Anti_Asian_V2.00 (Continuación Breakout) - 2026-08-07
+Se analizaron los reportes `Anti_Asian_V2.00_6.htm` y `Anti_Asian_V2.00_7.htm` para entender la falta de operaciones y las pérdidas.
+
+### Hallazgos de lógica de la estrategia:
+1. **Filtro Anti-Judas (`MaxPullbackIntoBoxPercent`):** Inicialmente estaba en 40.0, lo que bloqueaba muchas operaciones. Al subirlo a 100.0, las operaciones pasaron de 7 a 15, pero el Win Rate cayó drásticamente (11% en largos). Esto demuestra que el filtro en 40.0 estaba haciendo bien su trabajo: nos protegía de barridos de liquidez reales (Judas Swings) que se adentraban mucho en la caja y acababan dándose la vuelta.
+2. **Trailing Stop Asfixiante:** Con un `TrailingPips = 15` y un `BreakEvenActivation = 15`, el SL es arrastrado muy cerca del precio impidiendo que alcance el TP estructural amplio (ancho de la caja proyectado 1:1), perdiendo operaciones por ruido de mercado normal en M15.
+3. **Misterio del MT4 Tester (`close at stop`):** Se clarificó que cierres a las 23:59 con "close at stop" ocurren porque se detiene la prueba o se acaba el periodo del historial, no porque el precio llegue realmente a ese SL (lo cual el reporte MT4 español marca simplemente como `s/l`).
+
+### Cambios Aplicados (V2.23)
+*   **SL Estructural SMC (Zona de Liquidez):** El SL se desancló del mínimo del amago y se fijó estructuralmente al suelo de la caja asiática (`asianLow`) para compras, y al techo (`asianHigh`) para ventas, más la distancia externa (`ExternalSLDistancePips`). Esto respeta verdaderas zonas institucionales.
+
+### Próximos Pasos (Para Mañana)
+*   **Backtest V2.23:** Probar la nueva versión con `MaxPullbackIntoBoxPercent` devuelto a 40.0.
+*   **Ajuste del Trailing:** Apagar el Trailing Stop (`UseTrailingStop = false`) o aumentarlo considerablemente (ej. 25-30 pips) para que los trades puedan respirar y llegar al TP estructural.
+*   **Filtro de Tendencia intradía:** Cambiar `TrendTF` de H1 a M15 o apagarlo para no bloquear continuaciones válidas con indicadores retrasados.

@@ -1,7 +1,0 @@
-; Optimize price stop level param.
-MACD_PriceStopLevel,1=10
-MACD_PriceStopLevel,2=5
-MACD_PriceStopLevel,3=40
-MACD_PriceStopLevel,F=1
-MACD_SignalOpenFilterMethod=1
-MACD_TickFilterMethod=1

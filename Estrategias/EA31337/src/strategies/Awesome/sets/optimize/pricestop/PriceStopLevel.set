@@ -1,7 +1,0 @@
-; Optimize price stop level param.
-Awesome_PriceStopLevel,1=10
-Awesome_PriceStopLevel,2=5
-Awesome_PriceStopLevel,3=40
-Awesome_PriceStopLevel,F=1
-Awesome_SignalOpenFilterMethod=1
-Awesome_TickFilterMethod=1

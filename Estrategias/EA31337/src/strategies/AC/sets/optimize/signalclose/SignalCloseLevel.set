@@ -1,7 +1,0 @@
-; Optimize signal close level param.
-AC_SignalCloseLevel,1=10
-AC_SignalCloseLevel,2=5
-AC_SignalCloseLevel,3=40
-AC_SignalCloseLevel,F=1
-AC_SignalOpenFilterMethod=1
-AC_TickFilterMethod=1

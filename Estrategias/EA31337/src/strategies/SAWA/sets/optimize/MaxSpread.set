@@ -1,7 +1,0 @@
-; Optimize max spread param.
-SAWA_MaxSpread,1=10
-SAWA_MaxSpread,2=10
-SAWA_MaxSpread,3=40
-SAWA_MaxSpread,F=1
-SAWA_SignalOpenFilterMethod=1
-SAWA_TickFilterMethod=1

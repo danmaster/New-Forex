@@ -1,7 +1,0 @@
-; Optimize max spread param.
-DEMA_MaxSpread,1=10
-DEMA_MaxSpread,2=10
-DEMA_MaxSpread,3=40
-DEMA_MaxSpread,F=1
-DEMA_SignalOpenFilterMethod=1
-DEMA_TickFilterMethod=1

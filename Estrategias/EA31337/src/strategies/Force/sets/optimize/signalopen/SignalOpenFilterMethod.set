@@ -1,6 +1,0 @@
-; Optimize signal open filter method param.
-Force_SignalOpenFilterMethod,1=0
-Force_SignalOpenFilterMethod,2=1
-Force_SignalOpenFilterMethod,3=31
-Force_SignalOpenFilterMethod,F=1
-Force_TickFilterMethod=1

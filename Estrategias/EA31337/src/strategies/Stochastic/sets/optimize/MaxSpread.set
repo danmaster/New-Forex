@@ -1,7 +1,0 @@
-; Optimize max spread param.
-Stochastic_MaxSpread,1=10
-Stochastic_MaxSpread,2=10
-Stochastic_MaxSpread,3=40
-Stochastic_MaxSpread,F=1
-Stochastic_SignalOpenFilterMethod=1
-Stochastic_TickFilterMethod=1

@@ -1,6 +1,0 @@
-; Optimize tick filter method param.
-CCI_SignalOpenFilterMethod=1
-CCI_TickFilterMethod,1=1
-CCI_TickFilterMethod,2=1
-CCI_TickFilterMethod,3=32
-CCI_TickFilterMethod,F=1

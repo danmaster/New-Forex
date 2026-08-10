@@ -1,7 +1,0 @@
-; Optimize max spread param.
-OsMA_MaxSpread,1=10
-OsMA_MaxSpread,2=10
-OsMA_MaxSpread,3=40
-OsMA_MaxSpread,F=1
-OsMA_SignalOpenFilterMethod=1
-OsMA_TickFilterMethod=1

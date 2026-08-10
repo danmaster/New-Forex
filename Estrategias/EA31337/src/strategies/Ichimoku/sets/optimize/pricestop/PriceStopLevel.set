@@ -1,7 +1,0 @@
-; Optimize price stop level param.
-Ichimoku_PriceStopLevel,1=10
-Ichimoku_PriceStopLevel,2=5
-Ichimoku_PriceStopLevel,3=40
-Ichimoku_PriceStopLevel,F=1
-Ichimoku_SignalOpenFilterMethod=1
-Ichimoku_TickFilterMethod=1

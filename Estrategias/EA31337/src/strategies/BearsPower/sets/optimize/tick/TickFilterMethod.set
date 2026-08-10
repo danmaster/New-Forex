@@ -1,6 +1,0 @@
-; Optimize tick filter method param.
-BearsPower_SignalOpenFilterMethod=1
-BearsPower_TickFilterMethod,1=1
-BearsPower_TickFilterMethod,2=1
-BearsPower_TickFilterMethod,3=32
-BearsPower_TickFilterMethod,F=1

@@ -1,7 +1,0 @@
-; Optimize strategy shift param.
-Stochastic_Shift,1=0
-Stochastic_Shift,2=1
-Stochastic_Shift,3=1
-Stochastic_Shift,F=1
-Stochastic_SignalOpenFilterMethod=1
-Stochastic_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize indicator's shift param.
-CCI_Indi_CCI_Shift,1=0
-CCI_Indi_CCI_Shift,2=1
-CCI_Indi_CCI_Shift,3=4
-CCI_Indi_CCI_Shift,F=1
-CCI_SignalOpenFilterMethod=1
-CCI_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize signal open boost method param.
-BearsPower_SignalOpenBoostMethod,1=1
-BearsPower_SignalOpenBoostMethod,2=1
-BearsPower_SignalOpenBoostMethod,3=8
-BearsPower_SignalOpenBoostMethod,F=1
-BearsPower_SignalOpenFilterMethod=1
-BearsPower_TickFilterMethod=1

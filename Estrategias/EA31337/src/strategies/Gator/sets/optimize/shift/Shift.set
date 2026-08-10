@@ -1,7 +1,0 @@
-; Optimize strategy shift param.
-Gator_Shift,1=0
-Gator_Shift,2=1
-Gator_Shift,3=1
-Gator_Shift,F=1
-Gator_SignalOpenFilterMethod=1
-Gator_TickFilterMethod=1

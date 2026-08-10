@@ -1,8 +1,0 @@
-; Optimize price stop method param.
-Awesome_PriceStopMethod,1=0
-Awesome_PriceStopMethod,2=1
-Awesome_PriceStopMethod,3=4
-Awesome_PriceStopMethod,F=1
-Awesome_OrderCloseTime=-20
-Awesome_SignalOpenFilterMethod=1
-Awesome_TickFilterMethod=1

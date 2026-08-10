@@ -1,7 +1,0 @@
-; Optimize signal open method param.
-MACD_SignalOpenFilterMethod=1
-MACD_SignalOpenMethod,1=-4
-MACD_SignalOpenMethod,2=1
-MACD_SignalOpenMethod,3=4
-MACD_SignalOpenMethod,F=1
-MACD_TickFilterMethod=1

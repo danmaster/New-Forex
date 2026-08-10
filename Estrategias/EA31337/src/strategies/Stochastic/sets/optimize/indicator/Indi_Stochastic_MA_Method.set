@@ -1,7 +1,0 @@
-; Optimize strategy indicator's Stochastic params.
-Stochastic_Indi_Stochastic_MA_Method,1=0
-Stochastic_Indi_Stochastic_MA_Method,2=1
-Stochastic_Indi_Stochastic_MA_Method,3=3
-Stochastic_Indi_Stochastic_MA_Method,F=1
-Stochastic_SignalOpenFilterMethod=1
-Stochastic_TickFilterMethod=1

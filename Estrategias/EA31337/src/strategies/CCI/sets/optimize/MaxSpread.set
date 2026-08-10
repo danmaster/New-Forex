@@ -1,7 +1,0 @@
-; Optimize max spread param.
-CCI_MaxSpread,1=10
-CCI_MaxSpread,2=10
-CCI_MaxSpread,3=40
-CCI_MaxSpread,F=1
-CCI_SignalOpenFilterMethod=1
-CCI_TickFilterMethod=1

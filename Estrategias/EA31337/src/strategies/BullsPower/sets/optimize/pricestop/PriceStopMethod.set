@@ -1,8 +1,0 @@
-; Optimize price stop method param.
-BullsPower_PriceStopMethod,1=0
-BullsPower_PriceStopMethod,2=1
-BullsPower_PriceStopMethod,3=4
-BullsPower_PriceStopMethod,F=1
-BullsPower_OrderCloseTime=-20
-BullsPower_SignalOpenFilterMethod=1
-BullsPower_TickFilterMethod=1

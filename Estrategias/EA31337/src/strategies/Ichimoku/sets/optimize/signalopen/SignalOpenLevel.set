@@ -1,7 +1,0 @@
-; Optimize signal open level param.
-Ichimoku_SignalOpenFilterMethod=1
-Ichimoku_SignalOpenLevel,1=0
-Ichimoku_SignalOpenLevel,2=1
-Ichimoku_SignalOpenLevel,3=10
-Ichimoku_SignalOpenLevel,F=1
-Ichimoku_TickFilterMethod=1

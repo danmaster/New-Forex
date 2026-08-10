@@ -1,7 +1,0 @@
-; Optimize signal open boost method param.
-OsMA_SignalOpenBoostMethod,1=1
-OsMA_SignalOpenBoostMethod,2=1
-OsMA_SignalOpenBoostMethod,3=8
-OsMA_SignalOpenBoostMethod,F=1
-OsMA_SignalOpenFilterMethod=1
-OsMA_TickFilterMethod=1

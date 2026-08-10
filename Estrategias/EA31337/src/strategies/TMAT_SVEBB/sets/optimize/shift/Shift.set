@@ -1,7 +1,0 @@
-; Optimize strategy shift param.
-TMAT_SVEBB_Shift,1=0
-TMAT_SVEBB_Shift,2=1
-TMAT_SVEBB_Shift,3=1
-TMAT_SVEBB_Shift,F=1
-TMAT_SVEBB_SignalOpenFilterMethod=1
-TMAT_SVEBB_TickFilterMethod=1

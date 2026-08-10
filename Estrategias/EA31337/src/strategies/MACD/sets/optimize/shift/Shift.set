@@ -1,7 +1,0 @@
-; Optimize strategy shift param.
-MACD_Shift,1=0
-MACD_Shift,2=1
-MACD_Shift,3=1
-MACD_Shift,F=1
-MACD_SignalOpenFilterMethod=1
-MACD_TickFilterMethod=1

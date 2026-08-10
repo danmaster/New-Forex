@@ -1,8 +1,0 @@
-; Optimize price stop method param.
-BWMFI_PriceStopMethod,1=0
-BWMFI_PriceStopMethod,2=1
-BWMFI_PriceStopMethod,3=4
-BWMFI_PriceStopMethod,F=1
-BWMFI_OrderCloseTime=-20
-BWMFI_SignalOpenFilterMethod=1
-BWMFI_TickFilterMethod=1

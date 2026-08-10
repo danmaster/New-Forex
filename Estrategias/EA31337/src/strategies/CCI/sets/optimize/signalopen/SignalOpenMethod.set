@@ -1,7 +1,0 @@
-; Optimize signal open method param.
-CCI_SignalOpenFilterMethod=1
-CCI_SignalOpenMethod,1=-4
-CCI_SignalOpenMethod,2=1
-CCI_SignalOpenMethod,3=4
-CCI_SignalOpenMethod,F=1
-CCI_TickFilterMethod=1

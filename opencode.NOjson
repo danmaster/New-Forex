@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "opencode-vision": {
+            "command": "python",
+            "args": [
+                "-m",
+                "opencode_vision.server"
+            ]
+        }
+    }
+}

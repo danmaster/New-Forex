@@ -1,7 +1,0 @@
-; Optimize signal open method param.
-Awesome_SignalOpenFilterMethod=1
-Awesome_SignalOpenMethod,1=-4
-Awesome_SignalOpenMethod,2=1
-Awesome_SignalOpenMethod,3=4
-Awesome_SignalOpenMethod,F=1
-Awesome_TickFilterMethod=1

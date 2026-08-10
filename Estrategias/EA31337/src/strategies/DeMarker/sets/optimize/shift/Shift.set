@@ -1,7 +1,0 @@
-; Optimize strategy shift param.
-DeMarker_Shift,1=0
-DeMarker_Shift,2=1
-DeMarker_Shift,3=1
-DeMarker_Shift,F=1
-DeMarker_SignalOpenFilterMethod=1
-DeMarker_TickFilterMethod=1

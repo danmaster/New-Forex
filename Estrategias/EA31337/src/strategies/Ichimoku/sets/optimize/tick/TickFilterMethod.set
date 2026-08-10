@@ -1,6 +1,0 @@
-; Optimize tick filter method param.
-Ichimoku_SignalOpenFilterMethod=1
-Ichimoku_TickFilterMethod,1=1
-Ichimoku_TickFilterMethod,2=1
-Ichimoku_TickFilterMethod,3=32
-Ichimoku_TickFilterMethod,F=1

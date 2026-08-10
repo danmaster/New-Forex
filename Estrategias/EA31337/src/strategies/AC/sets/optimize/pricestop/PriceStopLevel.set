@@ -1,7 +1,0 @@
-; Optimize price stop level param.
-AC_PriceStopLevel,1=10
-AC_PriceStopLevel,2=5
-AC_PriceStopLevel,3=40
-AC_PriceStopLevel,F=1
-AC_SignalOpenFilterMethod=1
-AC_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize strategy indicator's Gator applied price param.
-Gator_Indi_Gator_Applied_Price,1=0
-Gator_Indi_Gator_Applied_Price,2=0
-Gator_Indi_Gator_Applied_Price,3=6
-Gator_Indi_Gator_Applied_Price,F=1
-Gator_SignalOpenFilterMethod=1
-Gator_TickFilterMethod=1

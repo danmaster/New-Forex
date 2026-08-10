@@ -1,7 +1,0 @@
-; Optimize signal open level param.
-BullsPower_SignalOpenFilterMethod=1
-BullsPower_SignalOpenLevel,1=0
-BullsPower_SignalOpenLevel,2=1
-BullsPower_SignalOpenLevel,3=10
-BullsPower_SignalOpenLevel,F=1
-BullsPower_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize strategy shift param.
-BWMFI_Shift,1=0
-BWMFI_Shift,2=1
-BWMFI_Shift,3=1
-BWMFI_Shift,F=1
-BWMFI_SignalOpenFilterMethod=1
-BWMFI_TickFilterMethod=1

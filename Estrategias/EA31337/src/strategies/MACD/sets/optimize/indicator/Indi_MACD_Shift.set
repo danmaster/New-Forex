@@ -1,7 +1,0 @@
-; Optimize indicator's shift param.
-MACD_Indi_MACD_Shift,1=0
-MACD_Indi_MACD_Shift,2=1
-MACD_Indi_MACD_Shift,3=4
-MACD_Indi_MACD_Shift,F=1
-MACD_SignalOpenFilterMethod=1
-MACD_TickFilterMethod=1

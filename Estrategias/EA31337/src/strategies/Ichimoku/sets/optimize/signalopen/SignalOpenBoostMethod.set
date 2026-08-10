@@ -1,7 +1,0 @@
-; Optimize signal open boost method param.
-Ichimoku_SignalOpenBoostMethod,1=1
-Ichimoku_SignalOpenBoostMethod,2=1
-Ichimoku_SignalOpenBoostMethod,3=8
-Ichimoku_SignalOpenBoostMethod,F=1
-Ichimoku_SignalOpenFilterMethod=1
-Ichimoku_TickFilterMethod=1

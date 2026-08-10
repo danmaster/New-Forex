@@ -1,7 +1,0 @@
-; Optimize price stop level param.
-TMAT_SVEBB_PriceStopLevel,1=10
-TMAT_SVEBB_PriceStopLevel,2=5
-TMAT_SVEBB_PriceStopLevel,3=40
-TMAT_SVEBB_PriceStopLevel,F=1
-TMAT_SVEBB_SignalOpenFilterMethod=1
-TMAT_SVEBB_TickFilterMethod=1

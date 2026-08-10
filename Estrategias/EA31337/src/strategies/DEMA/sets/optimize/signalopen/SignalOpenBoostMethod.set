@@ -1,7 +1,0 @@
-; Optimize signal open boost method param.
-DEMA_SignalOpenBoostMethod,1=1
-DEMA_SignalOpenBoostMethod,2=1
-DEMA_SignalOpenBoostMethod,3=8
-DEMA_SignalOpenBoostMethod,F=1
-DEMA_SignalOpenFilterMethod=1
-DEMA_TickFilterMethod=1

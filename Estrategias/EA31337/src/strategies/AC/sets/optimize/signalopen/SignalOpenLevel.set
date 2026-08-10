@@ -1,7 +1,0 @@
-; Optimize signal open level param.
-AC_SignalOpenFilterMethod=1
-AC_SignalOpenLevel,1=0
-AC_SignalOpenLevel,2=1
-AC_SignalOpenLevel,3=10
-AC_SignalOpenLevel,F=1
-AC_TickFilterMethod=1

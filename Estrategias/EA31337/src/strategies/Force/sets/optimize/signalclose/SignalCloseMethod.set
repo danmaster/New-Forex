@@ -1,7 +1,0 @@
-; Optimize signal close method param.
-Force_SignalCloseMethod,1=0
-Force_SignalCloseMethod,2=1
-Force_SignalCloseMethod,3=4
-Force_SignalCloseMethod,F=1
-Force_SignalOpenFilterMethod=1
-Force_TickFilterMethod=1

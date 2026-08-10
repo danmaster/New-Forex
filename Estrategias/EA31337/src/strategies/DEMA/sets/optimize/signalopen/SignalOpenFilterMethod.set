@@ -1,6 +1,0 @@
-; Optimize signal open filter method param.
-DEMA_SignalOpenFilterMethod,1=0
-DEMA_SignalOpenFilterMethod,2=1
-DEMA_SignalOpenFilterMethod,3=31
-DEMA_SignalOpenFilterMethod,F=1
-DEMA_TickFilterMethod=1

@@ -1,8 +1,0 @@
-; Optimize price stop method param.
-MACD_PriceStopMethod,1=0
-MACD_PriceStopMethod,2=1
-MACD_PriceStopMethod,3=4
-MACD_PriceStopMethod,F=1
-MACD_OrderCloseTime=-20
-MACD_SignalOpenFilterMethod=1
-MACD_TickFilterMethod=1

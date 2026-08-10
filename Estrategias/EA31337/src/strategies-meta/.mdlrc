@@ -1,4 +1,0 @@
-# The mdl/markdownlint configuration file.
-# Docs: https://github.com/markdownlint/markdownlint/blob/master/docs/RULES.md
-
-style ".mdlrc.style.rb"

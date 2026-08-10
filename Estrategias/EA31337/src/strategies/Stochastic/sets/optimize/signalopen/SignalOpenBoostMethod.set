@@ -1,7 +1,0 @@
-; Optimize signal open boost method param.
-Stochastic_SignalOpenBoostMethod,1=1
-Stochastic_SignalOpenBoostMethod,2=1
-Stochastic_SignalOpenBoostMethod,3=8
-Stochastic_SignalOpenBoostMethod,F=1
-Stochastic_SignalOpenFilterMethod=1
-Stochastic_TickFilterMethod=1

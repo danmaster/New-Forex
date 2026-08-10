@@ -1,7 +1,0 @@
-; Optimize strategy indicator's CCI period param.
-CCI_Indi_CCI_Period,1=4
-CCI_Indi_CCI_Period,2=4
-CCI_Indi_CCI_Period,3=24
-CCI_Indi_CCI_Period,F=1
-CCI_SignalOpenFilterMethod=1
-CCI_TickFilterMethod=1

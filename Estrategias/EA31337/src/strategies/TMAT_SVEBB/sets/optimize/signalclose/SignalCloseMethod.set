@@ -1,7 +1,0 @@
-; Optimize signal close method param.
-TMAT_SVEBB_SignalCloseMethod,1=-4
-TMAT_SVEBB_SignalCloseMethod,2=1
-TMAT_SVEBB_SignalCloseMethod,3=4
-TMAT_SVEBB_SignalCloseMethod,F=1
-TMAT_SVEBB_SignalOpenFilterMethod=1
-TMAT_SVEBB_TickFilterMethod=1

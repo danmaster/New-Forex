@@ -1,7 +1,0 @@
-; Optimize signal open level param.
-CCI_SignalOpenFilterMethod=1
-CCI_SignalOpenLevel,1=0
-CCI_SignalOpenLevel,2=1
-CCI_SignalOpenLevel,3=10
-CCI_SignalOpenLevel,F=1
-CCI_TickFilterMethod=1

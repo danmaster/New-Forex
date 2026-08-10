@@ -1,7 +1,0 @@
-; Optimize signal close level param.
-OsMA_SignalCloseLevel,1=10
-OsMA_SignalCloseLevel,2=5
-OsMA_SignalCloseLevel,3=40
-OsMA_SignalCloseLevel,F=1
-OsMA_SignalOpenFilterMethod=1
-OsMA_TickFilterMethod=1

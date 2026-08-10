@@ -1,7 +1,0 @@
-; Optimize strategy indicator's WPR period param.
-WPR_Indi_WPR_Period,1=2
-WPR_Indi_WPR_Period,2=2
-WPR_Indi_WPR_Period,3=12
-WPR_Indi_WPR_Period,F=1
-WPR_SignalOpenFilterMethod=1
-WPR_TickFilterMethod=1

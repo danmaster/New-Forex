@@ -1,7 +1,0 @@
-; Optimize price stop level param.
-BullsPower_PriceStopLevel,1=10
-BullsPower_PriceStopLevel,2=5
-BullsPower_PriceStopLevel,3=40
-BullsPower_PriceStopLevel,F=1
-BullsPower_SignalOpenFilterMethod=1
-BullsPower_TickFilterMethod=1

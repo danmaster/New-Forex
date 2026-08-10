@@ -1,7 +1,0 @@
-; Optimize max spread param.
-BullsPower_MaxSpread,1=10
-BullsPower_MaxSpread,2=10
-BullsPower_MaxSpread,3=40
-BullsPower_MaxSpread,F=1
-BullsPower_SignalOpenFilterMethod=1
-BullsPower_TickFilterMethod=1

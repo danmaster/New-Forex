@@ -1,8 +1,0 @@
-; Optimize price stop method param.
-Ichimoku_PriceStopMethod,1=0
-Ichimoku_PriceStopMethod,2=1
-Ichimoku_PriceStopMethod,3=4
-Ichimoku_PriceStopMethod,F=1
-Ichimoku_OrderCloseTime=-20
-Ichimoku_SignalOpenFilterMethod=1
-Ichimoku_TickFilterMethod=1

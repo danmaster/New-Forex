@@ -1,7 +1,0 @@
-; Optimize price stop level param.
-BWMFI_PriceStopLevel,1=10
-BWMFI_PriceStopLevel,2=5
-BWMFI_PriceStopLevel,3=40
-BWMFI_PriceStopLevel,F=1
-BWMFI_SignalOpenFilterMethod=1
-BWMFI_TickFilterMethod=1

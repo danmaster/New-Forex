@@ -1,6 +1,0 @@
-; Optimize tick filter method param.
-OsMA_SignalOpenFilterMethod=1
-OsMA_TickFilterMethod,1=1
-OsMA_TickFilterMethod,2=1
-OsMA_TickFilterMethod,3=32
-OsMA_TickFilterMethod,F=1

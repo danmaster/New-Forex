@@ -1,7 +1,0 @@
-; Optimize signal close method param.
-AC_SignalCloseMethod,1=-4
-AC_SignalCloseMethod,2=1
-AC_SignalCloseMethod,3=4
-AC_SignalCloseMethod,F=1
-AC_SignalOpenFilterMethod=1
-AC_TickFilterMethod=1

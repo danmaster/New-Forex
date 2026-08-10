@@ -1,8 +1,0 @@
-; Optimize price stop method param.
-AC_PriceStopMethod,1=0
-AC_PriceStopMethod,2=1
-AC_PriceStopMethod,3=4
-AC_PriceStopMethod,F=1
-AC_OrderCloseTime=-20
-AC_SignalOpenFilterMethod=1
-AC_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize signal open level param.
-OsMA_SignalOpenFilterMethod=1
-OsMA_SignalOpenLevel,1=0
-OsMA_SignalOpenLevel,2=1
-OsMA_SignalOpenLevel,3=10
-OsMA_SignalOpenLevel,F=1
-OsMA_TickFilterMethod=1

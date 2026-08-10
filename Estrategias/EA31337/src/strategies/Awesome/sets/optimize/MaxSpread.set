@@ -1,7 +1,0 @@
-; Optimize max spread param.
-Awesome_MaxSpread,1=10
-Awesome_MaxSpread,2=10
-Awesome_MaxSpread,3=40
-Awesome_MaxSpread,F=1
-Awesome_SignalOpenFilterMethod=1
-Awesome_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize strategy shift param.
-WPR_Shift,1=0
-WPR_Shift,2=1
-WPR_Shift,3=1
-WPR_Shift,F=1
-WPR_SignalOpenFilterMethod=1
-WPR_TickFilterMethod=1

@@ -1,7 +1,0 @@
-; Optimize strategy shift param.
-BearsPower_Shift,1=0
-BearsPower_Shift,2=1
-BearsPower_Shift,3=1
-BearsPower_Shift,F=1
-BearsPower_SignalOpenFilterMethod=1
-BearsPower_TickFilterMethod=1

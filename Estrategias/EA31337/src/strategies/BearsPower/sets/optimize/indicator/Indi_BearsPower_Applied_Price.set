@@ -1,7 +1,0 @@
-; Optimize strategy indicator's BearsPower applied price param.
-BearsPower_Indi_BearsPower_Applied_Price,1=0
-BearsPower_Indi_BearsPower_Applied_Price,2=0
-BearsPower_Indi_BearsPower_Applied_Price,3=6
-BearsPower_Indi_BearsPower_Applied_Price,F=1
-BearsPower_SignalOpenFilterMethod=1
-BearsPower_TickFilterMethod=1
