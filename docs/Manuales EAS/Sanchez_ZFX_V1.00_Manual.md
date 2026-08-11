@@ -25,8 +25,12 @@ Estos parámetros definen cuándo ocurrieron las sesiones anteriores para calcul
 
 ### 🚀 Horario de Trading Permitido (Filtro Operativo)
 El EA solo buscará entradas dentro de estos rangos horarios, simulando tu presencia durante las ventanas de volatilidad (aperturas de Londres y Nueva York).
-- **TradingStart1 / TradingEnd1**: Rango de la apertura de Londres (Por defecto: `08:00` - `11:00`).
-- **TradingStart2 / TradingEnd2**: Rango de la apertura de Nueva York (Por defecto: `13:00` - `16:00`).
+- **TradingStart1 / TradingEnd1**: Rango de la apertura de Londres (Por defecto: `09:00` - `12:00` hora Skilling).
+- **TradingStart2 / TradingEnd2**: Rango de la apertura de Nueva York (Por defecto: `15:00` - `18:00` hora Skilling).
+
+### 🎯 Gatillo (Confirmación 4)
+- **TriggerTF**: Temporalidad donde se busca la vela envolvente (Order Block). Por defecto es M5, pero puede ajustarse a M3 para índices.
+- **SweepProximityPoints**: Distancia máxima permitida (en puntos) entre la envolvente y el nivel barrido. Evita tomar operaciones en retrocesos que ocurren muy lejos del punto estructural original.
 
 ---
 
@@ -35,15 +39,14 @@ El EA solo buscará entradas dentro de estos rangos horarios, simulando tu prese
 El EA se ejecuta en temporalidad de **5 Minutos (M5)**, pero monitorea los cierres de H1 y H4 en tiempo real. 
 
 1. **Zonas de Liquidez:** El bot identifica constantemente el Alto y Bajo del día anterior (D1) y el Alto y Bajo de la sesión inmediatamente anterior (según la hora del broker configurada).
-2. **El "Liquidity Sweep" (Confirmación MTF):** 
-   - El EA comprueba la última vela cerrada de H4 y la última de H1.
-   - Ambas velas deben haber superado (roto) uno de los niveles de liquidez, pero su precio de cierre (`Close`) debe ser inferior al nivel (si es un máximo) o superior al nivel (si es un mínimo). 
-   - Si la vela cierra con cuerpo más allá del nivel, se considera un "Liquidity Run" y el EA cancela la posibilidad de operar.
-3. **El Gatillo (Envolvente en M5):**
-   - Una vez confirmado el barrido en H4 y H1, el EA espera pacientemente en M5.
-   - Si detecta una **Vela Envolvente** (Order Block) en dirección opuesta a la toma de liquidez, ejecuta la entrada inmediatamente al cierre de esa vela de M5.
+2. **El "Liquidity Sweep" (Confirmación MTF en tiempo real):** 
+   - El EA monitoriza las velas *en formación* (en vivo) de H4 y H1.
+   - Si el precio cruza un nivel estructural y luego es rechazado regresando al otro lado (dejando una mecha tanto en H1 como en H4 de forma simultánea), se confirma el barrido sin necesidad de esperar al cierre de 4 horas.
+3. **El Gatillo (Envolvente y Proximidad):**
+   - Una vez confirmado el rechazo MTF en vivo, el EA espera en la temporalidad definida en `TriggerTF` (ej. M5 o M3).
+   - Se requiere que se forme una **Vela Envolvente** muy cerca de la toma de liquidez (filtrado por `SweepProximityPoints`). Si la vela envolvente se forma, se ejecuta la entrada.
 4. **Gestión de la Operación:**
-   - **Stop Loss:** Se coloca en el extremo absoluto (High/Low) de la vela de barrido (H4), sumándole el margen de `StopLossPaddingPips`.
+   - **Stop Loss:** Se coloca matemáticamente justo por encima (o por debajo) del **nivel real barrido**, sumándole el margen de `StopLossPaddingPoints`.
    - **Take Profit:** Se calcula matemáticamente para ser igual a la distancia del Stop Loss (Riesgo/Beneficio 1:1).
 
 ---
