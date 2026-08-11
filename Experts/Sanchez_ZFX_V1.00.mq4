@@ -13,7 +13,7 @@ input int      MagicNumber             = 8888;
 input double   RiskPercent             = 1.0;         // Riesgo por operacion (%)
 input double   FixedLotSize            = 0.0;         // Lote fijo (si es > 0, ignora Riesgo %)
 input int      Slippage                = 3;           // Slippage maximo
-input double   StopLossPaddingPips     = 2.0;         // Pips de margen para el SL (encima/debajo mecha)
+input double   StopLossPaddingPoints   = 20.0;        // Puntos/Ticks de margen para el SL (encima/debajo mecha)
 
 input string   str_session             = "--- Horarios del Broker (Skilling) ---";
 input string   AsiaStart               = "00:00";
@@ -107,23 +107,22 @@ int CheckLiquiditySweep(double levelHigh, double levelLow)
 {
    // Devuelve 1 para Sweep de Venta (saca High), -1 para Sweep de Compra (saca Low), 0 para nada
    
-   // H4 y H1
+   // Verificamos H4
    double h4High = iHigh(Symbol(), PERIOD_H4, 1);
    double h4Low  = iLow(Symbol(), PERIOD_H4, 1);
    double h4Close = iClose(Symbol(), PERIOD_H4, 1);
    
-   double h1High = iHigh(Symbol(), PERIOD_H1, 1);
-   double h1Low  = iLow(Symbol(), PERIOD_H1, 1);
+   // Verificamos H1 (puede ser la misma vela u otra anterior dentro del mismo H4)
    double h1Close = iClose(Symbol(), PERIOD_H1, 1);
    
+   // Para confirmar el sweep, H4 debió perforar el nivel y CERRAR por debajo (o encima).
+   // Y el último H1 cerrado también debe estar por debajo (o encima) validando el rechazo.
+   
    bool sweepH4Low = (h4Low < levelLow && h4Close > levelLow);
-   bool sweepH1Low = (h1Low < levelLow && h1Close > levelLow);
-   
    bool sweepH4High = (h4High > levelHigh && h4Close < levelHigh);
-   bool sweepH1High = (h1High > levelHigh && h1Close < levelHigh);
    
-   if(sweepH4Low && sweepH1Low) return -1;
-   if(sweepH4High && sweepH1High) return 1;
+   if(sweepH4Low && h1Close > levelLow) return -1;
+   if(sweepH4High && h1Close < levelHigh) return 1;
    
    return 0;
 }
@@ -151,7 +150,7 @@ int CheckEngulfing()
 }
 
 //+------------------------------------------------------------------+
-//| Calcular Lotaje Segun Riesgo                                     |
+//| Calcular Lotaje Segun Riesgo (Adaptado para Indices/Forex)       |
 //+------------------------------------------------------------------+
 double CalculateLotSize(double slPrice)
 {
@@ -159,12 +158,18 @@ double CalculateLotSize(double slPrice)
    
    double riskMoney = AccountBalance() * (RiskPercent / 100.0);
    double tickValue = MarketInfo(Symbol(), MODE_TICKVALUE);
+   double tickSize  = MarketInfo(Symbol(), MODE_TICKSIZE);
    
-   double pipsToSl = MathAbs(slPrice - Ask) / Point;
-   if(Digits == 3 || Digits == 5) pipsToSl /= 10.0;
+   // Puntos de diferencia (Puntos crudos)
+   double pointsToSl = MathAbs(slPrice - Ask) / tickSize;
    
    double lotStep = MarketInfo(Symbol(), MODE_LOTSTEP);
-   double lot = riskMoney / (pipsToSl * 10 * tickValue);
+   double lot = 0;
+   
+   // Evitar division por 0
+   if(pointsToSl > 0 && tickValue > 0) {
+      lot = riskMoney / (pointsToSl * tickValue);
+   }
    
    lot = MathFloor(lot / lotStep) * lotStep;
    
@@ -208,11 +213,11 @@ void OnTick()
    if(activeSweep != 0)
    {
       int engulfing = CheckEngulfing();
-      double pipsPad = StopLossPaddingPips * (Digits == 3 || Digits == 5 ? 10 : 1) * Point;
+      double pointsPad = StopLossPaddingPoints * Point;
       
       if(activeSweep == -1 && engulfing == 1) // Comprar
       {
-         double sl = targetSLPrice - pipsPad;
+         double sl = targetSLPrice - pointsPad;
          double tp = Ask + (Ask - sl);
          double lot = CalculateLotSize(sl);
          
@@ -221,7 +226,7 @@ void OnTick()
       }
       else if(activeSweep == 1 && engulfing == -1) // Vender
       {
-         double sl = targetSLPrice + pipsPad;
+         double sl = targetSLPrice + pointsPad;
          double tp = Bid - (sl - Bid);
          double lot = CalculateLotSize(sl);
          
