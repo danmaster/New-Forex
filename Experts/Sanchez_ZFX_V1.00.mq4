@@ -30,7 +30,7 @@ input string   TradingStart2           = "15:00";     // Apertura de NY (Skillin
 input string   TradingEnd2             = "18:00";
 
 input string   str_trigger             = "--- Gatillo (Confirmacion 4) ---";
-input ENUM_TIMEFRAMES TriggerTF        = PERIOD_M5;   // Temporalidad del gatillo (M3 en indices, M5 en forex)
+input ENUM_TIMEFRAMES TriggerTF        = PERIOD_M5;   // MT4 no tiene M3 -> usar M5 (en indices y forex)
 input double   SweepProximityPoints    = 40.0;        // Distancia max en puntos de la envolvente al nivel barrido
 
 // Variables Globales
@@ -38,6 +38,7 @@ double prevDayHigh = 0.0, prevDayLow = 0.0;
 double prevSessionHigh = 0.0, prevSessionLow = 0.0;
 int lastDayProcessed = -1;
 datetime lastTriggerBar = 0;
+double lastSweptLevelUsed = 0.0; // Evita re-entradas en el mismo nivel
 
 //+------------------------------------------------------------------+
 //| Inicializacion                                                   |
@@ -75,34 +76,28 @@ void UpdateStructuralLevels()
    }
    
    // Determinar la sesion anterior a cada ventana de trading.
-   // En Londres -> sesion previa = Asia (00:00-08:00).
-   // En NY -> sesion previa = Londres (09:00-18:00, aun en curso)
-   //          usamos el alto/bajo "hasta ahora" de esa sesion.
+   // Congelamos el bloque horario exacto para evitar un nivel movil.
    string currentTime = TimeToStr(TimeCurrent(), TIME_MINUTES);
    int startIdx = -1;
+   int endIdx = -1;
 
-   if(currentTime >= AsiaStart && currentTime < AsiaEnd)
+   if(currentTime >= LondonStart && currentTime < LondonEnd)
    {
-      startIdx = iBarShift(Symbol(), PERIOD_M5,
-         StringToTime(TimeToStr(TimeCurrent(), TIME_DATE) + " " + AsiaStart), false);
-   }
-   else if(currentTime >= LondonStart && currentTime < LondonEnd)
-   {
-      startIdx = iBarShift(Symbol(), PERIOD_M5,
-         StringToTime(TimeToStr(TimeCurrent(), TIME_DATE) + " " + AsiaStart), false);
+      startIdx = iBarShift(Symbol(), PERIOD_M5, StringToTime(TimeToStr(TimeCurrent(), TIME_DATE) + " " + AsiaStart), false);
+      endIdx   = iBarShift(Symbol(), PERIOD_M5, StringToTime(TimeToStr(TimeCurrent(), TIME_DATE) + " " + AsiaEnd), false);
    }
    else if(currentTime >= NYStart && currentTime < NYEnd)
    {
-      startIdx = iBarShift(Symbol(), PERIOD_M5,
-         StringToTime(TimeToStr(TimeCurrent(), TIME_DATE) + " " + LondonStart), false);
+      startIdx = iBarShift(Symbol(), PERIOD_M5, StringToTime(TimeToStr(TimeCurrent(), TIME_DATE) + " " + LondonStart), false);
+      endIdx   = iBarShift(Symbol(), PERIOD_M5, StringToTime(TimeToStr(TimeCurrent(), TIME_DATE) + " " + NYStart), false);
    }
 
-   // Rango desde el inicio de esa sesion hasta la vela actual (bar 0)
-   if(startIdx >= 0)
+   // Rango desde el inicio de la sesion hasta el fin de esa misma sesion
+   if(startIdx >= 0 && endIdx >= 0 && startIdx >= endIdx)
    {
-      int count = startIdx + 1;
-      int highIdx = iHighest(Symbol(), PERIOD_M5, MODE_HIGH, count, 0);
-      int lowIdx  = iLowest(Symbol(), PERIOD_M5, MODE_LOW, count, 0);
+      int count = startIdx - endIdx + 1;
+      int highIdx = iHighest(Symbol(), PERIOD_M5, MODE_HIGH, count, endIdx);
+      int lowIdx  = iLowest(Symbol(), PERIOD_M5, MODE_LOW, count, endIdx);
 
       if(highIdx >= 0) prevSessionHigh = iHigh(Symbol(), PERIOD_M5, highIdx);
       if(lowIdx >= 0)  prevSessionLow  = iLow(Symbol(), PERIOD_M5, lowIdx);
@@ -131,17 +126,38 @@ int CheckLiquiditySweep(double levelHigh, double levelLow)
    double bid = Bid;
 
    // Sweep de minimos -> Compra (-1)
-   // H1: mecha por debajo del nivel y precio actual por encima (rechazo)
    bool h1SweepLow = (h1Low < levelLow && bid > levelLow);
-   // H4: mecha por debajo del nivel y precio actual por encima (rechazo)
    bool h4SweepLow = (h4Low < levelLow && bid > levelLow);
-   // Evita barrer dos veces el mismo barrido: el H1 debe haber nacido por encima
-   if(h1SweepLow && h4SweepLow && h1Open > levelLow && h4Open > levelLow) return -1;
+   
+   if(h4Low < levelLow && levelLow > 0)
+   {
+      if(bid > levelLow)
+      {
+         if(h1Low < levelLow) {
+            if(h1Open > levelLow && h4Open > levelLow) {
+               Print("DEBUG BUY: Sweep Confirmado (-1). Nivel=", levelLow, " Bid=", bid);
+               return -1;
+            } else Print("DEBUG BUY FALLO: H1 o H4 nacieron bajo el nivel (re-barrido).");
+         } // Silenciado H1 no confirma
+      } // Silenciado H4 no confirma rechazo
+   }
 
    // Sweep de maximos -> Venta (1)
    bool h1SweepHigh = (h1High > levelHigh && bid < levelHigh);
    bool h4SweepHigh = (h4High > levelHigh && bid < levelHigh);
-   if(h1SweepHigh && h4SweepHigh && h1Open < levelHigh && h4Open < levelHigh) return 1;
+   
+   if(h4High > levelHigh && levelHigh > 0)
+   {
+      if(bid < levelHigh)
+      {
+         if(h1High > levelHigh) {
+            if(h1Open < levelHigh && h4Open < levelHigh) {
+               Print("DEBUG SELL: Sweep Confirmado (1). Nivel=", levelHigh, " Bid=", bid);
+               return 1;
+            }
+         }
+      }
+   }
 
    return 0;
 }
@@ -252,9 +268,11 @@ void OnTick()
       else if(sweepDir == 1) sweptLevel = prevSessionHigh;
    }
 
-   if(sweepDir != 0)
+   if(sweepDir != 0 && sweptLevel != lastSweptLevelUsed)
    {
       int engulfing = CheckEngulfing(sweptLevel, sweepDir);
+      
+      if(engulfing != 0) Print("DEBUG: Envolvente detectada (", engulfing, ") en el nivel ", sweptLevel);
       double pointsPad = StopLossPaddingPoints * Point;
 
       // Compra: barrio minimo (-1) + envolvente alcista
@@ -265,7 +283,10 @@ void OnTick()
          double lot = CalculateLotSize(sl, -1);
 
          int ticket = OrderSend(Symbol(), OP_BUY, lot, Ask, Slippage, sl, tp, TradeComment, MagicNumber, 0, Blue);
-         if(ticket > 0) lastTriggerBar = currentBarTrigger;
+         if(ticket > 0) {
+            lastTriggerBar = currentBarTrigger;
+            lastSweptLevelUsed = sweptLevel;
+         }
       }
       // Venta: barrio maximo (1) + envolvente bajista
       else if(sweepDir == 1 && engulfing == -1)
@@ -275,7 +296,10 @@ void OnTick()
          double lot = CalculateLotSize(sl, 1);
 
          int ticket = OrderSend(Symbol(), OP_SELL, lot, Bid, Slippage, sl, tp, TradeComment, MagicNumber, 0, Red);
-         if(ticket > 0) lastTriggerBar = currentBarTrigger;
+         if(ticket > 0) {
+            lastTriggerBar = currentBarTrigger;
+            lastSweptLevelUsed = sweptLevel;
+         }
       }
    }
 }
